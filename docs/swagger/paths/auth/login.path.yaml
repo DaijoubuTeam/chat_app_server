@@ -1,0 +1,18 @@
+post: 
+  tags:
+    - "Auth"
+  summary: Post resource and get user's auth token
+  requestBody: 
+    required: true
+    content:
+      application/json:
+        schema:
+          $ref: '../../components/auth/login.component.yaml#/schemas/LoginRequest'
+  responses:
+    200: 
+      description: Login successful
+      content:
+        application/json:
+          schema:
+            $ref: '../../components/auth/login.component.yaml#/schemas/LoginResponse'
+

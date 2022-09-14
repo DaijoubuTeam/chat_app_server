@@ -1,0 +1,12 @@
+{
+  "json.schemas": [
+    {
+      "fileMatch": ["/*.path.json"],
+      "url": "docs/swagger/paths/path.schema.json"
+    }
+  ],
+  "yaml.schemas": {
+    "docs/swagger/paths/path.schema.json": ["/*.path.yaml"],
+    "docs/swagger/components/component.schema.json": ["/*.component.yaml"]
+  }
+}

@@ -1,0 +1,8 @@
+schemas:
+  user:
+    type: object
+    properties:
+      userId:
+        type: string
+      userName:
+        type: string

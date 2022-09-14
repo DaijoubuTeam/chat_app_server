@@ -1,0 +1,147 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "title": "Validation schema for Swagger 3.0.x's components",
+  "description": "Validation schema for Swagger 3.0.x's components",
+  "type": "object",
+  "properties": {
+    "schemas": {
+      "type": "object",
+      "patternProperties": {
+        "^[a-zA-Z0-9\\.\\-_]+$": {
+          "oneOf": [
+            {
+              "$ref": "../swagger.schema.json#/definitions/Schema"
+            },
+            {
+              "$ref": "../swagger.schema.json#/definitions/Reference"
+            }
+          ]
+        }
+      }
+    },
+    "responses": {
+      "type": "object",
+      "patternProperties": {
+        "^[a-zA-Z0-9\\.\\-_]+$": {
+          "oneOf": [
+            {
+              "$ref": "../swagger.schema.json#/definitions/Reference"
+            },
+            {
+              "$ref": "../swagger.schema.json#/definitions/Response"
+            }
+          ]
+        }
+      }
+    },
+    "parameters": {
+      "type": "object",
+      "patternProperties": {
+        "^[a-zA-Z0-9\\.\\-_]+$": {
+          "oneOf": [
+            {
+              "$ref": "../swagger.schema.json#/definitions/Reference"
+            },
+            {
+              "$ref": "../swagger.schema.json#/definitions/Parameter"
+            }
+          ]
+        }
+      }
+    },
+    "examples": {
+      "type": "object",
+      "patternProperties": {
+        "^[a-zA-Z0-9\\.\\-_]+$": {
+          "oneOf": [
+            {
+              "$ref": "../swagger.schema.json#/definitions/Reference"
+            },
+            {
+              "$ref": "../swagger.schema.json#/definitions/Example"
+            }
+          ]
+        }
+      }
+    },
+    "requestBodies": {
+      "type": "object",
+      "patternProperties": {
+        "^[a-zA-Z0-9\\.\\-_]+$": {
+          "oneOf": [
+            {
+              "$ref": "../swagger.schema.json#/definitions/Reference"
+            },
+            {
+              "$ref": "../swagger.schema.json#/definitions/RequestBody"
+            }
+          ]
+        }
+      }
+    },
+    "headers": {
+      "type": "object",
+      "patternProperties": {
+        "^[a-zA-Z0-9\\.\\-_]+$": {
+          "oneOf": [
+            {
+              "$ref": "../swagger.schema.json#/definitions/Reference"
+            },
+            {
+              "$ref": "../swagger.schema.json#/definitions/Header"
+            }
+          ]
+        }
+      }
+    },
+    "securitySchemes": {
+      "type": "object",
+      "patternProperties": {
+        "^[a-zA-Z0-9\\.\\-_]+$": {
+          "oneOf": [
+            {
+              "$ref": "../swagger.schema.json#/definitions/Reference"
+            },
+            {
+              "$ref": "../swagger.schema.json#/definitions/SecurityScheme"
+            }
+          ]
+        }
+      }
+    },
+    "links": {
+      "type": "object",
+      "patternProperties": {
+        "^[a-zA-Z0-9\\.\\-_]+$": {
+          "oneOf": [
+            {
+              "$ref": "../swagger.schema.json#/definitions/Reference"
+            },
+            {
+              "$ref": "../swagger.schema.json#/definitions/Link"
+            }
+          ]
+        }
+      }
+    },
+    "callbacks": {
+      "type": "object",
+      "patternProperties": {
+        "^[a-zA-Z0-9\\.\\-_]+$": {
+          "oneOf": [
+            {
+              "$ref": "../swagger.schema.json#/definitions/Reference"
+            },
+            {
+              "$ref": "../swagger.schema.json#/definitions/Callback"
+            }
+          ]
+        }
+      }
+    }
+  },
+  "patternProperties": {
+    "^x-": {}
+  },
+  "additionalProperties": false
+}

@@ -1,0 +1,44 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "title": "Validation schema for Swagger 3.0.x's path",
+  "description": "Validation schema for Swagger 3.0.x's path",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "$ref": {
+      "type": "string"
+    },
+    "summary": {
+      "type": "string"
+    },
+    "description": {
+      "type": "string"
+    },
+    "servers": {
+      "type": "array",
+      "items": {
+        "$ref": "../swagger.schema.json#/definitions/Server"
+      }
+    },
+    "parameters": {
+      "type": "array",
+      "items": {
+        "oneOf": [
+          {
+            "$ref": "../swagger.schema.json#/definitions/Parameter"
+          },
+          {
+            "$ref": "../swagger.schema.json#/definitions/Reference"
+          }
+        ]
+      },
+      "uniqueItems": true
+    }
+  },
+  "patternProperties": {
+    "^(get|put|post|delete|options|head|patch|trace)$": {
+      "$ref": "../swagger.schema.json#/definitions/Operation"
+    },
+    "^x-": {}
+  }
+}
