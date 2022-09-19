@@ -1,0 +1,22 @@
+post: 
+  tags:
+    - "Auth"
+  summary: Verify user and get resources
+  security:
+    - bearerAuth: []
+  responses:
+    200: 
+      description: Verify and access successful
+      content:
+        application/json:
+          schema:
+            $ref: '../../components/auth/verify.component.yaml#/schemas/VerifyResponse'
+    201:
+      description: Verify and create user successful
+      content:
+        application/json::
+          schema:
+            $ref: '../../components/auth/verify.component.yaml#/schemas/VerifyResponse'
+    400:
+      description: Invalid token
+

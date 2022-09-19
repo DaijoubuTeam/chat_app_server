@@ -20,49 +20,54 @@
     }
   ],
   "paths": {
-    "/auth/login": {
+    "/auth/verify": {
       "post": {
         "tags": [
           "Auth"
         ],
-        "summary": "Post resource and get user's auth token",
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "type": "object",
-                "properties": {
-                  "email": {
-                    "type": "string"
-                  },
-                  "password": {
-                    "type": "string"
-                  }
-                }
-              }
-            }
+        "summary": "Verify user and get resources",
+        "security": [
+          {
+            "bearerAuth": []
           }
-        },
+        ],
         "responses": {
           "200": {
-            "description": "Login successful",
+            "description": "Verify and access successful",
             "content": {
               "application/json": {
                 "schema": {
                   "type": "object",
                   "properties": {
-                    "jwtToken": {
-                      "type": "string"
-                    },
                     "user": {
                       "type": "object",
                       "properties": {
-                        "userId": {
+                        "username": {
                           "type": "string"
                         },
-                        "userName": {
+                        "fullname": {
                           "type": "string"
+                        },
+                        "uid": {
+                          "type": "string"
+                        },
+                        "avatar": {
+                          "type": "string"
+                        },
+                        "phone": {
+                          "type": "string"
+                        },
+                        "about": {
+                          "type": "string"
+                        },
+                        "email": {
+                          "type": "string"
+                        },
+                        "isEmailVerified": {
+                          "type": "boolean"
+                        },
+                        "isProfileFilled": {
+                          "type": "boolean"
                         }
                       }
                     }
@@ -70,6 +75,19 @@
                 }
               }
             }
+          },
+          "201": {
+            "description": "Verify and create user successful",
+            "content": {
+              "application/json:": {
+                "schema": {
+                  "$ref": "#/paths/~1auth~1verify/post/responses/200/content/application~1json/schema"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid token"
           }
         }
       }

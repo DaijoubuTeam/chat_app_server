@@ -2,7 +2,21 @@ schemas:
   user:
     type: object
     properties:
-      userId:
+      username:
         type: string
-      userName:
+      fullname:
         type: string
+      uid:
+        type: string
+      avatar:
+        type: string
+      phone:
+        type: string
+      about:
+        type: string
+      email:
+        type: string
+      isEmailVerified:
+        type: boolean
+      isProfileFilled:
+        type: boolean

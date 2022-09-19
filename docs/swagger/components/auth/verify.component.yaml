@@ -1,0 +1,7 @@
+schemas:
+  VerifyResponse:
+    type: object
+    properties:
+      user: {
+        $ref: '../models/user.component.yaml#/schemas/user'
+      }
