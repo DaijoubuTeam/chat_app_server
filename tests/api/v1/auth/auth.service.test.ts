@@ -4,8 +4,7 @@ import { AuthException } from '../../../../src/exception/auth_exception';
 import * as admin from 'firebase-admin';
 import { Auth } from 'firebase-admin/lib/auth/auth';
 import { DecodedIdToken } from 'firebase-admin/lib/auth/token-verifier';
-import User, { IUser } from '../../../../src/models/user';
-import { StatusCodes } from 'http-status-codes';
+import User from '../../../../src/models/user';
 
 jest.mock('../../../../src/models/user');
 const mockedAdmin = jest.mocked(admin);
@@ -97,7 +96,6 @@ describe('auth.service', function () {
 
     test('should return null if user not exist', async function () {
       const mockUid = 'mock-uid';
-      const mockUser = new User({ uid: mockUid });
       const mockDecodedToken = {
         uid: mockUid,
       } as unknown as DecodedIdToken;

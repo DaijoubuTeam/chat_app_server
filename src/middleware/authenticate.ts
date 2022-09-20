@@ -3,8 +3,9 @@ import { AuthException } from '../exception/auth_exception';
 import { StatusCodes } from 'http-status-codes';
 import * as admin from 'firebase-admin';
 import User from '../models/user';
+import { UserAuthInfoRequest } from '../types/express/user_auth_info_request';
 const authenticate = async (
-  req: Request,
+  req: UserAuthInfoRequest,
   res: Response,
   next: NextFunction
 ) => {

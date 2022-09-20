@@ -1,0 +1,17 @@
+get:
+  tags:
+    - "User"
+  summary: Get self profile
+  security:
+    - bearerAuth: []
+  responses:
+    200: 
+      description: Get user successful
+      content:
+        application/json:
+          schema:
+            $ref: '../../components/auth/verify.component.yaml#/schemas/VerifyResponse'
+    400:
+      description: Invalid token
+    404:
+      description: User not found

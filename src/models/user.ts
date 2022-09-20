@@ -28,6 +28,21 @@ const userSchema = new Schema<IUser>({
 
 const User = model<IUser>('User', userSchema);
 
-export { IUser };
+const getRawUser = (user: IUser) => {
+  const rawUser = {
+    username: user.username,
+    fullname: user.fullname,
+    uid: user.uid,
+    avatar: user.avatar,
+    phone: user.phone,
+    about: user.about,
+    email: user.email,
+    isEmailVerified: user.isEmailVerified,
+    isProfileFilled: user.isProfileFilled,
+  };
+  return rawUser;
+};
+
+export { IUser, getRawUser };
 
 export default User;

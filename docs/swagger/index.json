@@ -37,6 +37,44 @@
             "content": {
               "application/json": {
                 "schema": {
+                  "$ref": "#/paths/~1user~1self/get/responses/200/content/application~1json/schema"
+                }
+              }
+            }
+          },
+          "201": {
+            "description": "Verify and create user successful",
+            "content": {
+              "application/json:": {
+                "schema": {
+                  "$ref": "#/paths/~1user~1self/get/responses/200/content/application~1json/schema"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid token"
+          }
+        }
+      }
+    },
+    "/user/self": {
+      "get": {
+        "tags": [
+          "User"
+        ],
+        "summary": "Get self profile",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Get user successful",
+            "content": {
+              "application/json": {
+                "schema": {
                   "type": "object",
                   "properties": {
                     "user": {
@@ -76,18 +114,11 @@
               }
             }
           },
-          "201": {
-            "description": "Verify and create user successful",
-            "content": {
-              "application/json:": {
-                "schema": {
-                  "$ref": "#/paths/~1auth~1verify/post/responses/200/content/application~1json/schema"
-                }
-              }
-            }
-          },
           "400": {
             "description": "Invalid token"
+          },
+          "404": {
+            "description": "User not found"
           }
         }
       }
