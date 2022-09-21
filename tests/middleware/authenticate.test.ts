@@ -4,7 +4,6 @@ import authenticate from '../../src/middleware/authenticate';
 import * as admin from 'firebase-admin';
 import { DecodedIdToken } from 'firebase-admin/lib/auth/token-verifier';
 import User from '../../src/models/user';
-import { UserAuthInfoRequest } from '../../src/types/express/user_auth_info_request';
 
 jest.mock('firebase-admin');
 
@@ -12,7 +11,7 @@ const mockedAdmin = jest.mocked(admin);
 const mockedUser = jest.mocked(User);
 
 describe('authenticate', function () {
-  let mockRequest: UserAuthInfoRequest;
+  let mockRequest: Request;
   let mockResponse: Response;
   let mockNextFunction: NextFunction & jest.Mock;
 
@@ -21,7 +20,7 @@ describe('authenticate', function () {
       headers: {
         authorization: undefined,
       },
-    } as UserAuthInfoRequest;
+    } as Request;
     mockResponse = {} as Response;
     mockNextFunction = jest.fn();
     await authenticate(mockRequest, mockResponse, mockNextFunction);
@@ -36,7 +35,7 @@ describe('authenticate', function () {
       headers: {
         authorization: 'invalid-header',
       },
-    } as UserAuthInfoRequest;
+    } as Request;
     mockResponse = {} as Response;
     mockNextFunction = jest.fn();
 
@@ -53,7 +52,7 @@ describe('authenticate', function () {
       headers: {
         authorization: mockBearerToken,
       },
-    } as UserAuthInfoRequest;
+    } as Request;
     mockResponse = {} as Response;
     mockNextFunction = jest.fn();
     const mockError = new Error('mock-error');
@@ -62,6 +61,7 @@ describe('authenticate', function () {
         throw mockError;
       },
     } as unknown as admin.auth.Auth;
+    mockedAdmin.initializeApp = jest.fn();
     mockedAdmin.initializeApp.mockImplementationOnce(jest.fn());
     mockedAdmin.auth = jest.fn();
     mockedAdmin.auth.mockImplementationOnce(() => {
@@ -80,7 +80,7 @@ describe('authenticate', function () {
       headers: {
         authorization: mockBearerToken,
       },
-    } as UserAuthInfoRequest;
+    } as Request;
     mockResponse = {} as Response;
     mockNextFunction = jest.fn();
     const mockUid = 'mock-uid';
@@ -109,7 +109,7 @@ describe('authenticate', function () {
       headers: {
         authorization: mockBearerToken,
       },
-    } as UserAuthInfoRequest;
+    } as Request;
     mockResponse = {} as Response;
     mockNextFunction = jest.fn();
     const mockUid = 'mock-uid';

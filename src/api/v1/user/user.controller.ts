@@ -1,11 +1,12 @@
 import { Request, Response, NextFunction } from 'express';
 import HttpException from '../../../exception';
 import { StatusCodes } from 'http-status-codes';
-import { getRawUser, IUser } from '../../../models/user';
-import { UserAuthInfoRequest } from '../../../types/express/user_auth_info_request';
+import { getRawUser } from '../../../models/user';
+import userService from './user.service';
+import { IUser } from '../../../models/user';
 
 const getSelfProfile = async (
-  req: UserAuthInfoRequest,
+  req: Request,
   res: Response,
   next: NextFunction
 ) => {
@@ -20,4 +21,22 @@ const getSelfProfile = async (
   }
 };
 
-export default { getSelfProfile };
+const putSelfProfile = async (
+  req: Request<any, any, IUser>,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const user = req.user;
+    if (!user) {
+      throw new HttpException(StatusCodes.UNAUTHORIZED, 'Unauthorized');
+    }
+    const userInfo = req.body;
+    const updatedUser = await userService.updateUserProfile(user.uid, userInfo);
+    res.status(StatusCodes.OK).json({ user: updatedUser });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export default { getSelfProfile, putSelfProfile };

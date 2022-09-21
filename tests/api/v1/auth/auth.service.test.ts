@@ -89,6 +89,7 @@ describe('auth.service', function () {
       const mockDecodedToken = {
         uid: mockUid,
       } as unknown as DecodedIdToken;
+
       mockedUser.findOne.mockResolvedValueOnce(mockUser);
       const user = await authService.getUser(mockDecodedToken);
       expect(user).toBe(mockUser);

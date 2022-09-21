@@ -15,3 +15,29 @@ get:
       description: Invalid token
     404:
       description: User not found
+
+put:
+  tags:
+    - "User"
+  summary: Update self profile
+  security:
+    - bearerAuth: []
+  requestBody:
+    content:
+      application/json:
+        schema:
+          $ref: '../../components/user/self.component.yaml#/schemas/PutSelfRequest'
+  responses:
+    200: 
+      description: Update user
+      content:
+        application/json:
+          schema:
+            $ref: '../../components/user/self.component.yaml#/schemas/PutSelfResponse'
+    400:
+      description: Invalid token
+
+    
+    
+
+  

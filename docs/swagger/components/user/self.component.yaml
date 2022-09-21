@@ -1,0 +1,23 @@
+schemas:
+  PutSelfRequest:
+    type: object
+    properties:
+      username:
+        type: string
+      fullname:
+        type: string
+      uid:
+        type: string
+      avatar:
+        type: string
+      phone:
+        type: string
+      about:
+        type: string
+      email:
+        type: string
+  PutSelfResponse:
+    type: object
+    properties:
+      user:
+        $ref: '../models/user.component.yaml#/schemas/user'

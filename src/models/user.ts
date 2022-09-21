@@ -10,8 +10,8 @@ interface IUser {
   phone: string;
   about: string;
   email: string;
-  isEmailVerified: boolean;
-  isProfileFilled: boolean;
+  isEmailVerified?: boolean;
+  isProfileFilled?: boolean;
 }
 
 const userSchema = new Schema<IUser>({
