@@ -4,6 +4,7 @@
 
 - .env
 - docker.env
+- sendgrid.env
 
 ## docker build command
 

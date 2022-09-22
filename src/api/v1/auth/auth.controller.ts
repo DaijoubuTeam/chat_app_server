@@ -32,4 +32,18 @@ const verifyUser = async (req: Request, res: Response, next: NextFunction) => {
   }
 };
 
-export default { verifyUser };
+const forgotPassword = async (
+  req: Request<any, any, { email: string }>,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const { email } = req.body;
+    await service.sendResetPasswordCode(email);
+    res.status(StatusCodes.ACCEPTED).json('Send email successful');
+  } catch (error) {
+    next(error);
+  }
+};
+
+export default { verifyUser, forgotPassword };

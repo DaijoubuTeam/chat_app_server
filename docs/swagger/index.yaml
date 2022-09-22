@@ -14,5 +14,7 @@ servers:
 paths:
   /auth/verify:
     $ref: './paths/auth/verify.path.yaml'
+  /auth/forgot-password:
+    $ref: './paths/auth/forgot_password.path.yaml'
   /user/self:
     $ref: './paths/user/self.path.yaml'

@@ -20,6 +20,8 @@ const app: Express = express();
 // Middleware
 app.use(cors());
 
+app.use(express.json());
+
 app.use('/api-docs', SwaggerUI.serve, SwaggerUI.setup(swaggerDocument));
 
 app.use('/api', apiRouter);
@@ -37,13 +39,20 @@ if (!mongo_url || !port) {
 const key = fs.readFileSync('localhost-key.pem', 'utf-8');
 const cert = fs.readFileSync('localhost.pem', 'utf-8');
 
-mongoose
-  .connect(mongo_url)
-  .then(() => {
-    console.log('CONNECT TO DATABASE SUCCESSFUL');
-    return admin.initializeApp({
-      credential: admin.credential.cert(serviceAccount as admin.ServiceAccount),
-    });
-  })
-  .then(() => https.createServer({ key, cert }, app).listen(port))
-  .then(() => console.log(`LISTEN ON PORT ${port}`));
+async function startApp(
+  mongo_url: string,
+  app: express.Express,
+  port: string,
+  key: string,
+  cert: string
+) {
+  await mongoose.connect(mongo_url);
+  console.log('CONNECT TO DATABASE SUCCESSFUL');
+  admin.initializeApp({
+    credential: admin.credential.cert(serviceAccount as admin.ServiceAccount),
+  });
+  https.createServer({ key, cert }, app).listen(port);
+  console.log(`LISTEN ON PORT ${port}`);
+}
+
+startApp(mongo_url, app, port, key, cert);

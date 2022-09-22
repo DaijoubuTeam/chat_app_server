@@ -4,6 +4,11 @@ import { DecodedIdToken } from 'firebase-admin/lib/auth/token-verifier';
 import { AuthException } from '../../../exception/auth_exception';
 import User, { IUser } from '../../../models/user';
 import { StatusCodes } from 'http-status-codes';
+import HttpException from '../../../exception';
+import ResetPasswordToken from '../../../models/reset_password_token';
+import sgMail from '@sendgrid/mail';
+import ejs from 'ejs';
+import path from 'path';
 
 const getHeaderToken = (req: Request) => {
   const authorizationHeader = req.headers.authorization;
@@ -61,4 +66,57 @@ const getRawUser = (user: IUser) => {
   return rawUser;
 };
 
-export default { getHeaderToken, getUser, verifyToken, createUser, getRawUser };
+const generateResetCode = () => {
+  return (Math.random() * 10000 * 1000).toString().substring(0, 4);
+};
+
+const sendEmailResetCode = async (email: string, reset_code: string) => {
+  const sendGridApiKey = process.env.SENDGRID_API_KEY;
+  const verifiedSender = process.env.SENDGRID_VERIFIED_SENDER;
+  if (!sendGridApiKey || !verifiedSender) {
+    throw new HttpException(
+      StatusCodes.INTERNAL_SERVER_ERROR,
+      'Internal server error'
+    );
+  }
+  sgMail.setApiKey(sendGridApiKey);
+  const templatePath = path.join(
+    __dirname,
+    'template',
+    'reset_password_template.ejs'
+  );
+  const template = await ejs.renderFile(templatePath, {
+    reset_code,
+  });
+  const msg: sgMail.MailDataRequired = {
+    to: email, // Change to your recipient
+    from: verifiedSender, // Change to your verified sender
+    subject: 'Reset your password',
+    html: template,
+  };
+  await sgMail.send(msg);
+};
+
+const sendResetPasswordCode = async (email: string) => {
+  const user = await User.findOne({ email });
+  if (!user) {
+    throw new HttpException(StatusCodes.NOT_FOUND, 'User not found');
+  }
+  const code = generateResetCode();
+  const resetPasswordToken = new ResetPasswordToken({
+    uid: user.uid,
+    token: code,
+  });
+  await resetPasswordToken.save();
+  await sendEmailResetCode(email, code);
+};
+
+export default {
+  getHeaderToken,
+  getUser,
+  verifyToken,
+  createUser,
+  getRawUser,
+  sendResetPasswordCode,
+  generateResetCode,
+};

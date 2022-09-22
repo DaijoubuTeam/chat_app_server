@@ -116,4 +116,13 @@ describe('auth.service', function () {
       expect(user).toBeNull();
     });
   });
+  describe('generateResetCode', function () {
+    test('the generated code should have 4 numberic character length', function () {
+      for (let i = 0; i < 10; i++) {
+        const code = authService.generateResetCode();
+        expect(code.length).toBe(4);
+        expect(code).toMatch(/[0-9]+/);
+      }
+    });
+  });
 });
