@@ -46,4 +46,26 @@ const forgotPassword = async (
   }
 };
 
-export default { verifyUser, forgotPassword };
+const resetPassword = async (
+  req: Request<
+    { userId: string },
+    any,
+    { password: string },
+    { token: string }
+  >,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const { password } = req.body;
+    const { token } = req.query;
+    const { userId } = req.params;
+    await service.verifyResetPasswordToken(userId, token);
+    await service.updatePassword(userId, password);
+    res.status(StatusCodes.OK).json('Update successful');
+  } catch (error) {
+    next(error);
+  }
+};
+
+export default { verifyUser, forgotPassword, resetPassword };

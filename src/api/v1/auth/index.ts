@@ -5,5 +5,6 @@ const router = Router();
 
 router.post('/verify', controller.verifyUser);
 router.post('/forgot-password', controller.forgotPassword);
+router.patch('/reset-password/:userId', controller.resetPassword);
 
 export default router;

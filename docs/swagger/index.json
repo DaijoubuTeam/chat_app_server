@@ -89,6 +89,56 @@
         }
       }
     },
+    "/auth/reset-password/{userId}": {
+      "patch": {
+        "tags": [
+          "Auth"
+        ],
+        "summary": "Change user password",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "userId",
+            "schema": {
+              "type": "string"
+            },
+            "required": true,
+            "description": "user's id"
+          },
+          {
+            "in": "query",
+            "name": "token",
+            "schema": {
+              "type": "string"
+            },
+            "required": true,
+            "description": "Reset password token"
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "password": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Change password sucessful"
+          },
+          "400": {
+            "description": "Invalid token"
+          }
+        }
+      }
+    },
     "/user/self": {
       "get": {
         "tags": [

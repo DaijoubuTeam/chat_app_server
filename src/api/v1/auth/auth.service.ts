@@ -102,13 +102,31 @@ const sendResetPasswordCode = async (email: string) => {
   if (!user) {
     throw new HttpException(StatusCodes.NOT_FOUND, 'User not found');
   }
-  const code = generateResetCode();
+  const token = generateResetCode();
   const resetPasswordToken = new ResetPasswordToken({
     uid: user.uid,
-    token: code,
+    token,
   });
   await resetPasswordToken.save();
-  await sendEmailResetCode(email, code);
+  await sendEmailResetCode(email, token);
+};
+
+const verifyResetPasswordToken = async (userId: string, token: string) => {
+  const resetToken = await ResetPasswordToken.findOne({
+    uid: userId,
+    token: token,
+  });
+  if (!resetToken) {
+    throw new HttpException(StatusCodes.BAD_REQUEST, 'Invalid reset code');
+  }
+  return true;
+};
+
+const updatePassword = async (userId: string, password: string) => {
+  await firebase.auth().updateUser(userId, {
+    password,
+  });
+  await ResetPasswordToken.deleteMany({ uid: userId });
 };
 
 export default {
@@ -119,4 +137,6 @@ export default {
   getRawUser,
   sendResetPasswordCode,
   generateResetCode,
+  verifyResetPasswordToken,
+  updatePassword,
 };
