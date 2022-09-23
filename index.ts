@@ -47,8 +47,12 @@ if (!mongo_url || !httpsPort || !httpPort) {
 const HTTPS_KEY_FILE = process.env.HTTPS_KEY_FILE;
 const HTTPS_CERT_FILE = process.env.HTTPS_CERT_FILE;
 
-const key = fs.readFileSync('localhost-key.pem', 'utf-8');
-const cert = fs.readFileSync('localhost.pem', 'utf-8');
+if (!HTTPS_KEY_FILE || !HTTPS_CERT_FILE) {
+  console.log('Invalid enviroment variable');
+  process.exit();
+}
+const key = fs.readFileSync(HTTPS_KEY_FILE, 'utf-8');
+const cert = fs.readFileSync(HTTPS_CERT_FILE, 'utf-8');
 
 async function startApp(
   mongo_url: string,
