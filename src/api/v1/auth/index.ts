@@ -3,7 +3,7 @@ import controller from './auth.controller';
 
 const router = Router();
 
-router.post('/verify', controller.verifyUser);
+router.get('/verify', controller.verifyUser);
 router.post('/forgot-password', controller.forgotPassword);
 router.patch('/reset-password/:userId', controller.resetPassword);
 

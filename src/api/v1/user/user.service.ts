@@ -39,6 +39,7 @@ const updateUserProfile = async (
     throw new HttpException(StatusCodes.BAD_REQUEST, 'Invalid user id');
   }
   validateUserProfile(userInfo);
+  userInfo.isProfileFilled = true; // set profile filled
   const user = await User.findOneAndUpdate({ uid }, userInfo);
   return user as IUser;
 };
