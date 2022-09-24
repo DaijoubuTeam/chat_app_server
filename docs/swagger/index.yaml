@@ -21,3 +21,5 @@ paths:
     $ref: './paths/auth/reset_password.path.yaml'
   /user/self:
     $ref: './paths/user/self.path.yaml'
+  /user/verify-email:
+    $ref: './paths/user/verify_email.path.yaml'

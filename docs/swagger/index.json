@@ -269,6 +269,30 @@
           }
         }
       }
+    },
+    "/user/verify-email": {
+      "get": {
+        "tags": [
+          "User"
+        ],
+        "summary": "Request verify email mail",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Email sent"
+          },
+          "400": {
+            "description": "Bad request. Email has been verified"
+          },
+          "401": {
+            "description": "Unauthorized"
+          }
+        }
+      }
     }
   }
 }

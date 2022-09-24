@@ -11,6 +11,8 @@ import isPhone from '../../../validator/is_phone';
 import dotenv from 'dotenv';
 import { auth } from 'firebase-admin';
 import { ActionCodeSettings } from 'firebase-admin/lib/auth/action-code-settings-builder';
+import VerifyEmailToken from '../../../models/verify_email_token';
+import crypto from 'crypto';
 
 dotenv.config();
 
@@ -65,19 +67,23 @@ const loadVerifyEmailTemplate = async (link: string): Promise<string> => {
   return template;
 };
 
-const getVerifiedLink = async (email: string): Promise<string> => {
-  const clientUrl = process.env.CLIENT_URL;
+const getVerifiedLink = async (
+  email: string,
+  token: string
+): Promise<string> => {
+  const hostUrl = process.env.HOST;
 
-  if (!clientUrl) {
+  if (!hostUrl) {
     throw new HttpException(
       StatusCodes.INTERNAL_SERVER_ERROR,
-      'CLIENT_URL env missing'
+      'HOST env missing'
     );
   }
 
+  const url = `${hostUrl}/api/v1/user/email-verified?token=${token}`;
+
   const actionCodeSettings: ActionCodeSettings = {
-    url: `${clientUrl}/?verified=true`,
-    // This must be true for email link sign-in.
+    url,
     handleCodeInApp: true,
     iOS: {
       bundleId: 'xyz.daijoubuteam.chatapp',
@@ -100,9 +106,33 @@ const sendVerifyEmailMail = async (email: string) => {
   if (!isEmail(email)) {
     throw new HttpException(StatusCodes.BAD_REQUEST, 'User email is not valid');
   }
-  const link = await getVerifiedLink(email);
+  const veriyEmailToken = new VerifyEmailToken({
+    email,
+    token: crypto.randomBytes(8).toString('hex'),
+  });
+  await veriyEmailToken.save();
+  const link = await getVerifiedLink(email, veriyEmailToken.token);
   const template = await loadVerifyEmailTemplate(link);
   await sendEmail(email, 'Verify your email', template);
 };
 
-export default { updateUserProfile, validateUserProfile, sendVerifyEmailMail };
+const changeEmailVerified = async (token: string) => {
+  const existingVerifiedEmailToken = await VerifyEmailToken.findOne({ token });
+  if (!existingVerifiedEmailToken) {
+    throw new HttpException(StatusCodes.NOT_FOUND, 'Token not found');
+  }
+  const user = await User.findOne({ email: existingVerifiedEmailToken.email });
+  if (!user) {
+    throw new HttpException(StatusCodes.NOT_FOUND, 'User not found');
+  }
+  user.isEmailVerified = true;
+  await user.save();
+  await existingVerifiedEmailToken.delete();
+};
+
+export default {
+  updateUserProfile,
+  validateUserProfile,
+  sendVerifyEmailMail,
+  changeEmailVerified,
+};

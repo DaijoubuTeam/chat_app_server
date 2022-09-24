@@ -4,6 +4,9 @@ import { StatusCodes } from 'http-status-codes';
 import { getRawUser } from '../../../models/user';
 import userService from './user.service';
 import { IUser } from '../../../models/user';
+import dotenv from 'dotenv';
+
+dotenv.config();
 
 const getSelfProfile = async (
   req: Request,
@@ -58,4 +61,31 @@ const verifyEmail = async (req: Request, res: Response, next: NextFunction) => {
   }
 };
 
-export default { getSelfProfile, putSelfProfile, verifyEmail };
+const changeMailVerified = async (
+  req: Request<any, any, any, { token: string }>,
+  res: Response,
+  next: NextFunction
+) => {
+  const clientUrl = process.env.CLIENT_URL;
+  if (!clientUrl) {
+    return res.status(StatusCodes.NOT_FOUND).send('<h1>Not found</h1>');
+  }
+  try {
+    const { token } = req.query;
+
+    if (!token) {
+      return res.redirect(clientUrl);
+    }
+    await userService.changeEmailVerified(token);
+    res.status(StatusCodes.OK).redirect(clientUrl);
+  } catch (error) {
+    res.status(StatusCodes.NOT_FOUND).redirect(clientUrl);
+  }
+};
+
+export default {
+  getSelfProfile,
+  putSelfProfile,
+  verifyEmail,
+  changeMailVerified,
+};
