@@ -9,6 +9,7 @@ import ResetPasswordToken from '../../../models/reset_password_token';
 import sgMail from '@sendgrid/mail';
 import ejs from 'ejs';
 import path from 'path';
+import sendEmail from '../../../common/sendEmail';
 
 const getHeaderToken = (req: Request) => {
   const authorizationHeader = req.headers.authorization;
@@ -71,15 +72,6 @@ const generateResetCode = () => {
 };
 
 const sendEmailResetCode = async (email: string, reset_code: string) => {
-  const sendGridApiKey = process.env.SENDGRID_API_KEY;
-  const verifiedSender = process.env.SENDGRID_VERIFIED_SENDER;
-  if (!sendGridApiKey || !verifiedSender) {
-    throw new HttpException(
-      StatusCodes.INTERNAL_SERVER_ERROR,
-      'Internal server error'
-    );
-  }
-  sgMail.setApiKey(sendGridApiKey);
   const templatePath = path.join(
     __dirname,
     'template',
@@ -88,13 +80,7 @@ const sendEmailResetCode = async (email: string, reset_code: string) => {
   const template = await ejs.renderFile(templatePath, {
     reset_code,
   });
-  const msg: sgMail.MailDataRequired = {
-    to: email, // Change to your recipient
-    from: verifiedSender, // Change to your verified sender
-    subject: 'Reset your password',
-    html: template,
-  };
-  await sgMail.send(msg);
+  await sendEmail(email, 'Reset password', template);
 };
 
 const sendResetPasswordCode = async (email: string) => {

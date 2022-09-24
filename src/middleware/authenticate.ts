@@ -29,6 +29,7 @@ const authenticate = async (
     }
 
     req.user = user;
+    next();
   } catch (error) {
     next(error);
   }

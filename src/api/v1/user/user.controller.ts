@@ -39,4 +39,23 @@ const putSelfProfile = async (
   }
 };
 
-export default { getSelfProfile, putSelfProfile };
+const verifyEmail = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const user = req.user;
+    if (!user) {
+      throw new HttpException(StatusCodes.UNAUTHORIZED, 'Unauthorized');
+    }
+    if (user.isEmailVerified) {
+      throw new HttpException(
+        StatusCodes.BAD_REQUEST,
+        'Email address has already been verified'
+      );
+    }
+    await userService.sendVerifyEmailMail(user.email);
+    res.status(StatusCodes.OK).json('Email is sent');
+  } catch (error) {
+    next(error);
+  }
+};
+
+export default { getSelfProfile, putSelfProfile, verifyEmail };
