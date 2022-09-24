@@ -47,20 +47,14 @@ const forgotPassword = async (
 };
 
 const resetPassword = async (
-  req: Request<
-    { userId: string },
-    any,
-    { password: string },
-    { token: string }
-  >,
+  req: Request<any, any, { password: string }, { token: string }>,
   res: Response,
   next: NextFunction
 ) => {
   try {
     const { password } = req.body;
     const { token } = req.query;
-    const { userId } = req.params;
-    await service.verifyResetPasswordToken(userId, token);
+    const userId = await service.verifyResetPasswordToken(token);
     await service.updatePassword(userId, password);
     res.status(StatusCodes.OK).json('Update successful');
   } catch (error) {

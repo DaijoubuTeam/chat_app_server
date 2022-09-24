@@ -97,15 +97,14 @@ const sendResetPasswordCode = async (email: string) => {
   await sendEmailResetCode(email, token);
 };
 
-const verifyResetPasswordToken = async (userId: string, token: string) => {
+const verifyResetPasswordToken = async (token: string) => {
   const resetToken = await ResetPasswordToken.findOne({
-    uid: userId,
     token: token,
   });
   if (!resetToken) {
     throw new HttpException(StatusCodes.BAD_REQUEST, 'Invalid reset code');
   }
-  return true;
+  return resetToken.uid;
 };
 
 const updatePassword = async (userId: string, password: string) => {

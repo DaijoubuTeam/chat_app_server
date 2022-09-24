@@ -76,8 +76,13 @@
           "content": {
             "application/json": {
               "schema": {
-                "type": "string",
-                "example": "email@domain.com"
+                "type": "object",
+                "properties": {
+                  "email": {
+                    "type": "string",
+                    "example": "example@domain.com"
+                  }
+                }
               }
             }
           }
@@ -92,22 +97,13 @@
         }
       }
     },
-    "/auth/reset-password/{userId}": {
+    "/auth/reset-password": {
       "patch": {
         "tags": [
           "Auth"
         ],
         "summary": "Change user password",
         "parameters": [
-          {
-            "in": "path",
-            "name": "userId",
-            "schema": {
-              "type": "string"
-            },
-            "required": true,
-            "description": "user's id"
-          },
           {
             "in": "query",
             "name": "token",

@@ -17,7 +17,7 @@ paths:
     $ref: './paths/auth/verify.path.yaml'
   /auth/forgot-password:
     $ref: './paths/auth/forgot_password.path.yaml'
-  /auth/reset-password/{userId}:
+  /auth/reset-password:
     $ref: './paths/auth/reset_password.path.yaml'
   /user/self:
     $ref: './paths/user/self.path.yaml'
