@@ -39,7 +39,7 @@ const forgotPassword = async (
 ) => {
   try {
     const { email } = req.body;
-    await service.sendResetPasswordCode(email);
+    await service.sendResetPasswordMail(email);
     res.status(StatusCodes.ACCEPTED).json('Send email successful');
   } catch (error) {
     next(error);

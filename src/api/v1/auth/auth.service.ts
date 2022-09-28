@@ -5,11 +5,14 @@ import { AuthException } from '../../../exception/auth_exception';
 import User, { IUser } from '../../../models/user';
 import { StatusCodes } from 'http-status-codes';
 import HttpException from '../../../exception';
-import ResetPasswordToken from '../../../models/reset_password_token';
-import sgMail from '@sendgrid/mail';
+import ResetPasswordToken, {
+  IResetPasswordToken,
+} from '../../../models/reset_password_token';
 import ejs from 'ejs';
 import path from 'path';
 import sendEmail from '../../../common/sendEmail';
+import crypto from 'crypto';
+import { Types } from 'mongoose';
 
 const getHeaderToken = (req: Request) => {
   const authorizationHeader = req.headers.authorization;
@@ -67,40 +70,46 @@ const getRawUser = (user: IUser) => {
   return rawUser;
 };
 
-const generateResetCode = () => {
-  return (Math.random() * 10000 * 1000).toString().substring(0, 4);
+// #region Reset password
+
+const getResetLink = (token: IResetPasswordToken & { _id: Types.ObjectId }) => {
+  const clientUrl = process.env.CLIENT_RESET_URL;
+  const reset_link = `${clientUrl}?token=${token._id}`;
+  return reset_link;
 };
 
-const sendEmailResetCode = async (email: string, reset_code: string) => {
+const sendEmailResetLink = async (
+  email: string,
+  token: IResetPasswordToken & { _id: Types.ObjectId }
+) => {
   const templatePath = path.join(
     __dirname,
     'template',
     'reset_password_template.ejs'
   );
+
+  const reset_link = getResetLink(token);
+
   const template = await ejs.renderFile(templatePath, {
-    reset_code,
+    reset_link,
   });
   await sendEmail(email, 'Reset password', template);
 };
 
-const sendResetPasswordCode = async (email: string) => {
+const sendResetPasswordMail = async (email: string) => {
   const user = await User.findOne({ email });
   if (!user) {
     throw new HttpException(StatusCodes.NOT_FOUND, 'User not found');
   }
-  const token = generateResetCode();
   const resetPasswordToken = new ResetPasswordToken({
     uid: user.uid,
-    token,
   });
-  await resetPasswordToken.save();
-  await sendEmailResetCode(email, token);
+  const tokenDoc = await resetPasswordToken.save();
+  await sendEmailResetLink(email, tokenDoc);
 };
 
 const verifyResetPasswordToken = async (token: string) => {
-  const resetToken = await ResetPasswordToken.findOne({
-    token: token,
-  });
+  const resetToken = await ResetPasswordToken.findById(token);
   if (!resetToken) {
     throw new HttpException(StatusCodes.BAD_REQUEST, 'Invalid reset code');
   }
@@ -113,6 +122,7 @@ const updatePassword = async (userId: string, password: string) => {
   });
   await ResetPasswordToken.deleteMany({ uid: userId });
 };
+// #endregion
 
 export default {
   getHeaderToken,
@@ -120,8 +130,7 @@ export default {
   verifyToken,
   createUser,
   getRawUser,
-  sendResetPasswordCode,
-  generateResetCode,
+  sendResetPasswordMail,
   verifyResetPasswordToken,
   updatePassword,
 };

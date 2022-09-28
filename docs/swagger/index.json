@@ -66,12 +66,7 @@
         "tags": [
           "Auth"
         ],
-        "summary": "Send reset password code",
-        "security": [
-          {
-            "bearerAuth": []
-          }
-        ],
+        "summary": "Send reset password link",
         "requestBody": {
           "content": {
             "application/json": {
