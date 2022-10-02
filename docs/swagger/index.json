@@ -230,9 +230,6 @@
                   },
                   "about": {
                     "type": "string"
-                  },
-                  "email": {
-                    "type": "string"
                   }
                 }
               }
@@ -281,6 +278,185 @@
           },
           "401": {
             "description": "Unauthorized"
+          }
+        }
+      }
+    },
+    "/friend": {
+      "get": {
+        "tags": [
+          "Friend"
+        ],
+        "summary": "Get user friends",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Get user friends list successful",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "username": {
+                        "type": "string"
+                      },
+                      "fullname": {
+                        "type": "string"
+                      },
+                      "uid": {
+                        "type": "string"
+                      },
+                      "avatar": {
+                        "type": "string"
+                      },
+                      "phone": {
+                        "type": "string"
+                      },
+                      "about": {
+                        "type": "string"
+                      },
+                      "email": {
+                        "type": "string"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid token"
+          },
+          "404": {
+            "description": "User not found"
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Friend"
+        ],
+        "summary": "Send friend request",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "id": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Send successful"
+          },
+          "400": {
+            "description": "Friend id not found or request has been sent"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "404": {
+            "description": "User not found"
+          }
+        }
+      }
+    },
+    "/friend/{id}": {
+      "get": {
+        "tags": [
+          "Friend"
+        ],
+        "summary": "Accept or denied friend request based on action",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "query",
+            "name": "action",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "accept",
+                "denied"
+              ]
+            }
+          },
+          {
+            "in": "path",
+            "name": "id",
+            "schema": {
+              "type": "string"
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Action successful"
+          },
+          "400": {
+            "description": "Friend id not found or invalid action or"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "404": {
+            "description": "User not found or friend request not found"
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Friend"
+        ],
+        "summary": "Delete friend",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "schema": {
+              "type": "string"
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Delete successful"
+          },
+          "400": {
+            "description": "Friend id not found or request has been sent"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "404": {
+            "description": "Friend not found"
           }
         }
       }

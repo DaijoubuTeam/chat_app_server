@@ -1,0 +1,54 @@
+get:
+  tags:
+    - "Friend"
+  summary: Accept or denied friend request based on action
+  security:
+    - bearerAuth: []
+  parameters:
+    - in: query
+      name: action
+      schema:
+        type: string
+        enum: [accept, denied]
+    - in: path
+      name: id
+      schema:
+        type: string
+      required: true
+  responses:
+    204: 
+      description: Action successful
+    401:
+      description: Unauthorized
+    400:
+      description: Friend id not found or invalid action or 
+    404:
+      description: User not found or friend request not found
+
+delete:
+  tags:
+    - "Friend"
+  summary: Delete friend
+  security:
+    - bearerAuth: []
+  parameters:
+    - in: path
+      name: id
+      schema:
+        type: string
+      required: true
+  responses:
+    204: 
+      description: Delete successful
+    400:
+      description: Friend id not found or request has been sent
+    401:
+      description: Unauthorized
+    404:
+      description: Friend not found
+
+
+    
+    
+
+  

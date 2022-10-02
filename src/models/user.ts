@@ -12,6 +12,9 @@ interface IUser {
   email: string;
   isEmailVerified?: boolean;
   isProfileFilled?: boolean;
+  friends: mongoose.Types.Array<mongoose.Types.ObjectId>;
+  friendRequests: mongoose.Types.Array<mongoose.Types.ObjectId>;
+  bans: mongoose.Types.Array<mongoose.Types.ObjectId>;
 }
 
 const userSchema = new Schema<IUser>({
@@ -24,25 +27,13 @@ const userSchema = new Schema<IUser>({
   email: { type: String, default: '' },
   isEmailVerified: { required: true, type: Boolean, default: false },
   isProfileFilled: { required: true, type: Boolean, default: false },
+  friends: [{ type: this, ref: 'User' }],
+  friendRequests: [{ type: this, ref: 'User' }],
+  bans: [{ type: this, ref: 'User' }],
 });
 
 const User = model<IUser>('User', userSchema);
 
-const getRawUser = (user: IUser) => {
-  const rawUser = {
-    username: user.username,
-    fullname: user.fullname,
-    uid: user.uid,
-    avatar: user.avatar,
-    phone: user.phone,
-    about: user.about,
-    email: user.email,
-    isEmailVerified: user.isEmailVerified,
-    isProfileFilled: user.isProfileFilled,
-  };
-  return rawUser;
-};
-
-export { IUser, getRawUser };
+export { IUser };
 
 export default User;

@@ -1,0 +1,27 @@
+schemas:
+  GetResponse:
+    type: array
+    items:
+      type: object
+      properties:
+          username:
+            type: string
+          fullname:
+            type: string
+          uid:
+            type: string
+          avatar:
+            type: string
+          phone:
+            type: string
+          about:
+            type: string
+          email:
+            type: string
+  PostRequest:
+    type: object
+    properties:
+      id:
+        type: string
+        
+      

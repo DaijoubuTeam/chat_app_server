@@ -23,3 +23,7 @@ paths:
     $ref: './paths/user/self.path.yaml'
   /user/verify-email:
     $ref: './paths/user/verify_email.path.yaml'
+  /friend:
+    $ref: './paths/friend/index.path.yaml'
+  /friend/{id}:
+    $ref: './paths/friend/id.path.yaml'

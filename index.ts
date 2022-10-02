@@ -28,6 +28,8 @@ if (process.env.ENVIRONMENT === 'DEV') {
   app.get('/', (req, res) => {
     res.redirect('/api-docs');
   });
+
+  // Set up emulator
 }
 
 app.use('/api-docs', SwaggerUI.serve, SwaggerUI.setup(swaggerDocument));

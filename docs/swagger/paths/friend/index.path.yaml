@@ -1,0 +1,44 @@
+get:
+  tags:
+    - "Friend"
+  summary: Get user friends
+  security:
+    - bearerAuth: []
+  responses:
+    200: 
+      description: Get user friends list successful
+      content:
+        application/json:
+          schema:
+            $ref: '../../components/friend/index.component.yaml#/schemas/GetResponse'
+    400:
+      description: Invalid token
+    404:
+      description: User not found
+
+post:
+  tags:
+    - "Friend"
+  summary: Send friend request
+  security:
+    - bearerAuth: []
+  requestBody:
+    content:
+      application/json:
+        schema:
+          $ref: '../../components/friend/index.component.yaml#/schemas/PostRequest'
+  responses:
+    200: 
+      description: Send successful
+    400:
+      description: Friend id not found or request has been sent
+    401:
+      description: Unauthorized
+    404:
+      description: User not found
+
+
+    
+    
+
+  

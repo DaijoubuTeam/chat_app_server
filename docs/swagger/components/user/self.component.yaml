@@ -14,8 +14,6 @@ schemas:
         type: string
       about:
         type: string
-      email:
-        type: string
   PutSelfResponse:
     type: object
     properties:

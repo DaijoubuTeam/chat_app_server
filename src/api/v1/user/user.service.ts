@@ -33,11 +33,11 @@ const validateUserProfile = (userInfo: IUser) => {
   ) {
     throw badRequestException;
   }
-  if (
-    !isEmail(userInfo.email) ||
-    !isLink(userInfo.avatar) ||
-    !isPhone(userInfo.phone)
-  ) {
+  if (userInfo.email !== undefined && userInfo.email !== null) {
+    throw badRequestException;
+  }
+
+  if (!isLink(userInfo.avatar) || !isPhone(userInfo.phone)) {
     throw badRequestException;
   }
 };
@@ -51,7 +51,8 @@ const updateUserProfile = async (
   }
   validateUserProfile(userInfo);
   userInfo.isProfileFilled = true; // set profile filled
-  const user = await User.findOneAndUpdate({ uid }, userInfo);
+  await User.findOneAndUpdate({ uid }, userInfo);
+  const user = await User.findOne({ uid });
   return user as IUser;
 };
 

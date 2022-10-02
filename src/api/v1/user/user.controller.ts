@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
 import HttpException from '../../../exception';
 import { StatusCodes } from 'http-status-codes';
-import { getRawUser } from '../../../models/user';
+import getRawUser from '../../../common/getRawUser';
 import userService from './user.service';
 import { IUser } from '../../../models/user';
 import dotenv from 'dotenv';
