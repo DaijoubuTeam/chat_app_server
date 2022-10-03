@@ -81,6 +81,10 @@ const acceptOrDeniedFriendRequest = async (
       await servive.acceptRequest(user.uid, id);
     } else if (action == 'denied') {
       await servive.deniedRequest(user.uid, id);
+    } else if (action === 'ban') {
+      await servive.banUser(user.uid, id);
+    } else if (action === 'unban') {
+      await servive.unbanUser(user.uid, id);
     } else {
       return res.status(StatusCodes.BAD_REQUEST).json('invalid action');
     }

@@ -155,7 +155,7 @@
                     "user": {
                       "type": "object",
                       "properties": {
-                        "username": {
+                        "gender": {
                           "type": "string"
                         },
                         "fullname": {
@@ -213,7 +213,7 @@
               "schema": {
                 "type": "object",
                 "properties": {
-                  "username": {
+                  "gender": {
                     "type": "string"
                   },
                   "fullname": {
@@ -303,7 +303,7 @@
                   "items": {
                     "type": "object",
                     "properties": {
-                      "username": {
+                      "gender": {
                         "type": "string"
                       },
                       "fullname": {
@@ -374,6 +374,9 @@
           },
           "404": {
             "description": "User not found"
+          },
+          "409": {
+            "description": "User has been banned"
           }
         }
       }
@@ -383,7 +386,7 @@
         "tags": [
           "Friend"
         ],
-        "summary": "Accept or denied friend request based on action",
+        "summary": "Accept or denied friend request or ban or unban user based on action",
         "security": [
           {
             "bearerAuth": []
@@ -397,7 +400,9 @@
               "type": "string",
               "enum": [
                 "accept",
-                "denied"
+                "denied",
+                "ban",
+                "unban"
               ]
             }
           },
@@ -422,6 +427,9 @@
           },
           "404": {
             "description": "User not found or friend request not found"
+          },
+          "409": {
+            "description": "User is friend"
           }
         }
       },

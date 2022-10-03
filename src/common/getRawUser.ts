@@ -2,7 +2,7 @@ import { IUser } from '../models/user';
 
 const getRawUser = (user: IUser) => {
   const rawUser = {
-    username: user.username,
+    gender: user.gender,
     fullname: user.fullname,
     uid: user.uid,
     avatar: user.avatar,

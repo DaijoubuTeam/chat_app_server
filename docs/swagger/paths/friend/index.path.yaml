@@ -36,6 +36,8 @@ post:
       description: Unauthorized
     404:
       description: User not found
+    409:
+      description: User has been banned
 
 
     

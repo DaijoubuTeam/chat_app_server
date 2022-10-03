@@ -1,7 +1,7 @@
 get:
   tags:
     - "Friend"
-  summary: Accept or denied friend request based on action
+  summary: Accept or denied friend request or ban or unban user based on action
   security:
     - bearerAuth: []
   parameters:
@@ -9,7 +9,7 @@ get:
       name: action
       schema:
         type: string
-        enum: [accept, denied]
+        enum: [accept, denied, ban, unban]
     - in: path
       name: id
       schema:
@@ -24,6 +24,8 @@ get:
       description: Friend id not found or invalid action or 
     404:
       description: User not found or friend request not found
+    409:
+      description: User is friend
 
 delete:
   tags:

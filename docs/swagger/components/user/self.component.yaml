@@ -2,7 +2,7 @@ schemas:
   PutSelfRequest:
     type: object
     properties:
-      username:
+      gender:
         type: string
       fullname:
         type: string

@@ -3,7 +3,7 @@ import mongoose, { model } from 'mongoose';
 const { Schema } = mongoose;
 
 interface IUser {
-  username: string;
+  gender: string;
   fullname: string;
   uid: string;
   avatar: string;
@@ -18,7 +18,7 @@ interface IUser {
 }
 
 const userSchema = new Schema<IUser>({
-  username: { type: String, default: '' },
+  gender: { type: String, default: '' },
   fullname: { type: String, default: '' },
   uid: { required: true, type: String, default: '', index: true },
   avatar: { type: String },

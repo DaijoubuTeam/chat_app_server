@@ -21,6 +21,9 @@ const addFriendRequestList = async (userId: string, friendId: string) => {
   if (!friend) {
     throw new HttpException(StatusCodes.NOT_FOUND, 'User not found');
   }
+  if (friend.bans.find((banId) => banId.toString() === userId)) {
+    throw new HttpException(StatusCodes.CONFLICT, 'User has been banned');
+  }
   if (friend.friendRequests.find((request) => request.toString() === userId))
     throw new HttpException(StatusCodes.BAD_REQUEST, 'Request has been sent');
   friend.friendRequests.push(userId);
@@ -83,10 +86,51 @@ const deniedRequest = async (userId: string, friendId: string) => {
   );
   await user.save();
 };
+
+const banUser = async (userId: string, bannedUserId: string) => {
+  const user = await User.findOne({ uid: userId });
+  const bannedUser = await User.findOne({ uid: bannedUserId });
+  if (!user || !bannedUser) {
+    throw new HttpException(StatusCodes.NOT_FOUND, 'User not found');
+  }
+  if (user.friends.find((friend) => friend.toString() === bannedUserId)) {
+    throw new HttpException(StatusCodes.CONFLICT, 'User is friend');
+  }
+  bannedUser.friendRequests = new mongoose.Types.Array(
+    ...bannedUser.friendRequests.filter(
+      (request) => request.toString() === userId
+    )
+  );
+  user.friendRequests = new mongoose.Types.Array(
+    ...user.friendRequests.filter((request) => request.toString() === userId)
+  );
+  user.bans.push(bannedUserId);
+  await Promise.all([user.save(), bannedUser.save()]);
+};
+
+const unbanUser = async (userId: string, bannedUserId: string) => {
+  const user = await User.findOne({ uid: userId });
+  const bannedUser = await User.findOne({ uid: bannedUserId });
+  if (!user || !bannedUser) {
+    throw new HttpException(StatusCodes.NOT_FOUND, 'User not found');
+  }
+  if (!user.bans.find((ban) => ban.toString() === bannedUserId)) {
+    throw new HttpException(StatusCodes.NOT_FOUND, 'User has not been banned');
+  }
+
+  user.bans = new mongoose.Types.Array(
+    ...user.bans.filter((ban) => ban.toString() === bannedUserId)
+  );
+
+  await user.save();
+};
+
 export default {
   getFriendList,
   addFriendRequestList,
   removeFriend,
   acceptRequest,
   deniedRequest,
+  banUser,
+  unbanUser,
 };
