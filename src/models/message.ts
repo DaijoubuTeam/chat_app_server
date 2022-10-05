@@ -4,7 +4,7 @@ const { Schema } = mongoose;
 
 interface IMessage {
   chatId: string;
-  from: mongoose.Types.ObjectId;
+  from: string;
   timestamp: Date;
   content: string;
 }

@@ -1,0 +1,8 @@
+schemas:
+  PutRequest:
+    type: object
+    properties:
+      chatRoomName:
+        type: string
+      chatRoomAvatar:
+        type: string

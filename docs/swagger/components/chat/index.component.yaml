@@ -1,0 +1,10 @@
+schemas:
+  GetResponse:
+    type: object
+    properties:
+      chatRooms:
+        type: array
+        items:
+          $ref: '../models/chat-room.component.yaml#/schemas/ChatRoom'
+            
+      

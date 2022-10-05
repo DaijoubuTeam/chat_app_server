@@ -21,7 +21,7 @@ const isGroupAdmin = async (
     if (
       chatRoom.admin.findIndex((admin) => admin.toString() === user._id) === -1
     ) {
-      throw new HttpException(StatusCodes.UNAUTHORIZED, 'Unauthorized');
+      throw new HttpException(StatusCodes.FORBIDDEN, 'User is not admin');
     }
     next();
   } catch (error) {

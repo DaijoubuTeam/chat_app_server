@@ -5,7 +5,7 @@ import ChatRoom, { CHAT_ROOM_TYPE, IChatRoom } from '../../../models/chat_room';
 import mongoose from 'mongoose';
 
 const getUserChatRooms = async (userId: string): Promise<IChatRoom[]> => {
-  const user = await User.findOne({ uid: userId }).populate<{
+  const user = await User.findById(userId).populate<{
     chatRooms: IChatRoom[];
   }>('chatRooms');
   if (!user) {
@@ -21,10 +21,18 @@ const createNewChatRoom = async (
   const chatRoom = new ChatRoom({
     chatRoomName,
     admin: [userId],
-    members: [],
+    members: [userId],
     type: CHAT_ROOM_TYPE.group,
   });
-  return chatRoom.save();
+  const user = await User.findById(userId);
+  if (!user) {
+    throw new HttpException(StatusCodes.NOT_FOUND, 'User not found');
+  }
+  const chatRoomDoc = await chatRoom.save();
+
+  user.chatRooms.push(chatRoomDoc._id);
+  await user.save();
+  return chatRoomDoc;
 };
 
 const updateChatRoom = async (
@@ -47,36 +55,74 @@ const deleteChatRoom = async (chatRoomId: string) => {
     throw new HttpException(StatusCodes.NOT_FOUND, 'Chat room not found');
   }
   const deleteMembers = chatRoom.members.map(async (member) => {
-    const memberUser = await User.findOne({ uid: member });
+    const memberUser = await User.findById(member);
     if (memberUser) {
       memberUser.chatRooms = new mongoose.Types.Array(
         ...memberUser.chatRooms.filter(
           (chatRoom) => chatRoom.toString() !== chatRoomId
         )
       );
-      await memberUser.save();
     }
+    return memberUser?.save();
   });
-  await Promise.all(deleteMembers);
+  await Promise.all([...deleteMembers, ChatRoom.findByIdAndDelete(chatRoomId)]);
 };
 
 const addMember = async (chatRoomId: string, memberId: string) => {
   const chatRoom = await ChatRoom.findById(chatRoomId);
-  const member = await User.findOne({ uid: memberId });
-  if (!chatRoom || !member) {
+  const memberUser = await User.findById(memberId);
+  if (!chatRoom || !memberUser) {
     throw new HttpException(
       StatusCodes.NOT_FOUND,
       'Chatroom or member not found'
     );
   }
+  if (
+    chatRoom.members.find(
+      (member) => member.toString() === memberUser._id.toString()
+    )
+  ) {
+    throw new HttpException(StatusCodes.CONFLICT, 'User has been in chat room');
+  }
+  chatRoom.members.push(memberUser._id);
+  memberUser.chatRooms.push(chatRoom._id);
+  await Promise.all([chatRoom.save(), memberUser.save()]);
+};
+
+const removeMember = async (chatRoomId: string, memberId: string) => {
+  const chatRoom = await ChatRoom.findById(chatRoomId);
+  const memberUser = await User.findById(memberId);
+  if (!chatRoom || !memberUser) {
+    throw new HttpException(
+      StatusCodes.NOT_FOUND,
+      'Chatroom or member not found'
+    );
+  }
+  if (
+    !chatRoom.members.find(
+      (member) => member.toString() === memberUser._id.toString()
+    )
+  ) {
+    throw new HttpException(StatusCodes.CONFLICT, 'User is not in chat room');
+  }
+  if (
+    chatRoom.admin.find(
+      (admin) => admin.toString() === memberUser._id.toString()
+    )
+  ) {
+    throw new HttpException(StatusCodes.CONFLICT, 'User is admin');
+  }
   chatRoom.members = new mongoose.Types.Array(
     ...chatRoom.members.filter(
-      (member) => member.toString() === member._id.toString()
+      (member) => member.toString() === memberUser._id.toString()
     )
   );
-  member.chatRooms = new mongoose.Types.Array(
-    ...member.chatRooms.filter((chatRoom) => chatRoom.toString() === chatRoomId)
+  memberUser.chatRooms = new mongoose.Types.Array(
+    ...memberUser.chatRooms.filter(
+      (chatroom) => chatroom.toString() === chatRoom._id.toString()
+    )
   );
+  await Promise.all([chatRoom.save(), memberUser.save()]);
 };
 
 export default {
@@ -85,4 +131,5 @@ export default {
   updateChatRoom,
   deleteChatRoom,
   addMember,
+  removeMember,
 };

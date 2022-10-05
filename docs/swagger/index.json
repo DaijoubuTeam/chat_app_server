@@ -465,6 +465,299 @@
           }
         }
       }
+    },
+    "/chat-room": {
+      "get": {
+        "tags": [
+          "Chatroom"
+        ],
+        "summary": "Get user chat rooms",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Get user chat room successful",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "chatRooms": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/paths/~1chat-room/post/responses/201/content/application~1json/schema"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "404": {
+            "description": "User not found"
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Chatroom"
+        ],
+        "summary": "Create new Chatroom",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "chatRoomName": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Create successful",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "chatRoomName": {
+                      "type": "string"
+                    },
+                    "chatRoomAvatar": {
+                      "type": "string"
+                    },
+                    "members": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      }
+                    },
+                    "admin": {
+                      "type": "array",
+                      "items": {
+                        "description": "User id",
+                        "type": "string"
+                      }
+                    },
+                    "type": {
+                      "type": "string",
+                      "enum": [
+                        "personal",
+                        "group"
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          }
+        }
+      }
+    },
+    "/chat-room/{chatRoomId}": {
+      "put": {
+        "summary": "Update chat room",
+        "tags": [
+          "Chatroom"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "chatRoomId",
+            "schema": {
+              "type": "string"
+            },
+            "required": true
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "chatRoomName": {
+                    "type": "string"
+                  },
+                  "chatRoomAvatar": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "204": {
+            "description": "Update successful"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "User is not admin"
+          },
+          "404": {
+            "description": "Chat room not found"
+          },
+          "409": {
+            "description": "User has been in chat room"
+          }
+        }
+      },
+      "delete": {
+        "summary": "Delete group chat room",
+        "tags": [
+          "Chatroom"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "chatRoomId",
+            "schema": {
+              "type": "string"
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Delete chat room successful"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "User is not admin"
+          },
+          "404": {
+            "description": "Chat room  not found"
+          }
+        }
+      }
+    },
+    "/chat-room/{chatRoomId}/{memberId}": {
+      "post": {
+        "summary": "Add member to group chat room",
+        "tags": [
+          "Chatroom"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "chatRoomId",
+            "schema": {
+              "type": "string"
+            },
+            "required": true
+          },
+          {
+            "in": "path",
+            "required": true,
+            "name": "memberId",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Add user successful"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "User is not admin"
+          },
+          "404": {
+            "description": "Chat room or member not found"
+          },
+          "409": {
+            "description": "User has been in chat room"
+          }
+        }
+      },
+      "delete": {
+        "summary": "Remove member from group chat room",
+        "tags": [
+          "Chatroom"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "chatRoomId",
+            "schema": {
+              "type": "string"
+            },
+            "required": true
+          },
+          {
+            "in": "path",
+            "required": true,
+            "name": "memberId",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Remove user successful"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "User is not admin"
+          },
+          "404": {
+            "description": "Chat room or member not found"
+          },
+          "409": {
+            "description": "User has been in chat room or User is admin"
+          }
+        }
+      }
     }
   }
 }
