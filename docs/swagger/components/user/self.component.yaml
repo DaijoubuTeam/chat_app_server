@@ -6,8 +6,6 @@ schemas:
         type: string
       fullname:
         type: string
-      uid:
-        type: string
       avatar:
         type: string
       phone:

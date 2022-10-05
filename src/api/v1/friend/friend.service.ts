@@ -4,20 +4,22 @@ import HttpException from '../../../exception';
 import User, { IUser } from '../../../models/user';
 
 const getFriendList = async (userId: string) => {
-  const user: IUser | null = await User.findOne({ uid: userId })
+  const user: IUser | null = await User.findById(userId)
     .populate(
       'friends',
-      '-friends -friendRequests -_id -bans -isEmailVerified -isProfileFilled'
+      '-friends -friendRequests -bans -isEmailVerified -isProfileFilled -chatRooms'
     )
     .exec();
+
   if (!user) {
     throw new HttpException(StatusCodes.NOT_FOUND, 'User not found');
   }
+
   return user.friends;
 };
 
 const addFriendRequestList = async (userId: string, friendId: string) => {
-  const friend = await User.findOne({ uid: friendId });
+  const friend = await User.findById(friendId);
   if (!friend) {
     throw new HttpException(StatusCodes.NOT_FOUND, 'User not found');
   }
@@ -31,8 +33,8 @@ const addFriendRequestList = async (userId: string, friendId: string) => {
 };
 
 const removeFriend = async (userId: string, friendId: string) => {
-  const user = await User.findOne({ uid: userId });
-  const friend = await User.findOne({ uid: friendId });
+  const user = await User.findById(userId);
+  const friend = await User.findById(friendId);
   if (!user || !friend) {
     throw new HttpException(StatusCodes.NOT_FOUND, 'User not found');
   }
@@ -51,8 +53,8 @@ const removeFriend = async (userId: string, friendId: string) => {
 };
 
 const acceptRequest = async (userId: string, friendId: string) => {
-  const user = await User.findOne({ uid: userId });
-  const friend = await User.findOne({ uid: friendId });
+  const user = await User.findById(userId);
+  const friend = await User.findById(friendId);
   if (!user || !friend) {
     throw new HttpException(StatusCodes.NOT_FOUND, 'User not found');
   }
@@ -71,7 +73,7 @@ const acceptRequest = async (userId: string, friendId: string) => {
 };
 
 const deniedRequest = async (userId: string, friendId: string) => {
-  const user = await User.findOne({ uid: userId });
+  const user = await User.findById(userId);
   if (!user) {
     throw new HttpException(StatusCodes.NOT_FOUND, 'User not found');
   }
@@ -88,13 +90,16 @@ const deniedRequest = async (userId: string, friendId: string) => {
 };
 
 const banUser = async (userId: string, bannedUserId: string) => {
-  const user = await User.findOne({ uid: userId });
-  const bannedUser = await User.findOne({ uid: bannedUserId });
+  const user = await User.findById(userId);
+  const bannedUser = await User.findById(bannedUserId);
   if (!user || !bannedUser) {
     throw new HttpException(StatusCodes.NOT_FOUND, 'User not found');
   }
   if (user.friends.find((friend) => friend.toString() === bannedUserId)) {
     throw new HttpException(StatusCodes.CONFLICT, 'User is friend');
+  }
+  if (user.bans.find((ban) => ban.toString() == bannedUserId)) {
+    throw new HttpException(StatusCodes.CONFLICT, 'User has been banned');
   }
   bannedUser.friendRequests = new mongoose.Types.Array(
     ...bannedUser.friendRequests.filter(
@@ -109,8 +114,8 @@ const banUser = async (userId: string, bannedUserId: string) => {
 };
 
 const unbanUser = async (userId: string, bannedUserId: string) => {
-  const user = await User.findOne({ uid: userId });
-  const bannedUser = await User.findOne({ uid: bannedUserId });
+  const user = await User.findById(userId);
+  const bannedUser = await User.findById(bannedUserId);
   if (!user || !bannedUser) {
     throw new HttpException(StatusCodes.NOT_FOUND, 'User not found');
   }

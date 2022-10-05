@@ -1,6 +1,8 @@
 import { Request, Response, NextFunction } from 'express';
 import { StatusCodes } from 'http-status-codes';
+import getRawUser from '../../../common/getRawUser';
 import HttpException from '../../../exception';
+import { IUser } from '../../../models/user';
 import servive from './friend.service';
 
 const getUserFriends = async (
@@ -13,8 +15,12 @@ const getUserFriends = async (
     if (!user) {
       throw new HttpException(StatusCodes.UNAUTHORIZED, 'Unauthorized');
     }
-    const userFriendsList = await servive.getFriendList(user.uid);
-    res.status(StatusCodes.OK).json(userFriendsList);
+    const userFriendsList = await servive.getFriendList(user._id);
+    res
+      .status(StatusCodes.OK)
+      .json(
+        (userFriendsList as unknown as IUser[]).map((user) => getRawUser(user))
+      );
   } catch (error) {
     next(error);
   }
@@ -34,7 +40,7 @@ const sendFriendRequest = async (
     if (!id) {
       throw new HttpException(StatusCodes.BAD_REQUEST, 'Friend id not found');
     }
-    await servive.addFriendRequestList(user.uid, id);
+    await servive.addFriendRequestList(user._id, id);
     res.status(StatusCodes.OK).end();
   } catch (error) {
     next(error);
@@ -55,7 +61,7 @@ const deleteFriend = async (
     if (!id) {
       throw new HttpException(StatusCodes.BAD_REQUEST, 'Friend id not found');
     }
-    await servive.removeFriend(user.uid, id);
+    await servive.removeFriend(user._id, id);
     res.status(StatusCodes.NO_CONTENT).end();
   } catch (error) {
     next(error);
@@ -78,13 +84,13 @@ const acceptOrDeniedFriendRequest = async (
       throw new HttpException(StatusCodes.BAD_REQUEST, 'Friend id not found');
     }
     if (action == 'accept') {
-      await servive.acceptRequest(user.uid, id);
+      await servive.acceptRequest(user._id, id);
     } else if (action == 'denied') {
-      await servive.deniedRequest(user.uid, id);
+      await servive.deniedRequest(user._id, id);
     } else if (action === 'ban') {
-      await servive.banUser(user.uid, id);
+      await servive.banUser(user._id, id);
     } else if (action === 'unban') {
-      await servive.unbanUser(user.uid, id);
+      await servive.unbanUser(user._id, id);
     } else {
       return res.status(StatusCodes.BAD_REQUEST).json('invalid action');
     }

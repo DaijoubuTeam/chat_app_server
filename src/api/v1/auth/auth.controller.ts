@@ -1,6 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
 import { StatusCodes } from 'http-status-codes';
 import service from './auth.service';
+import getRawUser from '../../../common/getRawUser';
 
 const verifyUser = async (req: Request, res: Response, next: NextFunction) => {
   try {
@@ -18,13 +19,13 @@ const verifyUser = async (req: Request, res: Response, next: NextFunction) => {
       );
       return res.status(StatusCodes.CREATED).json({
         user: {
-          ...service.getRawUser(newUser),
+          ...getRawUser(newUser),
         },
       });
     }
     return res.status(StatusCodes.OK).json({
       user: {
-        ...service.getRawUser(user),
+        ...getRawUser(user),
       },
     });
   } catch (exception) {
@@ -33,7 +34,7 @@ const verifyUser = async (req: Request, res: Response, next: NextFunction) => {
 };
 
 const forgotPassword = async (
-  req: Request<any, any, { email: string }>,
+  req: Request<unknown, unknown, { email: string }>,
   res: Response,
   next: NextFunction
 ) => {
@@ -47,7 +48,7 @@ const forgotPassword = async (
 };
 
 const resetPassword = async (
-  req: Request<any, any, { password: string }, { token: string }>,
+  req: Request<unknown, unknown, { password: string }, { token: string }>,
   res: Response,
   next: NextFunction
 ) => {

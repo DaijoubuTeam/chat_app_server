@@ -4,7 +4,7 @@ const getRawUser = (user: IUser) => {
   const rawUser = {
     gender: user.gender,
     fullname: user.fullname,
-    uid: user.uid,
+    uid: user._id,
     avatar: user.avatar,
     phone: user.phone,
     about: user.about,
@@ -14,5 +14,4 @@ const getRawUser = (user: IUser) => {
   };
   return rawUser;
 };
-
 export default getRawUser;

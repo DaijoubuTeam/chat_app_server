@@ -25,7 +25,7 @@ const getSelfProfile = async (
 };
 
 const putSelfProfile = async (
-  req: Request<any, any, IUser>,
+  req: Request<unknown, unknown, IUser>,
   res: Response,
   next: NextFunction
 ) => {
@@ -35,8 +35,8 @@ const putSelfProfile = async (
       throw new HttpException(StatusCodes.UNAUTHORIZED, 'Unauthorized');
     }
     const userInfo = req.body;
-    const updatedUser = await userService.updateUserProfile(user.uid, userInfo);
-    res.status(StatusCodes.OK).json({ user: updatedUser });
+    const updatedUser = await userService.updateUserProfile(user._id, userInfo);
+    res.status(StatusCodes.OK).json({ user: getRawUser(updatedUser) });
   } catch (error) {
     next(error);
   }

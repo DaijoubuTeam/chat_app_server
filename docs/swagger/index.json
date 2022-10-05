@@ -219,9 +219,6 @@
                   "fullname": {
                     "type": "string"
                   },
-                  "uid": {
-                    "type": "string"
-                  },
                   "avatar": {
                     "type": "string"
                   },

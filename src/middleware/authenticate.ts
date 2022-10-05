@@ -23,7 +23,7 @@ const authenticate = async (
 
     const uid = decodedToken.uid;
 
-    const user = await User.findOne({ uid });
+    const user = await User.findById(uid);
     if (!user) {
       throw new AuthException(StatusCodes.NOT_FOUND, 'User not found');
     }

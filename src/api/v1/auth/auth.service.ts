@@ -2,7 +2,7 @@ import { Request } from 'express';
 import firebase from 'firebase-admin';
 import { DecodedIdToken } from 'firebase-admin/lib/auth/token-verifier';
 import { AuthException } from '../../../exception/auth_exception';
-import User, { IUser } from '../../../models/user';
+import User from '../../../models/user';
 import { StatusCodes } from 'http-status-codes';
 import HttpException from '../../../exception';
 import ResetPasswordToken, {
@@ -11,8 +11,7 @@ import ResetPasswordToken, {
 import ejs from 'ejs';
 import path from 'path';
 import sendEmail from '../../../common/sendEmail';
-import crypto from 'crypto';
-import { Types } from 'mongoose';
+import mongoose from 'mongoose';
 
 const getHeaderToken = (req: Request) => {
   const authorizationHeader = req.headers.authorization;
@@ -34,7 +33,7 @@ const verifyToken = async (token: string) => {
 
 const getUser = async (decodedToken: DecodedIdToken) => {
   try {
-    const user = await User.findOne({ uid: decodedToken.uid });
+    const user = await User.findById(decodedToken.uid);
     if (!user) {
       throw new AuthException(StatusCodes.NOT_FOUND, 'User not found');
     }
@@ -51,28 +50,15 @@ const createUser = async (
   email: string | undefined,
   isEmailVerified: boolean | undefined
 ) => {
-  const user = new User({ uid, avatar, phone, email, isEmailVerified });
+  const user = new User({ _id: uid, avatar, phone, email, isEmailVerified });
   return user.save();
-};
-
-const getRawUser = (user: IUser) => {
-  const rawUser = {
-    gender: user.gender,
-    fullname: user.fullname,
-    uid: user.uid,
-    avatar: user.avatar,
-    phone: user.phone,
-    about: user.about,
-    email: user.email,
-    isEmailVerified: user.isEmailVerified,
-    isProfileFilled: user.isProfileFilled,
-  };
-  return rawUser;
 };
 
 // #region Reset password
 
-const getResetLink = (token: IResetPasswordToken & { _id: Types.ObjectId }) => {
+const getResetLink = (
+  token: IResetPasswordToken & { _id: mongoose.Types.ObjectId }
+) => {
   const clientUrl = process.env.CLIENT_RESET_URL;
   const reset_link = `${clientUrl}?token=${token._id}`;
   return reset_link;
@@ -80,7 +66,7 @@ const getResetLink = (token: IResetPasswordToken & { _id: Types.ObjectId }) => {
 
 const sendEmailResetLink = async (
   email: string,
-  token: IResetPasswordToken & { _id: Types.ObjectId }
+  token: IResetPasswordToken & { _id: mongoose.Types.ObjectId }
 ) => {
   const templatePath = path.join(
     __dirname,
@@ -102,7 +88,7 @@ const sendResetPasswordMail = async (email: string) => {
     throw new HttpException(StatusCodes.NOT_FOUND, 'User not found');
   }
   const resetPasswordToken = new ResetPasswordToken({
-    uid: user.uid,
+    uid: user._id,
   });
   const tokenDoc = await resetPasswordToken.save();
   await sendEmailResetLink(email, tokenDoc);
@@ -129,7 +115,6 @@ export default {
   getUser,
   verifyToken,
   createUser,
-  getRawUser,
   sendResetPasswordMail,
   verifyResetPasswordToken,
   updatePassword,

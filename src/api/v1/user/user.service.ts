@@ -21,18 +21,21 @@ const validateUserProfile = (userInfo: IUser) => {
     StatusCodes.BAD_REQUEST,
     'Bad request'
   );
+
   if (
     userInfo.isEmailVerified !== undefined &&
     userInfo.isEmailVerified !== null
   ) {
     throw badRequestException;
   }
+
   if (
     userInfo.isProfileFilled !== undefined &&
     userInfo.isProfileFilled !== null
   ) {
     throw badRequestException;
   }
+
   if (userInfo.email !== undefined && userInfo.email !== null) {
     throw badRequestException;
   }
@@ -43,16 +46,14 @@ const validateUserProfile = (userInfo: IUser) => {
 };
 
 const updateUserProfile = async (
-  uid: string,
+  _id: string,
   userInfo: IUser
 ): Promise<IUser> => {
-  if (uid !== userInfo.uid) {
-    throw new HttpException(StatusCodes.BAD_REQUEST, 'Invalid user id');
-  }
+  userInfo._id = _id;
   validateUserProfile(userInfo);
   userInfo.isProfileFilled = true; // set profile filled
-  await User.findOneAndUpdate({ uid }, userInfo);
-  const user = await User.findOne({ uid });
+  await User.findByIdAndUpdate(_id, userInfo);
+  const user = await User.findById(_id);
   return user as IUser;
 };
 
