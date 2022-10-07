@@ -12,6 +12,9 @@ import ejs from 'ejs';
 import path from 'path';
 import sendEmail from '../../../common/sendEmail';
 import mongoose from 'mongoose';
+import isLink from '../../../validator/is_link';
+import isPhone from '../../../validator/is_phone';
+import isEmail from '../../../validator/is_email';
 
 const getHeaderToken = (req: Request) => {
   const authorizationHeader = req.headers.authorization;
@@ -50,6 +53,27 @@ const createUser = async (
   email: string | undefined,
   isEmailVerified: boolean | undefined
 ) => {
+  if (avatar === undefined) {
+    avatar = '';
+  }
+  if (phone === undefined) {
+    phone = '';
+  }
+  if (email === undefined) {
+    email = '';
+  }
+  if (isEmailVerified === undefined) {
+    isEmailVerified = false;
+  }
+  if (!isLink(avatar)) {
+    throw new HttpException(StatusCodes.BAD_REQUEST, 'Invalid avatar');
+  }
+  if (!isPhone(phone)) {
+    throw new HttpException(StatusCodes.BAD_REQUEST, 'Invalid phone number');
+  }
+  if (!isEmail(email)) {
+    throw new HttpException(StatusCodes.BAD_REQUEST, 'Invalid email address');
+  }
   const user = new User({ _id: uid, avatar, phone, email, isEmailVerified });
   return user.save();
 };
@@ -60,6 +84,12 @@ const getResetLink = (
   token: IResetPasswordToken & { _id: mongoose.Types.ObjectId }
 ) => {
   const clientUrl = process.env.CLIENT_RESET_URL;
+  if (!clientUrl) {
+    throw new HttpException(
+      StatusCodes.INTERNAL_SERVER_ERROR,
+      'Internal server error'
+    );
+  }
   const reset_link = `${clientUrl}?token=${token._id}`;
   return reset_link;
 };
@@ -82,7 +112,10 @@ const sendEmailResetLink = async (
   await sendEmail(email, 'Reset password', template);
 };
 
-const sendResetPasswordMail = async (email: string) => {
+const sendResetPasswordMail = async (
+  email: string,
+  _sendEmailResetLink = sendEmailResetLink
+) => {
   const user = await User.findOne({ email });
   if (!user) {
     throw new HttpException(StatusCodes.NOT_FOUND, 'User not found');
@@ -91,7 +124,7 @@ const sendResetPasswordMail = async (email: string) => {
     uid: user._id,
   });
   const tokenDoc = await resetPasswordToken.save();
-  await sendEmailResetLink(email, tokenDoc);
+  await _sendEmailResetLink(email, tokenDoc);
 };
 
 const verifyResetPasswordToken = async (token: string) => {
@@ -111,6 +144,7 @@ const updatePassword = async (userId: string, password: string) => {
 // #endregion
 
 export default {
+  getResetLink,
   getHeaderToken,
   getUser,
   verifyToken,
@@ -118,4 +152,5 @@ export default {
   sendResetPasswordMail,
   verifyResetPasswordToken,
   updatePassword,
+  sendEmailResetLink,
 };
