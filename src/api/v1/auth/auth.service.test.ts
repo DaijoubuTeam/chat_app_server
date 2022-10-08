@@ -195,6 +195,57 @@ describe('createUser()', () => {
     expect(mockUserSave).toBeCalledTimes(1);
     mockUserSave.mockClear();
   });
+  it('should throw HttpException if invalid avatar provided', () => {
+    const uid_1 = 'uid-1';
+    const avatar_1 = 'invalid-avatar';
+    const phone_1 = '09080705033';
+    const email_1 = 'example@domain.vn';
+    const isEmailVerified_1 = true;
+    const result = authService.createUser(
+      uid_1,
+      avatar_1,
+      phone_1,
+      email_1,
+      isEmailVerified_1
+    );
+    return expect(result).rejects.toThrow(
+      new HttpException(StatusCodes.BAD_REQUEST, 'Invalid avatar')
+    );
+  });
+  it('should throw HttpException if invalid phone provided', () => {
+    const uid_1 = 'uid-1';
+    const avatar_1 = 'https://example.com/a.jpg';
+    const phone_1 = '090807s05033';
+    const email_1 = 'example@domain.vn';
+    const isEmailVerified_1 = true;
+    const result = authService.createUser(
+      uid_1,
+      avatar_1,
+      phone_1,
+      email_1,
+      isEmailVerified_1
+    );
+    return expect(result).rejects.toThrow(
+      new HttpException(StatusCodes.BAD_REQUEST, 'Invalid phone number')
+    );
+  });
+  it('should throw HttpException if invalid email address provided', () => {
+    const uid_1 = 'uid-1';
+    const avatar_1 = 'https://example.com/a.jpg';
+    const phone_1 = '09080705033';
+    const email_1 = 'exampledomain.vn';
+    const isEmailVerified_1 = true;
+    const result = authService.createUser(
+      uid_1,
+      avatar_1,
+      phone_1,
+      email_1,
+      isEmailVerified_1
+    );
+    return expect(result).rejects.toThrow(
+      new HttpException(StatusCodes.BAD_REQUEST, 'Invalid email address')
+    );
+  });
 });
 
 describe('getResetLink()', () => {

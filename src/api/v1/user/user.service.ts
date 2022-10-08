@@ -1,5 +1,4 @@
 import ejs from 'ejs';
-import { NextFunction } from 'express';
 import { StatusCodes } from 'http-status-codes';
 import path from 'path';
 import sendEmail from '../../../common/sendEmail';
@@ -9,7 +8,7 @@ import isEmail from '../../../validator/is_email';
 import isLink from '../../../validator/is_link';
 import isPhone from '../../../validator/is_phone';
 import dotenv from 'dotenv';
-import { auth } from 'firebase-admin';
+import firebase from 'firebase-admin';
 import { ActionCodeSettings } from 'firebase-admin/lib/auth/action-code-settings-builder';
 import VerifyEmailToken from '../../../models/verify_email_token';
 import crypto from 'crypto';
@@ -47,10 +46,11 @@ const validateUserProfile = (userInfo: IUser) => {
 
 const updateUserProfile = async (
   _id: string,
-  userInfo: IUser
+  userInfo: IUser,
+  _validateUserProfile = validateUserProfile
 ): Promise<IUser> => {
   userInfo._id = _id;
-  validateUserProfile(userInfo);
+  _validateUserProfile(userInfo);
   userInfo.isProfileFilled = true; // set profile filled
   await User.findByIdAndUpdate(_id, userInfo);
   const user = await User.findById(_id);
@@ -97,14 +97,18 @@ const getVerifiedLink = async (
     },
     dynamicLinkDomain: 'chatapp.daijoubuteam.xyz',
   };
-  const link = await auth().generateEmailVerificationLink(
-    email,
-    actionCodeSettings
-  );
+  const link = await firebase
+    .auth()
+    .generateEmailVerificationLink(email, actionCodeSettings);
   return link;
 };
 
-const sendVerifyEmailMail = async (email: string) => {
+const sendVerifyEmailMail = async (
+  email: string,
+  _getVerifiedLink = getVerifiedLink,
+  _loadVerifyEmailTemplate = loadVerifyEmailTemplate,
+  _sendEmail = sendEmail
+) => {
   if (!isEmail(email)) {
     throw new HttpException(StatusCodes.BAD_REQUEST, 'User email is not valid');
   }
@@ -113,9 +117,9 @@ const sendVerifyEmailMail = async (email: string) => {
     token: crypto.randomBytes(8).toString('hex'),
   });
   await veriyEmailToken.save();
-  const link = await getVerifiedLink(email, veriyEmailToken.token);
-  const template = await loadVerifyEmailTemplate(link);
-  await sendEmail(email, 'Verify your email', template);
+  const link = await _getVerifiedLink(email, veriyEmailToken.token);
+  const template = await _loadVerifyEmailTemplate(link);
+  await _sendEmail(email, 'Verify your email', template);
 };
 
 const changeEmailVerified = async (token: string) => {
@@ -137,4 +141,6 @@ export default {
   validateUserProfile,
   sendVerifyEmailMail,
   changeEmailVerified,
+  loadVerifyEmailTemplate,
+  getVerifiedLink,
 };
