@@ -1,0 +1,15 @@
+delete: 
+  tags:
+    - "Admin"
+    - "Dev"
+  summary: Delete User
+  parameters:
+    - in: path
+      name: userId
+      schema:
+        type: string
+      required: true
+  responses:
+    204: 
+      description: Delete successful
+

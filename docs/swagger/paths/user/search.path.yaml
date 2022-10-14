@@ -1,0 +1,24 @@
+get:
+  tags:
+    - "User"
+  summary: Search user by email or phone
+  security:
+    - bearerAuth: []
+  parameters:
+    - in: query
+      name: search
+      schema:
+        type: string
+      required: true
+      description: Search string for email and phone
+  responses:
+    200: 
+      description: Get user successful
+      content:
+        application/json:
+          schema:
+            $ref: '../../components/models/user.component.yaml#/schemas/user'
+    400:
+      description: Search string not found
+    404:
+      description: User not found

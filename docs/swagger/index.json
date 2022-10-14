@@ -153,36 +153,7 @@
                   "type": "object",
                   "properties": {
                     "user": {
-                      "type": "object",
-                      "properties": {
-                        "gender": {
-                          "type": "string"
-                        },
-                        "fullname": {
-                          "type": "string"
-                        },
-                        "uid": {
-                          "type": "string"
-                        },
-                        "avatar": {
-                          "type": "string"
-                        },
-                        "phone": {
-                          "type": "string"
-                        },
-                        "about": {
-                          "type": "string"
-                        },
-                        "email": {
-                          "type": "string"
-                        },
-                        "isEmailVerified": {
-                          "type": "boolean"
-                        },
-                        "isProfileFilled": {
-                          "type": "boolean"
-                        }
-                      }
+                      "$ref": "#/paths/~1user~1search/get/responses/200/content/application~1json/schema"
                     }
                   }
                 }
@@ -242,7 +213,7 @@
                   "type": "object",
                   "properties": {
                     "user": {
-                      "$ref": "#/paths/~1user~1self/get/responses/200/content/application~1json/schema/properties/user"
+                      "$ref": "#/paths/~1user~1search/get/responses/200/content/application~1json/schema"
                     }
                   }
                 }
@@ -275,6 +246,77 @@
           },
           "401": {
             "description": "Unauthorized"
+          }
+        }
+      }
+    },
+    "/user/search": {
+      "get": {
+        "tags": [
+          "User"
+        ],
+        "summary": "Search user by email or phone",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "query",
+            "name": "search",
+            "schema": {
+              "type": "string"
+            },
+            "required": true,
+            "description": "Search string for email and phone"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Get user successful",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "gender": {
+                      "type": "string"
+                    },
+                    "fullname": {
+                      "type": "string"
+                    },
+                    "uid": {
+                      "type": "string"
+                    },
+                    "avatar": {
+                      "type": "string"
+                    },
+                    "phone": {
+                      "type": "string"
+                    },
+                    "about": {
+                      "type": "string"
+                    },
+                    "email": {
+                      "type": "string"
+                    },
+                    "isEmailVerified": {
+                      "type": "boolean"
+                    },
+                    "isProfileFilled": {
+                      "type": "boolean"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Search string not found"
+          },
+          "404": {
+            "description": "User not found"
           }
         }
       }
@@ -536,6 +578,9 @@
                 "schema": {
                   "type": "object",
                   "properties": {
+                    "chatRoomId": {
+                      "type": "string"
+                    },
                     "chatRoomName": {
                       "type": "string"
                     },
@@ -569,6 +614,9 @@
           },
           "401": {
             "description": "Unauthorized"
+          },
+          "404": {
+            "description": "User not found"
           }
         }
       }
@@ -755,6 +803,30 @@
           },
           "409": {
             "description": "User has been in chat room or User is admin"
+          }
+        }
+      }
+    },
+    "/admin/user/{userId}": {
+      "delete": {
+        "tags": [
+          "Admin",
+          "Dev"
+        ],
+        "summary": "Delete User",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "userId",
+            "schema": {
+              "type": "string"
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Delete successful"
           }
         }
       }

@@ -83,9 +83,24 @@ const changeMailVerified = async (
   }
 };
 
+const searchUser = async (
+  req: Request<unknown, unknown, unknown, { search?: string }>,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const { search } = req.query;
+    const user = await userService.searchUser(search);
+    res.status(StatusCodes.OK).json(getRawUser(user));
+  } catch (error) {
+    next(error);
+  }
+};
+
 export default {
   getSelfProfile,
   putSelfProfile,
   verifyEmail,
   changeMailVerified,
+  searchUser,
 };

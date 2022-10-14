@@ -12,6 +12,7 @@ import firebase from 'firebase-admin';
 import { ActionCodeSettings } from 'firebase-admin/lib/auth/action-code-settings-builder';
 import VerifyEmailToken from '../../../models/verify_email_token';
 import crypto from 'crypto';
+import { toLowerCaseNonAccentVietnamese } from '../../../common/vietnamese/non-accent';
 
 dotenv.config();
 
@@ -25,6 +26,7 @@ const validateUserProfile = (userInfo: IUser) => {
     userInfo.isEmailVerified !== undefined &&
     userInfo.isEmailVerified !== null
   ) {
+    badRequestException.message = 'IsEmailVerified is not allowed';
     throw badRequestException;
   }
 
@@ -32,14 +34,17 @@ const validateUserProfile = (userInfo: IUser) => {
     userInfo.isProfileFilled !== undefined &&
     userInfo.isProfileFilled !== null
   ) {
+    badRequestException.message = 'isProfileFilled is not allowed';
     throw badRequestException;
   }
 
   if (userInfo.email !== undefined && userInfo.email !== null) {
+    badRequestException.message = 'email is not allowed';
     throw badRequestException;
   }
 
   if (!isLink(userInfo.avatar) || !isPhone(userInfo.phone)) {
+    badRequestException.message = 'invalid link or phone number';
     throw badRequestException;
   }
 };
@@ -136,6 +141,19 @@ const changeEmailVerified = async (token: string) => {
   await existingVerifiedEmailToken.delete();
 };
 
+const searchUser = async (searchString?: string): Promise<IUser> => {
+  if (!searchString) {
+    throw new HttpException(StatusCodes.BAD_REQUEST, 'Search string not found');
+  }
+  const user = await User.findOne({
+    $or: [{ email: searchString }, { phone: searchString }],
+  });
+  if (!user) {
+    throw new HttpException(StatusCodes.NOT_FOUND, 'User not found');
+  }
+  return user;
+};
+
 export default {
   updateUserProfile,
   validateUserProfile,
@@ -143,4 +161,5 @@ export default {
   changeEmailVerified,
   loadVerifyEmailTemplate,
   getVerifiedLink,
+  searchUser,
 };

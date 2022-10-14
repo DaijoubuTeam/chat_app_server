@@ -23,6 +23,8 @@ paths:
     $ref: './paths/user/self.path.yaml'
   /user/verify-email:
     $ref: './paths/user/verify_email.path.yaml'
+  /user/search:
+    $ref: './paths/user/search.path.yaml'
   /friend:
     $ref: './paths/friend/index.path.yaml'
   /friend/{id}:
@@ -33,3 +35,5 @@ paths:
     $ref: './paths/chat/chat-room-id.path.yaml'
   /chat-room/{chatRoomId}/{memberId}:
     $ref: './paths/chat/chat-room-id.member-id.path.yaml'
+  /admin/user/{userId}:
+    $ref: './paths/admin/user.path.yaml'
