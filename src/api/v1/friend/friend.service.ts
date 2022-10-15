@@ -1,6 +1,7 @@
 import { StatusCodes } from 'http-status-codes';
 import mongoose from 'mongoose';
 import HttpException from '../../../exception';
+import ChatRoom, { CHAT_ROOM_TYPE } from '../../../models/chat_room';
 import User, { IUser } from '../../../models/user';
 
 const getFriendList = async (userId: string) => {
@@ -49,6 +50,15 @@ const removeFriend = async (userId: string, friendId: string) => {
   friend.friends = new mongoose.Types.Array(
     ...friend.friends.filter((friend) => friend.toString() === userId)
   );
+  const chatRoom = await deletePersonalChatRoom(userId, friendId);
+  user.chatRooms = new mongoose.Types.Array(
+    ...user.chatRooms.filter((chatroom) => chatroom.toString() === chatRoom?.id)
+  );
+  friend.chatRooms = new mongoose.Types.Array(
+    ...friend.chatRooms.filter(
+      (chatroom) => chatroom.toString() === chatRoom?.id
+    )
+  );
   return Promise.all([user.save(), friend.save()]);
 };
 
@@ -69,6 +79,9 @@ const acceptRequest = async (userId: string, friendId: string) => {
   );
   user.friends.push(friendId);
   friend.friends.push(userId);
+  const chatroom = await createPersonalChatRoom(userId, friendId);
+  user.chatRooms.push(chatroom.id);
+  friend.chatRooms.push(chatroom.id);
   await Promise.all([user.save(), friend.save()]);
 };
 
@@ -128,6 +141,20 @@ const unbanUser = async (userId: string, bannedUserId: string) => {
   );
 
   await user.save();
+};
+
+const createPersonalChatRoom = async (userId: string, friendId: string) => {
+  return ChatRoom.create({
+    members: [userId, friendId],
+    type: CHAT_ROOM_TYPE.personal,
+  });
+};
+
+const deletePersonalChatRoom = async (userId: string, friendId: string) => {
+  return ChatRoom.findOneAndDelete({
+    members: { $all: [userId, friendId] },
+    type: CHAT_ROOM_TYPE.personal,
+  });
 };
 
 export default {

@@ -21,9 +21,7 @@ const chatRoomSchema = new Schema<IChatRoom>({
   chatRoomAvatar: { type: String, required: false, default: null },
   members: [{ type: String, ref: 'User' }],
   admin: [{ type: String, ref: 'User' }],
-  type: [
-    { type: String, enum: [CHAT_ROOM_TYPE.group, CHAT_ROOM_TYPE.personal] },
-  ],
+  type: { type: String, enum: [CHAT_ROOM_TYPE.group, CHAT_ROOM_TYPE.personal] },
 });
 
 const ChatRoom = model<IChatRoom>('ChatRoom', chatRoomSchema);
