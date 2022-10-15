@@ -3,6 +3,9 @@ import HttpException from '../../../exception';
 import User, { IUser } from '../../../models/user';
 import ChatRoom, { CHAT_ROOM_TYPE, IChatRoom } from '../../../models/chat_room';
 import mongoose from 'mongoose';
+import Message, { IMessage } from '../../../models/message';
+import { io } from '../../../..';
+import SocketUser from '../../../models/socket';
 
 const getUserChatRooms = async (userId: string): Promise<IChatRoom[]> => {
   const user = await User.findById(userId).populate<{

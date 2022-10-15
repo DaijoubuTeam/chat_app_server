@@ -15,11 +15,9 @@ const getUserChatRooms = async (
       throw new HttpException(StatusCodes.UNAUTHORIZED, 'Unauthorized');
     }
     const chatRooms = await chatroomService.getUserChatRooms(user._id);
-    res
-      .status(StatusCodes.OK)
-      .json({
-        chatRooms: chatRooms.map((chatRoom) => getRawChatRoom(chatRoom)),
-      });
+    res.status(StatusCodes.OK).json({
+      chatRooms: chatRooms.map((chatRoom) => getRawChatRoom(chatRoom)),
+    });
   } catch (error) {
     next(error);
   }
