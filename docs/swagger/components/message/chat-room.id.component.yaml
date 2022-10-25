@@ -1,0 +1,6 @@
+schemas:
+  PostRequest:
+    type: object
+    properties:
+      message:
+        type: string

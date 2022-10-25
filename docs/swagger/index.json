@@ -830,6 +830,57 @@
           }
         }
       }
+    },
+    "/message/chat-room/{chatRoomId}": {
+      "post": {
+        "tags": [
+          "Message"
+        ],
+        "summary": "Send message",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "chatRoomId",
+            "schema": {
+              "type": "string"
+            },
+            "required": true
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "message": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Send successful"
+          },
+          "400": {
+            "description": "Invalid user, message or chat room"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "404": {
+            "description": "User not found or chat room not found"
+          }
+        }
+      }
     }
   }
 }

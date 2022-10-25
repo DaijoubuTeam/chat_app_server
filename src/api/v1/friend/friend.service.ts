@@ -3,6 +3,9 @@ import mongoose from 'mongoose';
 import HttpException from '../../../exception';
 import ChatRoom, { CHAT_ROOM_TYPE } from '../../../models/chat_room';
 import User, { IUser } from '../../../models/user';
+import Notification, { NotifyType } from '../../../models/notification';
+import { io } from '../../../..';
+import SocketUser from '../../../models/socket';
 
 const getFriendList = async (userId: string) => {
   const user: IUser | null = await User.findById(userId)
@@ -30,7 +33,21 @@ const addFriendRequestList = async (userId: string, friendId: string) => {
   if (friend.friendRequests.find((request) => request.toString() === userId))
     throw new HttpException(StatusCodes.BAD_REQUEST, 'Request has been sent');
   friend.friendRequests.push(userId);
-  return friend.save();
+  await friend.save();
+  const notification = new Notification({
+    userId: friend._id,
+    notifyType: NotifyType.friendRequest,
+    readed: false,
+    actionDoer: userId,
+    actionTarget: friend._id,
+  });
+  await notification.save();
+  const friendSocketUsers = await SocketUser.find({
+    uid: friend._id,
+  });
+  friendSocketUsers.forEach((socketUser) =>
+    io.to(socketUser._id).emit('notification', notification.toJSON())
+  );
 };
 
 const removeFriend = async (userId: string, friendId: string) => {
