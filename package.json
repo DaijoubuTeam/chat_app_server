@@ -2,7 +2,7 @@
   "name": "chat_app_server",
   "version": "1.0.0",
   "description": "Server for chat app",
-  "main": "index.js",
+  "main": "index.ts",
   "scripts": {
     "build": "npx tsc",
     "start": "node dist/index.js",

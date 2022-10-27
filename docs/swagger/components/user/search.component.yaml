@@ -1,0 +1,12 @@
+schemas:
+  SearchResponse:
+    allOf:
+      - $ref: '../models/user.component.yaml#/schemas/user'
+      - type: object
+        required:
+          - rootCause
+        properties:
+          isFriend:
+            type: boolean
+          isSelf:
+            type: boolean

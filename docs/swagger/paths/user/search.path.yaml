@@ -17,7 +17,7 @@ get:
       content:
         application/json:
           schema:
-            $ref: '../../components/models/user.component.yaml#/schemas/user'
+            $ref: '../../components/user/search.component.yaml#/schemas/SearchResponse'
     400:
       description: Search string not found
     404:

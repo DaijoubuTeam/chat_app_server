@@ -91,7 +91,9 @@ const searchUser = async (
   try {
     const { search } = req.query;
     const user = await userService.searchUser(search);
-    res.status(StatusCodes.OK).json(getRawUser(user));
+    const isFriend = await userService.isFriend(user._id, req.user?._id ?? '');
+    const isSelf = user._id === req.user?._id;
+    res.status(StatusCodes.OK).json({ ...getRawUser(user), isFriend, isSelf });
   } catch (error) {
     next(error);
   }

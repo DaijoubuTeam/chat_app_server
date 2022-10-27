@@ -154,6 +154,23 @@ const searchUser = async (searchString?: string): Promise<IUser> => {
   return user;
 };
 
+const isFriend = async (user_1: string, user_2: string) => {
+  try {
+    const user = await User.findOne({
+      _id: user_1,
+      friends: {
+        $in: [user_2],
+      },
+    });
+    if (!user) {
+      throw new Error();
+    }
+    return true;
+  } catch (error) {
+    return false;
+  }
+};
+
 export default {
   updateUserProfile,
   validateUserProfile,
@@ -162,4 +179,5 @@ export default {
   loadVerifyEmailTemplate,
   getVerifiedLink,
   searchUser,
+  isFriend,
 };
