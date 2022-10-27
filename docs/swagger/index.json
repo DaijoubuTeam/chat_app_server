@@ -438,6 +438,37 @@
         }
       }
     },
+    "/friend/friend-requests": {
+      "get": {
+        "tags": [
+          "Friend"
+        ],
+        "summary": "Get user friends",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Get user friends list successful",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/paths/~1friend/get/responses/200/content/application~1json/schema"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid token"
+          },
+          "404": {
+            "description": "User not found"
+          }
+        }
+      }
+    },
     "/friend/{id}": {
       "get": {
         "tags": [

@@ -27,6 +27,8 @@ paths:
     $ref: './paths/user/search.path.yaml'
   /friend:
     $ref: './paths/friend/index.path.yaml'
+  /friend/friend-requests:
+    $ref: './paths/friend/friend-requests.path.yaml'
   /friend/{id}:
     $ref: './paths/friend/id.path.yaml'
   /chat-room:

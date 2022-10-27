@@ -22,6 +22,21 @@ const getFriendList = async (userId: string) => {
   return user.friends;
 };
 
+const getFriendRequestList = async (userId: string) => {
+  const user: IUser | null = await User.findById(userId)
+    .populate(
+      'friendRequests',
+      '-friends -friendRequests -bans -isEmailVerified -isProfileFilled -chatRooms'
+    )
+    .exec();
+
+  if (!user) {
+    throw new HttpException(StatusCodes.NOT_FOUND, 'User not found');
+  }
+
+  return user.friendRequests;
+};
+
 const addFriendRequestList = async (userId: string, friendId: string) => {
   const friend = await User.findById(friendId);
   if (!friend) {
@@ -182,4 +197,5 @@ export default {
   deniedRequest,
   banUser,
   unbanUser,
+  getFriendRequestList,
 };

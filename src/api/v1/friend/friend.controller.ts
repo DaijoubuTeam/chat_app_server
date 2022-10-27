@@ -100,9 +100,33 @@ const acceptOrDeniedFriendRequest = async (
   }
 };
 
+const getFriendRequest = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const user = req.user;
+    if (!user) {
+      throw new HttpException(StatusCodes.UNAUTHORIZED, 'Unauthorized');
+    }
+    const userFriendRequestsList = await servive.getFriendRequestList(user._id);
+    res
+      .status(StatusCodes.OK)
+      .json(
+        (userFriendRequestsList as unknown as IUser[]).map((user) =>
+          getRawUser(user)
+        )
+      );
+  } catch (error) {
+    next(error);
+  }
+};
+
 export default {
   getUserFriends,
   sendFriendRequest,
   deleteFriend,
   acceptOrDeniedFriendRequest,
+  getFriendRequest,
 };
