@@ -1,5 +1,4 @@
 import { StatusCodes } from 'http-status-codes';
-import mongoose from 'mongoose';
 import HttpException from '../../../exception';
 import ChatRoom, { CHAT_ROOM_TYPE } from '../../../models/chat_room';
 import User, { IUser } from '../../../models/user';
@@ -76,21 +75,11 @@ const removeFriend = async (userId: string, friendId: string) => {
   );
   if (friendIndex === -1)
     throw new HttpException(StatusCodes.BAD_REQUEST, 'User not be found');
-  user.friends = new mongoose.Types.Array(
-    ...user.friends.filter((friend) => friend.toString() === friendId)
-  );
-  friend.friends = new mongoose.Types.Array(
-    ...friend.friends.filter((friend) => friend.toString() === userId)
-  );
+  user.friends.pull(friendId);
+  friend.friends.pull(userId);
   const chatRoom = await deletePersonalChatRoom(userId, friendId);
-  user.chatRooms = new mongoose.Types.Array(
-    ...user.chatRooms.filter((chatroom) => chatroom.toString() === chatRoom?.id)
-  );
-  friend.chatRooms = new mongoose.Types.Array(
-    ...friend.chatRooms.filter(
-      (chatroom) => chatroom.toString() === chatRoom?.id
-    )
-  );
+  user.chatRooms.pull(chatRoom?._id);
+  friend.chatRooms.pull(chatRoom?._id);
   return Promise.all([user.save(), friend.save()]);
 };
 
@@ -106,9 +95,7 @@ const acceptRequest = async (userId: string, friendId: string) => {
   if (friendRequestIndex === -1) {
     throw new HttpException(StatusCodes.NOT_FOUND, 'Request not be found');
   }
-  user.friendRequests = new mongoose.Types.Array(
-    ...user.friendRequests.splice(friendRequestIndex, 1)
-  );
+  user.friendRequests.pull(friendId);
   user.friends.push(friendId);
   friend.friends.push(userId);
   const chatroom = await createPersonalChatRoom(userId, friendId);
@@ -128,9 +115,7 @@ const deniedRequest = async (userId: string, friendId: string) => {
   if (friendRequestIndex === -1) {
     throw new HttpException(StatusCodes.BAD_REQUEST, 'Request not be found');
   }
-  user.friendRequests = new mongoose.Types.Array(
-    ...user.friendRequests.splice(friendRequestIndex, 1)
-  );
+  user.friendRequests.pull(friendId);
   await user.save();
 };
 
@@ -146,14 +131,8 @@ const banUser = async (userId: string, bannedUserId: string) => {
   if (user.bans.find((ban) => ban.toString() == bannedUserId)) {
     throw new HttpException(StatusCodes.CONFLICT, 'User has been banned');
   }
-  bannedUser.friendRequests = new mongoose.Types.Array(
-    ...bannedUser.friendRequests.filter(
-      (request) => request.toString() === userId
-    )
-  );
-  user.friendRequests = new mongoose.Types.Array(
-    ...user.friendRequests.filter((request) => request.toString() === userId)
-  );
+  bannedUser.friendRequests.pull(userId);
+  user.friendRequests.pull(bannedUserId);
   user.bans.push(bannedUserId);
   await Promise.all([user.save(), bannedUser.save()]);
 };
@@ -168,9 +147,7 @@ const unbanUser = async (userId: string, bannedUserId: string) => {
     throw new HttpException(StatusCodes.NOT_FOUND, 'User has not been banned');
   }
 
-  user.bans = new mongoose.Types.Array(
-    ...user.bans.filter((ban) => ban.toString() === bannedUserId)
-  );
+  user.bans.pull(bannedUserId);
 
   await user.save();
 };

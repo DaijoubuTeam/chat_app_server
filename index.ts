@@ -75,11 +75,12 @@ io.on('connection', (socket) => {
     console.log(arg);
     if (!arg || !arg.uid) {
       socket.emit('register', 'Register failed');
-      socket.disconnect();
     } else {
-      registerSocket(arg.uid, socket.id).then(() =>
-        socket.emit('register', 'Register successful')
-      );
+      registerSocket(arg.uid, socket.id)
+        .then(() => socket.emit('register', 'Register successful'))
+        .catch((err) => {
+          socket.emit('register', `Register failed: ${err}`);
+        });
     }
   });
 });
