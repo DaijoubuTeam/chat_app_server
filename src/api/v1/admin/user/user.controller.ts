@@ -1,6 +1,5 @@
 import { Request, Response, NextFunction } from 'express';
 import { StatusCodes } from 'http-status-codes';
-import HttpException from '../../../../exception';
 import userService from './user.service';
 
 const deleteUser = async (
@@ -16,4 +15,28 @@ const deleteUser = async (
     next(error);
   }
 };
-export default { deleteUser };
+
+const seedUser = async (
+  req: Request<
+    unknown,
+    unknown,
+    {
+      password: string;
+      prefix: string;
+      nums: number;
+      suffix: string;
+      photo: string;
+    }
+  >,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const { password, prefix, nums, suffix, photo } = req.body;
+    await userService.createUser(password, prefix, suffix, nums, photo);
+    res.status(StatusCodes.OK).json('Seed successful');
+  } catch (error) {
+    next(error);
+  }
+};
+export default { deleteUser, seedUser };

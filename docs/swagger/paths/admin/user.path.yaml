@@ -1,6 +1,5 @@
 delete: 
   tags:
-    - "Admin"
     - "Dev"
   summary: Delete User
   parameters:

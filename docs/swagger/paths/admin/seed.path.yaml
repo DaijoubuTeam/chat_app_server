@@ -1,0 +1,24 @@
+post: 
+  tags:
+    - "Dev"
+  summary: Seed user
+  requestBody:
+    content:
+      application/json:
+        schema:
+          type: object
+          properties:
+            password:
+              type: string
+            prefix:
+              type: string
+            suffix:
+              type: string
+              example: test.com
+            nums:
+              type: number
+            photo:
+              type: string
+  responses:
+    200: 
+      description: Seed successful

@@ -32,7 +32,7 @@ services:
         condition: service_healthy
   firebase:
     build:
-      dockerfile: firebase.Dockerfile
+      dockerfile: Dockerfile.firebase
       context: .
     ports:
       - 4000:4000

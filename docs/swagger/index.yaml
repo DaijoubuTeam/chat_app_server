@@ -39,5 +39,7 @@ paths:
     $ref: './paths/chat/chat-room-id.member-id.path.yaml'
   /admin/user/{userId}:
     $ref: './paths/admin/user.path.yaml'
+  /admin/user/seed:
+    $ref: './paths/admin/seed.path.yaml'
   /message/chat-room/{chatRoomId}:
     $ref: './paths/message/chat-room.id.path.yaml'
