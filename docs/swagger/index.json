@@ -958,6 +958,100 @@
       }
     },
     "/message/chat-room/{chatRoomId}": {
+      "get": {
+        "tags": [
+          "Message"
+        ],
+        "summary": "Get messages",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "chatRoomId",
+            "schema": {
+              "type": "string"
+            },
+            "required": true
+          },
+          {
+            "in": "query",
+            "name": "from",
+            "schema": {
+              "type": "number"
+            },
+            "description": "count from 0",
+            "required": true
+          },
+          {
+            "in": "query",
+            "name": "to",
+            "schema": {
+              "type": "number"
+            },
+            "required": true,
+            "description": "exclusive"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Get message successful",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "_id": {
+                        "type": "string",
+                        "description": "message id"
+                      },
+                      "chatRoomId": {
+                        "type": "string",
+                        "description": "chat room id"
+                      },
+                      "from": {
+                        "type": "string",
+                        "description": "sender id"
+                      },
+                      "content": {
+                        "type": "string",
+                        "description": "message content"
+                      },
+                      "createdAt": {
+                        "type": "string",
+                        "format": "date-time",
+                        "description": "message send time"
+                      },
+                      "updatedAt": {
+                        "type": "string",
+                        "format": "date-time",
+                        "description": "message update time"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid user, message or chat room"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden, may be user not in chat room"
+          },
+          "404": {
+            "description": "User not found or chat room not found"
+          }
+        }
+      },
       "post": {
         "tags": [
           "Message"
