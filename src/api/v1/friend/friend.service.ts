@@ -3,7 +3,7 @@ import HttpException from '../../../exception';
 import ChatRoom, { CHAT_ROOM_TYPE } from '../../../models/chat_room';
 import User, { IUser } from '../../../models/user';
 import Notification, { NotifyType } from '../../../models/notification';
-import { io } from '../../../..';
+import { io } from '../../..';
 import SocketUser from '../../../models/socket';
 
 const getFriendList = async (userId: string) => {

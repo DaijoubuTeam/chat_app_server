@@ -133,3 +133,5 @@ dist
 serviceAccountKey.json
 
 sendgrid.env
+
+.env*

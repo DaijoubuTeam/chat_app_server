@@ -1,5 +1,5 @@
 import { StatusCodes } from 'http-status-codes';
-import { io } from '../../../..';
+import { io } from '../../..';
 import HttpException from '../../../exception';
 import ChatRoom from '../../../models/chat_room';
 import Message from '../../../models/message';

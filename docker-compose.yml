@@ -18,7 +18,7 @@ services:
       dockerfile: Dockerfile.server.dev
       context: .
     env_file:
-      - .env.dev
+      - .env
     networks:
       - chat_app_server
     volumes:
@@ -26,22 +26,8 @@ services:
     ports:
       - 8080:8080
     depends_on:
-      firebase:
-        condition: service_started
       mongodb:
         condition: service_healthy
-  firebase:
-    build:
-      dockerfile: firebase.Dockerfile
-      context: .
-    ports:
-      - 4000:4000
-      - 9099:9099
-      - 9199:9199
-    env_file:
-      - .env.dev
-    networks:
-      - chat_app_server
   mongodb:
     image: mongo:5.0
     networks:

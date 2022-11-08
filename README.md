@@ -16,6 +16,18 @@ Shutdown dev enviroment:
 docker compose -f docker-compose.dev.yml down
 ```
 
+Start prod enviroment:
+
+```sh
+docker compose -f docker-compose.yml up -d
+```
+
+Shutdown prod enviroment:
+
+```sh
+docker compose -f docker-compose.yml down
+```
+
 ## Meta
 
 Tran Dinh Loc – [@TDLoc02](https://www.facebook.com/TDLoc02) – dinhlockt02@gmail.com
