@@ -1,0 +1,6 @@
+mongo-url = "mongodb://root:example@mongodb:27017/?replicaSet=rs0"
+elasticsearch-urls = ["http://elastic-search:9200"]
+elasticsearch-user = "elastic"
+elasticsearch-password = "changeme"
+[logs]
+error = "./logs/error.log" 

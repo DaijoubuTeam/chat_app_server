@@ -23,8 +23,6 @@ services:
       - chat_app_server
     volumes:
       - ./:/app:ro
-    ports:
-      - 8080:8080
     depends_on:
       firebase:
         condition: service_started
@@ -50,12 +48,17 @@ services:
     environment:
       MONGO_INITDB_ROOT_USERNAME: root
       MONGO_INITDB_ROOT_PASSWORD: example
+    volumes:
+      - ./docker/mongo/:/mongo/:ro
+    # ports:
+    #   - 27017:27017
     healthcheck:
       test: echo 'db.runCommand("ping").ok' | mongo localhost:27017/test --quiet
-      interval: 10s
-      timeout: 10s
+      interval: 5s
+      timeout: 5s
       retries: 5
       start_period: 40s
+    entrypoint: sh /mongo/script.sh
   mongo-express:
     image: mongo-express
     ports:
@@ -69,6 +72,34 @@ services:
     depends_on:
       mongodb:
         condition: service_healthy
+  elastic-search:
+    image: elasticsearch:7.17.7
+    environment:
+      - discovery.type=single-node
+      - http.cors.enabled=true
+      - http.cors.allow-origin=https://app.elasticvue.com
+      - xpack.security.enabled=false
+      - "http.cors.allow-headers=X-Requested-With,X-Auth-Token,Content-Type,Content-Length,Authorization"
+      - "http.cors.allow-credentials=true"
+    ports:
+      - 9200:9200
+      - 9300:9300
+    networks:
+      - chat_app_server
+  monstache:        
+    image: rwynn/monstache:latest        
+    working_dir: /monstache        
+    command: -f /monstache/config.toml        
+    volumes:          
+        - ./docker/monstache/:/monstache/
+    restart: always
+    depends_on:
+      mongodb:
+        condition: service_healthy
+      elastic-search:
+        condition: service_started
+    networks:
+      - chat_app_server
 
 networks:
   chat_app_server:

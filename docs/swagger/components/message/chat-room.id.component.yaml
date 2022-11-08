@@ -29,12 +29,4 @@ schemas:
           type: string
           format: date-time
           description: message update time
-
-    #         "_id": "6369ee907153de50f7aaf8d5",
-    # "chatRoomId": "6369edfa7153de50f7aaf88b",
-    # "from": "w0JunubbH62vTsioggZC1QMMUzww",
-    # "content": "7",
-    # "createdAt": "2022-11-08T05:52:16.563Z",
-    # "updatedAt": "2022-11-08T05:52:16.563Z",
-    # "__v": 0
         
