@@ -1,0 +1,22 @@
+get:
+  tags:
+    - "User"
+  summary: Get user by id
+  security:
+    - bearerAuth: []
+  parameters:
+    - in: path
+      name: id
+      schema:
+        type: string
+      required: true
+  responses:
+    200:
+      description: Get user successful
+      content:
+        application/json:
+          schema:
+            $ref: '../../components/models/user.component.yaml#/schemas/user'
+    404:
+      description: User not found
+        

@@ -5,6 +5,7 @@ import getRawUser from '../../../common/getRawUser';
 import userService from './user.service';
 import { IUser } from '../../../models/user';
 import dotenv from 'dotenv';
+import validator from '../../../validator';
 
 dotenv.config();
 
@@ -99,10 +100,31 @@ const searchUser = async (
   }
 };
 
+const getUserById = async (
+  req: Request<{ id: string }>,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const { id } = req.params;
+    if (!validator.isId.isUserId(id)) {
+      throw new HttpException(StatusCodes.BAD_REQUEST, 'Invalid id');
+    }
+    const user = await userService.getUserById(id);
+    if (user === null || user === undefined) {
+      throw new HttpException(StatusCodes.NOT_FOUND, 'User not found');
+    }
+    res.status(StatusCodes.OK).json(getRawUser(user));
+  } catch (error) {
+    next(error);
+  }
+};
+
 export default {
   getSelfProfile,
   putSelfProfile,
   verifyEmail,
   changeMailVerified,
   searchUser,
+  getUserById,
 };

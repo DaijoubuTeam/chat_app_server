@@ -171,6 +171,10 @@ const isFriend = async (user_1: string, user_2: string) => {
   }
 };
 
+const getUserById = async (userId: string) => {
+  return User.findById(userId);
+};
+
 export default {
   updateUserProfile,
   validateUserProfile,
@@ -180,4 +184,5 @@ export default {
   getVerifiedLink,
   searchUser,
   isFriend,
+  getUserById,
 };

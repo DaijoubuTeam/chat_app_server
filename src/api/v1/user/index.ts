@@ -9,4 +9,5 @@ router.get('/email-verified', controller.changeMailVerified);
 router.put('/self', authenticate, controller.putSelfProfile);
 router.get('/verify-email', authenticate, controller.verifyEmail);
 router.get('/search', authenticate, controller.searchUser);
+router.get('/:id', authenticate, controller.getUserById);
 export default router;

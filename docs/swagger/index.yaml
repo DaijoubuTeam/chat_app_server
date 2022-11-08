@@ -25,6 +25,8 @@ paths:
     $ref: './paths/user/verify_email.path.yaml'
   /user/search:
     $ref: './paths/user/search.path.yaml'
+  /user/{id}:
+    $ref: './paths/user/id.path.yaml'
   /friend:
     $ref: './paths/friend/index.path.yaml'
   /friend/friend-requests:
