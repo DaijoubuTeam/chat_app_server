@@ -5,6 +5,7 @@ import ChatRoom from '../../../models/chat_room';
 import Message from '../../../models/message';
 import constants from '../../../constants';
 import getRawMessage from '../../../common/getRawMessage';
+import { IUser } from '../../../models/user';
 
 const sendMessage = async (
   userId: string,
@@ -24,11 +25,19 @@ const sendMessage = async (
   chatRoom.latestMessage = messageDoc._id;
   await chatRoom.save();
   chatRoom.members.forEach((member) => {
-    sendSocketToUser(
-      member,
-      constants.socketEvents.NEW_MESSAGE,
-      getRawMessage(message)
-    );
+    if (typeof member == 'string' || member instanceof String) {
+      sendSocketToUser(
+        member as string,
+        constants.socketEvents.NEW_MESSAGE,
+        getRawMessage(message)
+      );
+    } else {
+      sendSocketToUser(
+        (member as IUser)._id,
+        constants.socketEvents.NEW_MESSAGE,
+        getRawMessage(message)
+      );
+    }
   });
   return getRawMessage(messageDoc);
 };

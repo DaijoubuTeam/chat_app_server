@@ -22,6 +22,7 @@ router.delete(
 
 router.get('/chat-room-requests', chatRoomController.getChatRoomRequests);
 
+router.get('/:chatRoomId', chatRoomController.getChatRoom); //Update group chat room
 router.put('/:chatRoomId', isGroupAdmin, chatRoomController.putChatRoom); //Update group chat room
 router.delete('/:chatRoomId', isGroupAdmin, chatRoomController.deleteChatRoom); // Delete group chat room
 

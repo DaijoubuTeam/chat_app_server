@@ -206,6 +206,27 @@ const getChatRoomRequests = async (userId: string) => {
   });
 };
 
+const getChatRoom = async (chatRoomId: string, userId: string) => {
+  const chatRoom = await ChatRoom.findOne({
+    _id: chatRoomId,
+    members: userId,
+  })
+    .populate({
+      path: 'latestMessage',
+      populate: {
+        path: 'from readed',
+      },
+    })
+    .populate({
+      path: 'members',
+    })
+    .exec();
+  if (!chatRoom) {
+    throw new HttpException(StatusCodes.NOT_FOUND, 'chat room not found');
+  }
+  return chatRoom;
+};
+
 export default {
   getUserChatRooms,
   createNewChatRoom,
@@ -216,4 +237,5 @@ export default {
   acceptJoinChatRoom,
   rejectJoinChatRoom,
   getChatRoomRequests,
+  getChatRoom,
 };

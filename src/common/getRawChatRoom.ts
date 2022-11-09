@@ -1,7 +1,9 @@
 import mongoose, { isValidObjectId } from 'mongoose';
 import { IChatRoom } from '../models/chat_room';
 import { IMessage } from '../models/message';
+import { IUser } from '../models/user';
 import getRawMessage from './getRawMessage';
+import getRawUser from './getRawUser';
 
 const getRawChatRoom = (chatroom: IChatRoom) => {
   if (!chatroom.latestMessage) {
@@ -14,10 +16,17 @@ const getRawChatRoom = (chatroom: IChatRoom) => {
       chatRoomId: chatroom._id,
     };
   }
+  const members = chatroom.members.map((member) => {
+    if (typeof member == 'string' || member instanceof String) {
+      return member;
+    } else {
+      return getRawUser(member as unknown as IUser);
+    }
+  });
   const rawChatRoom = {
     chatRoomName: chatroom.chatRoomName,
     chatRoomAvatar: chatroom.chatRoomAvatar,
-    members: chatroom.members,
+    members: members,
     admin: chatroom.admin,
     type: chatroom.type,
     chatRoomId: chatroom._id,

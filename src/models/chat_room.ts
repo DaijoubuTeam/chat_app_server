@@ -1,5 +1,6 @@
 import mongoose, { model, Types } from 'mongoose';
 import { IMessage } from './message';
+import { IUser } from './user';
 
 const { Schema } = mongoose;
 
@@ -12,7 +13,7 @@ interface IChatRoom {
   _id: mongoose.Types.ObjectId;
   chatRoomName: string;
   chatRoomAvatar: string;
-  members: Types.Array<string>;
+  members: Types.Array<string | IUser>;
   admin: Types.Array<string>;
   type: string;
   latestMessage: Types.ObjectId | IMessage;

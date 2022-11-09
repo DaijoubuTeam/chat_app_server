@@ -177,6 +177,24 @@ const getChatRoomRequests = async (
   }
 };
 
+const getChatRoom = async (
+  req: Request<{ chatRoomId: string }>,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const user = req.user;
+    const { chatRoomId } = req.params;
+    if (user == null) {
+      throw new HttpException(StatusCodes.NOT_FOUND, 'User not found');
+    }
+    const chatRoom = await chatroomService.getChatRoom(chatRoomId, user._id);
+    res.status(StatusCodes.OK).json(getRawChatRoom(chatRoom));
+  } catch (error) {
+    next(error);
+  }
+};
+
 export default {
   getUserChatRooms,
   postNewChatRoom,
@@ -187,4 +205,5 @@ export default {
   acceptJoinChatRoom,
   rejectJoinChatRoom,
   getChatRoomRequests,
+  getChatRoom,
 };
