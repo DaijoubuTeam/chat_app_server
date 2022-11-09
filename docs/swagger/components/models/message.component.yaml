@@ -1,0 +1,43 @@
+schemas:
+  message:
+    type: object
+    properties:
+      chatRoomId:
+        type: string
+      from:
+        type: string
+      content:
+        type: string
+      readed:
+        type: array
+        items:
+          type: string
+      id:
+        type: string
+      createdAt:
+        type: string
+        format: date-time
+      updatedAt:
+        type: string
+        format: date-time
+  MessageWithFromAndReaded:
+    type: object
+    properties:
+      chatRoomId:
+        type: string
+      from:
+        $ref: './user.component.yaml#/schemas/user'
+      content:
+        type: string
+      readed:
+        type: array
+        items:
+          $ref: './user.component.yaml#/schemas/user'
+      id:
+        type: string
+      createdAt:
+        type: string
+        format: date-time
+      updatedAt:
+        type: string
+        format: date-time

@@ -6,11 +6,21 @@ import mongoose from 'mongoose';
 import notificationService from '../notification/notification.service';
 import { NotifyType } from '../../../models/notification';
 import getRawChatRoom from '../../../common/getRawChatRoom';
+import { IMessage } from '../../../models/message';
 
 const getUserChatRooms = async (userId: string): Promise<IChatRoom[]> => {
   const user = await User.findById(userId).populate<{
     chatRooms: IChatRoom[];
-  }>('chatRooms');
+  }>({
+    path: 'chatRooms',
+    populate: {
+      path: 'latestMessage',
+      populate: {
+        path: 'from readed',
+      },
+    },
+  });
+
   if (!user) {
     throw new HttpException(StatusCodes.NOT_FOUND, 'User not found');
   }

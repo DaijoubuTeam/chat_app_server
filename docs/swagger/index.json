@@ -692,7 +692,69 @@
                     "chatRooms": {
                       "type": "array",
                       "items": {
-                        "$ref": "#/paths/~1chat-room/post/responses/201/content/application~1json/schema"
+                        "type": "object",
+                        "properties": {
+                          "chatRoomId": {
+                            "type": "string"
+                          },
+                          "chatRoomName": {
+                            "type": "string"
+                          },
+                          "chatRoomAvatar": {
+                            "type": "string"
+                          },
+                          "members": {
+                            "type": "array",
+                            "items": {
+                              "type": "string"
+                            }
+                          },
+                          "admin": {
+                            "type": "array",
+                            "items": {
+                              "description": "User id",
+                              "type": "string"
+                            }
+                          },
+                          "type": {
+                            "type": "string",
+                            "enum": [
+                              "personal",
+                              "group"
+                            ]
+                          },
+                          "latestMessage": {
+                            "type": "object",
+                            "properties": {
+                              "chatRoomId": {
+                                "type": "string"
+                              },
+                              "from": {
+                                "$ref": "#/paths/~1user~1%7Bid%7D/get/responses/200/content/application~1json/schema"
+                              },
+                              "content": {
+                                "type": "string"
+                              },
+                              "readed": {
+                                "type": "array",
+                                "items": {
+                                  "type": "string"
+                                }
+                              },
+                              "id": {
+                                "type": "string"
+                              },
+                              "createdAt": {
+                                "type": "string",
+                                "format": "date-time"
+                              },
+                              "updatedAt": {
+                                "type": "string",
+                                "format": "date-time"
+                              }
+                            }
+                          }
+                        }
                       }
                     }
                   }
@@ -768,6 +830,9 @@
                         "personal",
                         "group"
                       ]
+                    },
+                    "latestMessage": {
+                      "type": "string"
                     }
                   }
                 }
@@ -1179,7 +1244,7 @@
                   "items": {
                     "type": "object",
                     "properties": {
-                      "_id": {
+                      "id": {
                         "type": "string",
                         "description": "message id"
                       },

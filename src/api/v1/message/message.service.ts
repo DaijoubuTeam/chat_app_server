@@ -1,9 +1,10 @@
 import { StatusCodes } from 'http-status-codes';
 import sendSocketToUser from '../../../common/sendSocketToUser';
 import HttpException from '../../../exception';
-import ChatRoom, { IChatRoom } from '../../../models/chat_room';
+import ChatRoom from '../../../models/chat_room';
 import Message from '../../../models/message';
 import constants from '../../../constants';
+import getRawMessage from '../../../common/getRawMessage';
 
 const sendMessage = async (
   userId: string,
@@ -19,14 +20,17 @@ const sendMessage = async (
     from: userId,
     content,
   });
-  await message.save();
+  const messageDoc = await message.save();
+  chatRoom.latestMessage = messageDoc._id;
+  await chatRoom.save();
   chatRoom.members.forEach((member) => {
     sendSocketToUser(
       member,
       constants.socketEvents.NEW_MESSAGE,
-      message.toJSON()
+      getRawMessage(message)
     );
   });
+  return getRawMessage(messageDoc);
 };
 
 const getChatRoomMessage = async (
@@ -34,7 +38,7 @@ const getChatRoomMessage = async (
   userId: string,
   from: number,
   to: number
-): Promise<IChatRoom[]> => {
+) => {
   const chatRoom = await ChatRoom.findById(chatRoomId);
   if (!chatRoom) {
     throw new HttpException(StatusCodes.NOT_FOUND, 'chat room not found');
@@ -48,10 +52,13 @@ const getChatRoomMessage = async (
   const messages = await Message.find({
     chatRoomId,
   })
+    .populate({
+      path: 'from readed',
+    })
     .sort({ createdAt: 'desc' })
     .skip(from)
     .limit(to - from);
-  return messages.map((message) => message.toObject());
+  return messages.map((message) => getRawMessage(message));
 };
 
 export default { sendMessage, getChatRoomMessage };

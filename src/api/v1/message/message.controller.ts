@@ -18,8 +18,12 @@ const postSendMessage = async (
         'Bad request: Invalid user, messsage or chatRoom id'
       );
     }
-    await messageService.sendMessage(user._id, chatRoomId, message);
-    res.status(StatusCodes.CREATED).end();
+    const messageDTO = await messageService.sendMessage(
+      user._id,
+      chatRoomId,
+      message
+    );
+    res.status(StatusCodes.CREATED).json({ message: messageDTO });
   } catch (error) {
     next(error);
   }

@@ -5,6 +5,8 @@ schemas:
       chatRooms:
         type: array
         items:
-          $ref: '../models/chat-room.component.yaml#/schemas/ChatRoom'
+          $ref: '../models/chat-room.component.yaml#/schemas/ChatRoomWithLatestMessageWithFrom'
+
+
             
       

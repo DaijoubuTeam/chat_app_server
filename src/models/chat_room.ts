@@ -1,4 +1,5 @@
 import mongoose, { model, Types } from 'mongoose';
+import { IMessage } from './message';
 
 const { Schema } = mongoose;
 
@@ -14,6 +15,7 @@ interface IChatRoom {
   members: Types.Array<string>;
   admin: Types.Array<string>;
   type: string;
+  latestMessage: Types.ObjectId | IMessage;
 }
 
 const chatRoomSchema = new Schema<IChatRoom>({
@@ -22,6 +24,11 @@ const chatRoomSchema = new Schema<IChatRoom>({
   members: [{ type: String, ref: 'User' }],
   admin: [{ type: String, ref: 'User' }],
   type: { type: String, enum: [CHAT_ROOM_TYPE.group, CHAT_ROOM_TYPE.personal] },
+  latestMessage: {
+    type: mongoose.SchemaTypes.ObjectId,
+    required: true,
+    ref: 'Message',
+  },
 });
 
 const ChatRoom = model<IChatRoom>('ChatRoom', chatRoomSchema);

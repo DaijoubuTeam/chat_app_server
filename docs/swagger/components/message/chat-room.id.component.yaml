@@ -9,7 +9,7 @@ schemas:
     items:
       type: object
       properties:
-        "_id":
+        id:
           type: string
           description: message id
         chatRoomId:
