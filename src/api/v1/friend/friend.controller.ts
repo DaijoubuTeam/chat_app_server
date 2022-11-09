@@ -123,10 +123,58 @@ const getFriendRequest = async (
   }
 };
 
+const getFriendRequestsSent = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const user = req.user;
+    if (!user) {
+      throw new HttpException(StatusCodes.UNAUTHORIZED, 'Unauthorized');
+    }
+    const userFriendRequestsList = await servive.getFriendRequestSentList(
+      user._id
+    );
+    res
+      .status(StatusCodes.OK)
+      .json(
+        (userFriendRequestsList as unknown as IUser[]).map((user) =>
+          getRawUser(user)
+        )
+      );
+  } catch (error) {
+    next(error);
+  }
+};
+
+const unsendFriendRequests = async (
+  req: Request<{ id: string }, unknown, unknown, { action: string }>,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const user = req.user;
+    const { id } = req.params;
+    if (!user) {
+      throw new HttpException(StatusCodes.UNAUTHORIZED, 'Unauthorized');
+    }
+    if (!id) {
+      throw new HttpException(StatusCodes.BAD_REQUEST, 'Friend id not found');
+    }
+    await servive.unsendFriendRequests(user._id, id);
+    res.status(StatusCodes.NO_CONTENT).end();
+  } catch (error) {
+    next(error);
+  }
+};
+
 export default {
   getUserFriends,
   sendFriendRequest,
   deleteFriend,
   acceptOrDeniedFriendRequest,
   getFriendRequest,
+  getFriendRequestsSent,
+  unsendFriendRequests,
 };

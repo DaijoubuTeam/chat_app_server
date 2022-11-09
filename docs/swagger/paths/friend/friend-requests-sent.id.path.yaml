@@ -1,0 +1,25 @@
+delete:
+  tags:
+    - "Friend"
+  summary: Unsend friends requests
+  security:
+    - bearerAuth: []
+  parameters:
+    - in: path
+      name: id
+      description: friend id
+      schema:
+        type: string
+      required: true
+  responses:
+    204: 
+      description: Unsend friends requests successful
+    400:
+      description: Invalid token
+    401:
+      description: Unauthorized
+    404:
+      description: User not found
+
+
+  

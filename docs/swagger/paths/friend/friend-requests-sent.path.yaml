@@ -1,12 +1,12 @@
 get:
   tags:
     - "Friend"
-  summary: Get user's friend requests
+  summary: Get user's sent friends requests
   security:
     - bearerAuth: []
   responses:
     200: 
-      description: Get user's friend requests successful
+      description: Get user's sent friends requests successful
       content:
         application/json:
           schema:

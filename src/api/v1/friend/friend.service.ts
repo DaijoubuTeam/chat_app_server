@@ -2,14 +2,14 @@ import { StatusCodes } from 'http-status-codes';
 import HttpException from '../../../exception';
 import ChatRoom, { CHAT_ROOM_TYPE } from '../../../models/chat_room';
 import User, { IUser } from '../../../models/user';
-import { NotifyType } from '../../../models/notification';
+import Notification, { NotifyType } from '../../../models/notification';
 import notificationService from '../notification/notification.service';
 
 const getFriendList = async (userId: string) => {
   const user: IUser | null = await User.findById(userId)
     .populate(
       'friends',
-      '-friends -friendRequests -bans -isEmailVerified -isProfileFilled -chatRooms'
+      '-friends -friendRequests -friendRequestsSent -bans -isEmailVerified -isProfileFilled -chatRooms'
     )
     .exec();
 
@@ -24,7 +24,7 @@ const getFriendRequestList = async (userId: string) => {
   const user: IUser | null = await User.findById(userId)
     .populate(
       'friendRequests',
-      '-friends -friendRequests -bans -isEmailVerified -isProfileFilled -chatRooms'
+      '-friends -friendRequests -friendRequestsSent -bans -isEmailVerified -isProfileFilled -chatRooms'
     )
     .exec();
 
@@ -35,9 +35,31 @@ const getFriendRequestList = async (userId: string) => {
   return user.friendRequests;
 };
 
-const addFriendRequestList = async (userId: string, friendId: string) => {
+const getFriendRequestSentList = async (userId: string) => {
+  const user: IUser | null = await User.findById(userId)
+    .populate(
+      'friendRequestsSent',
+      '-friends -friendRequests -friendRequestsSent -bans -isEmailVerified -isProfileFilled -chatRooms'
+    )
+    .exec();
+
+  if (!user) {
+    throw new HttpException(StatusCodes.NOT_FOUND, 'User not found');
+  }
+
+  return user.friendRequestsSent;
+};
+
+const sendFriendRequest = async (userId: string, friendId: string) => {
+  if (userId === friendId) {
+    throw new HttpException(
+      StatusCodes.BAD_REQUEST,
+      "Can't not add friend self"
+    );
+  }
   const friend = await User.findById(friendId);
-  if (!friend) {
+  const user = await User.findById(userId);
+  if (!friend || !user) {
     throw new HttpException(StatusCodes.NOT_FOUND, 'User not found');
   }
   if (friend.bans.find((banId) => banId.toString() === userId)) {
@@ -46,7 +68,8 @@ const addFriendRequestList = async (userId: string, friendId: string) => {
   if (friend.friendRequests.find((request) => request.toString() === userId))
     throw new HttpException(StatusCodes.BAD_REQUEST, 'Request has been sent');
   friend.friendRequests.push(userId);
-  await friend.save();
+  user.friendRequestsSent.push(friendId);
+  await Promise.all([friend.save(), user.save()]);
   await notificationService.newNotification(
     userId,
     friend._id,
@@ -88,6 +111,7 @@ const acceptRequest = async (userId: string, friendId: string) => {
     throw new HttpException(StatusCodes.NOT_FOUND, 'Request not be found');
   }
   user.friendRequests.pull(friendId);
+  friend.friendRequestsSent.pull(userId);
   user.friends.push(friendId);
   friend.friends.push(userId);
   const chatroom = await createPersonalChatRoom(userId, friendId);
@@ -98,7 +122,8 @@ const acceptRequest = async (userId: string, friendId: string) => {
 
 const deniedRequest = async (userId: string, friendId: string) => {
   const user = await User.findById(userId);
-  if (!user) {
+  const friend = await User.findById(friendId);
+  if (!user || !friend) {
     throw new HttpException(StatusCodes.NOT_FOUND, 'User not found');
   }
   const friendRequestIndex = user.friendRequests.findIndex(
@@ -108,7 +133,8 @@ const deniedRequest = async (userId: string, friendId: string) => {
     throw new HttpException(StatusCodes.BAD_REQUEST, 'Request not be found');
   }
   user.friendRequests.pull(friendId);
-  await user.save();
+  friend.friendRequestsSent.pull(userId);
+  await Promise.all([user.save(), friend.save()]);
 };
 
 const banUser = async (userId: string, bannedUserId: string) => {
@@ -125,6 +151,8 @@ const banUser = async (userId: string, bannedUserId: string) => {
   }
   bannedUser.friendRequests.pull(userId);
   user.friendRequests.pull(bannedUserId);
+  user.friendRequestsSent.pull(bannedUserId);
+  bannedUser.friendRequestsSent.pull(userId);
   user.bans.push(bannedUserId);
   await Promise.all([user.save(), bannedUser.save()]);
 };
@@ -158,13 +186,34 @@ const deletePersonalChatRoom = async (userId: string, friendId: string) => {
   });
 };
 
+const unsendFriendRequests = async (userId: string, friendId: string) => {
+  const user = await User.findById(userId);
+  const friend = await User.findById(friendId);
+  if (!user || !friend) {
+    throw new HttpException(StatusCodes.NOT_FOUND, 'user not found');
+  }
+  user.friendRequestsSent.pull(friendId);
+  friend.friendRequests.pull(userId);
+  await Promise.all([
+    user.save(),
+    friend.save(),
+    Notification.findOneAndDelete({
+      notificationSender: userId,
+      notificationReceiver: friendId,
+      notifyType: NotifyType.friendRequest,
+    }),
+  ]);
+};
+
 export default {
   getFriendList,
-  addFriendRequestList,
+  addFriendRequestList: sendFriendRequest,
   removeFriend,
   acceptRequest,
   deniedRequest,
   banUser,
   unbanUser,
   getFriendRequestList,
+  getFriendRequestSentList,
+  unsendFriendRequests,
 };

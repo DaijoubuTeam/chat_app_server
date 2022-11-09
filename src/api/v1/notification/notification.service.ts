@@ -7,7 +7,7 @@ import Notification, { NotifyType } from '../../../models/notification';
 
 const getNotification = async (userId: string) => {
   const notifications = await Notification.find({
-    userId,
+    notificationReceiver: userId,
   });
   return notifications;
 };

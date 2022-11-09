@@ -481,7 +481,7 @@
         "tags": [
           "Friend"
         ],
-        "summary": "Get user friends",
+        "summary": "Get user's friend requests",
         "security": [
           {
             "bearerAuth": []
@@ -489,7 +489,7 @@
         ],
         "responses": {
           "200": {
-            "description": "Get user friends list successful",
+            "description": "Get user's friend requests successful",
             "content": {
               "application/json": {
                 "schema": {
@@ -500,6 +500,9 @@
           },
           "400": {
             "description": "Invalid token"
+          },
+          "401": {
+            "description": "Unauthorized"
           },
           "404": {
             "description": "User not found"
@@ -591,6 +594,78 @@
           },
           "404": {
             "description": "Friend not found"
+          }
+        }
+      }
+    },
+    "/friend/friend-requests-sent": {
+      "get": {
+        "tags": [
+          "Friend"
+        ],
+        "summary": "Get user's sent friends requests",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Get user's sent friends requests successful",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/paths/~1friend/get/responses/200/content/application~1json/schema"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid token"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "404": {
+            "description": "User not found"
+          }
+        }
+      }
+    },
+    "/friend/friend-requests-sent/{id}": {
+      "delete": {
+        "tags": [
+          "Friend"
+        ],
+        "summary": "Unsend friends requests",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "description": "friend id",
+            "schema": {
+              "type": "string"
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Unsend friends requests successful"
+          },
+          "400": {
+            "description": "Invalid token"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "404": {
+            "description": "User not found"
           }
         }
       }

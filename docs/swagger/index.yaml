@@ -33,6 +33,10 @@ paths:
     $ref: './paths/friend/friend-requests.path.yaml'
   /friend/{id}:
     $ref: './paths/friend/id.path.yaml'
+  /friend/friend-requests-sent:
+    $ref: './paths/friend/friend-requests-sent.path.yaml'
+  /friend/friend-requests-sent/{id}:
+    $ref: './paths/friend/friend-requests-sent.id.path.yaml'
   /chat-room:
     $ref: './paths/chat/index.path.yaml'
   /chat-room/{chatRoomId}/accept:
