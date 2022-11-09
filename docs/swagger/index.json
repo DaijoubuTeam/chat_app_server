@@ -1166,7 +1166,14 @@
         ],
         "responses": {
           "200": {
-            "description": "Get successful"
+            "description": "Get successful",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/paths/~1chat-room/post/responses/201/content/application~1json/schema"
+                }
+              }
+            }
           },
           "401": {
             "description": "Unauthorized"
