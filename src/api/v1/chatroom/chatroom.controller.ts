@@ -89,7 +89,7 @@ const deleteChatRoom = async (
   }
 };
 
-const postAddMember = async (
+const sendChatRoomRequest = async (
   req: Request<{ chatRoomId: string; memberId: string }>,
   res: Response,
   next: NextFunction
@@ -100,7 +100,7 @@ const postAddMember = async (
     if (!user) {
       throw new HttpException(StatusCodes.UNAUTHORIZED, 'Unauthorized');
     }
-    await chatroomService.addMember(chatRoomId, memberId);
+    await chatroomService.sendChatRoomRequest(chatRoomId, user._id, memberId);
     res.status(StatusCodes.NO_CONTENT).end();
   } catch (error) {
     next(error);
@@ -125,11 +125,66 @@ const deleteRemoveMember = async (
   }
 };
 
+const acceptJoinChatRoom = async (
+  req: Request<{ chatRoomId: string }>,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const { chatRoomId } = req.params;
+    const user = req.user;
+    if (user == null) {
+      throw new HttpException(StatusCodes.NOT_FOUND, 'User not found');
+    }
+    await chatroomService.acceptJoinChatRoom(chatRoomId, user._id);
+    res.status(StatusCodes.OK).json('Join successful');
+  } catch (error) {
+    next(error);
+  }
+};
+const rejectJoinChatRoom = async (
+  req: Request<{ chatRoomId: string }>,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const { chatRoomId } = req.params;
+    const user = req.user;
+    if (user == null) {
+      throw new HttpException(StatusCodes.NOT_FOUND, 'User not found');
+    }
+    await chatroomService.rejectJoinChatRoom(chatRoomId, user._id);
+    res.status(StatusCodes.OK).json('Reject successful');
+  } catch (error) {
+    next(error);
+  }
+};
+
+const getChatRoomRequests = async (
+  req: Request<{ chatRoomId: string }>,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const user = req.user;
+    if (user == null) {
+      throw new HttpException(StatusCodes.NOT_FOUND, 'User not found');
+    }
+    const chatRooms = await chatroomService.getChatRoomRequests(user._id);
+    res.status(StatusCodes.OK).json({ chatRooms });
+  } catch (error) {
+    next(error);
+  }
+};
+
 export default {
   getUserChatRooms,
   postNewChatRoom,
   putChatRoom,
   deleteChatRoom,
-  postAddMember,
+  sendChatRoomRequest,
   deleteRemoveMember,
+  acceptJoinChatRoom,
+  rejectJoinChatRoom,
+  getChatRoomRequests,
 };

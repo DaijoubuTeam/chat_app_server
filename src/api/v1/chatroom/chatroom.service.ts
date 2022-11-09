@@ -1,11 +1,11 @@
 import { StatusCodes } from 'http-status-codes';
 import HttpException from '../../../exception';
-import User, { IUser } from '../../../models/user';
+import User from '../../../models/user';
 import ChatRoom, { CHAT_ROOM_TYPE, IChatRoom } from '../../../models/chat_room';
 import mongoose from 'mongoose';
-import Message, { IMessage } from '../../../models/message';
-import { io } from '../../..';
-import SocketUser from '../../../models/socket';
+import notificationService from '../notification/notification.service';
+import { NotifyType } from '../../../models/notification';
+import getRawChatRoom from '../../../common/getRawChatRoom';
 
 const getUserChatRooms = async (userId: string): Promise<IChatRoom[]> => {
   const user = await User.findById(userId).populate<{
@@ -71,25 +71,33 @@ const deleteChatRoom = async (chatRoomId: string) => {
   await Promise.all([...deleteMembers, ChatRoom.findByIdAndDelete(chatRoomId)]);
 };
 
-const addMember = async (chatRoomId: string, memberId: string) => {
+const sendChatRoomRequest = async (
+  chatRoomId: string,
+  senderId: string,
+  userId: string
+) => {
   const chatRoom = await ChatRoom.findById(chatRoomId);
-  const memberUser = await User.findById(memberId);
-  if (!chatRoom || !memberUser) {
+  const user = await User.findById(userId);
+  if (!chatRoom || !user) {
     throw new HttpException(
       StatusCodes.NOT_FOUND,
       'Chatroom or member not found'
     );
   }
   if (
-    chatRoom.members.find(
-      (member) => member.toString() === memberUser._id.toString()
-    )
+    chatRoom.members.find((member) => member.toString() === user._id.toString())
   ) {
     throw new HttpException(StatusCodes.CONFLICT, 'User has been in chat room');
   }
-  chatRoom.members.push(memberUser._id);
-  memberUser.chatRooms.push(chatRoom._id);
-  await Promise.all([chatRoom.save(), memberUser.save()]);
+  user.chatRoomRequests.push(chatRoom._id);
+  await user.save();
+  await notificationService.newNotification(
+    senderId,
+    userId,
+    NotifyType.chatRoomRequest,
+    chatRoom._id,
+    null
+  );
 };
 
 const removeMember = async (chatRoomId: string, memberId: string) => {
@@ -128,11 +136,74 @@ const removeMember = async (chatRoomId: string, memberId: string) => {
   await Promise.all([chatRoom.save(), memberUser.save()]);
 };
 
+const acceptJoinChatRoom = async (chatRoomId: string, userId: string) => {
+  const chatRoom = await ChatRoom.findById(chatRoomId);
+  const user = await User.findById(userId);
+  if (!chatRoom || !user) {
+    throw new HttpException(
+      StatusCodes.NOT_FOUND,
+      'User or chat room not found'
+    );
+  }
+  if (
+    user.chatRoomRequests.findIndex(
+      (request) => request.toString() === chatRoomId
+    ) === -1
+  ) {
+    throw new HttpException(
+      StatusCodes.BAD_REQUEST,
+      'User does not have the request'
+    );
+  }
+  user.chatRoomRequests.pull(chatRoomId);
+  user.chatRooms.push(chatRoomId);
+  chatRoom.members.push(userId);
+  return Promise.all([user.save(), chatRoom.save()]);
+};
+const rejectJoinChatRoom = async (chatRoomId: string, userId: string) => {
+  const chatRoom = await ChatRoom.findById(chatRoomId);
+  const user = await User.findById(userId);
+  if (!chatRoom || !user) {
+    throw new HttpException(
+      StatusCodes.NOT_FOUND,
+      'User or chat room not found'
+    );
+  }
+  if (
+    user.chatRoomRequests.findIndex(
+      (request) => request.toString() === chatRoomId
+    ) === -1
+  ) {
+    throw new HttpException(
+      StatusCodes.BAD_REQUEST,
+      'User does not have the request'
+    );
+  }
+  user.chatRoomRequests.pull(chatRoomId);
+
+  return Promise.all([user.save()]);
+};
+
+const getChatRoomRequests = async (userId: string) => {
+  const user = await User.findById(userId).populate<{
+    chatRoomRequests: IChatRoom[];
+  }>('chatRoomRequests');
+  if (!user) {
+    throw new HttpException(StatusCodes.NOT_FOUND, 'User not found');
+  }
+  return user.chatRoomRequests.map((request: IChatRoom) => {
+    return getRawChatRoom(request);
+  });
+};
+
 export default {
   getUserChatRooms,
   createNewChatRoom,
   updateChatRoom,
   deleteChatRoom,
-  addMember,
+  sendChatRoomRequest,
   removeMember,
+  acceptJoinChatRoom,
+  rejectJoinChatRoom,
+  getChatRoomRequests,
 };

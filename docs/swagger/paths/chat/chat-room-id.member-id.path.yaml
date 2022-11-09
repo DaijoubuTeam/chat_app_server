@@ -1,5 +1,5 @@
 post:
-  summary: Add member to group chat room
+  summary: Invite member to join group chat room
   tags:
     - Chatroom
   security:

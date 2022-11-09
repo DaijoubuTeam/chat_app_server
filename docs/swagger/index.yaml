@@ -35,10 +35,16 @@ paths:
     $ref: './paths/friend/id.path.yaml'
   /chat-room:
     $ref: './paths/chat/index.path.yaml'
+  /chat-room/{chatRoomId}/accept:
+    $ref: './paths/chat/chat-room-id.accept.yaml'
+  /chat-room/{chatRoomId}/reject:
+    $ref: './paths/chat/chat-room-id.reject.yaml'
   /chat-room/{chatRoomId}:
     $ref: './paths/chat/chat-room-id.path.yaml'
   /chat-room/{chatRoomId}/{memberId}:
     $ref: './paths/chat/chat-room-id.member-id.path.yaml'
+  /chat-room/chat-room-requests:
+    $ref: './paths/chat/chat-room-requests.yaml'
   /admin/user/{userId}:
     $ref: './paths/admin/user.path.yaml'
   /admin/user/seed:

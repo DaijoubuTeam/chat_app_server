@@ -708,6 +708,80 @@
         }
       }
     },
+    "/chat-room/{chatRoomId}/accept": {
+      "get": {
+        "summary": "Accept to join chat room",
+        "tags": [
+          "Chatroom"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "chatRoomId",
+            "schema": {
+              "type": "string"
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Join successful"
+          },
+          "400": {
+            "description": "User does not have the request"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "404": {
+            "description": "User or chat room not found"
+          }
+        }
+      }
+    },
+    "/chat-room/{chatRoomId}/reject": {
+      "get": {
+        "summary": "Reject to join chat room",
+        "tags": [
+          "Chatroom"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "chatRoomId",
+            "schema": {
+              "type": "string"
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Reject successful"
+          },
+          "400": {
+            "description": "User does not have the request"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "404": {
+            "description": "User or chat room not found"
+          }
+        }
+      }
+    },
     "/chat-room/{chatRoomId}": {
       "put": {
         "summary": "Update chat room",
@@ -802,7 +876,7 @@
     },
     "/chat-room/{chatRoomId}/{memberId}": {
       "post": {
-        "summary": "Add member to group chat room",
+        "summary": "Invite member to join group chat room",
         "tags": [
           "Chatroom"
         ],
@@ -890,6 +964,30 @@
           },
           "409": {
             "description": "User has been in chat room or User is admin"
+          }
+        }
+      }
+    },
+    "/chat-room/chat-room-requests": {
+      "get": {
+        "summary": "Get all chat room requests",
+        "tags": [
+          "Chatroom"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Get successful"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "404": {
+            "description": "User not found"
           }
         }
       }

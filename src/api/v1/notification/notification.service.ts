@@ -1,6 +1,9 @@
 import { StatusCodes } from 'http-status-codes';
+import mongoose from 'mongoose';
+import sendSocketToUser from '../../../common/sendSocketToUser';
+import constants from '../../../constants';
 import HttpException from '../../../exception';
-import Notification from '../../../models/notification';
+import Notification, { NotifyType } from '../../../models/notification';
 
 const getNotification = async (userId: string) => {
   const notifications = await Notification.find({
@@ -9,9 +12,31 @@ const getNotification = async (userId: string) => {
   return notifications;
 };
 
+const newNotification = async (
+  senderId: string,
+  receiverId: string,
+  notifyType: NotifyType,
+  chatRoom: mongoose.Types.ObjectId | null,
+  message: mongoose.Types.ObjectId | null
+) => {
+  const notification = new Notification({
+    notificationSender: senderId,
+    notificationReceiver: receiverId,
+    notifyType: notifyType,
+    chatRoom: chatRoom,
+    message: message,
+  });
+  await notification.save();
+  sendSocketToUser(
+    receiverId,
+    constants.socketEvents.NEW_NOTIFICATION,
+    notification.toJSON()
+  );
+};
+
 const removeNotification = async (userId: string, notificationId: string) => {
   const notification = await Notification.findById(notificationId);
-  if (notification?.userId !== userId) {
+  if (notification?.notificationReceiver !== userId) {
     throw new HttpException(
       StatusCodes.FORBIDDEN,
       'User does not have this notification'
@@ -20,20 +45,8 @@ const removeNotification = async (userId: string, notificationId: string) => {
   await notification.delete();
 };
 
-const updateNotification = async (
-  userId: string,
-  notificationId: string,
-  readed: boolean
-) => {
-  const notification = await Notification.findById(notificationId);
-  if (notification?.userId !== userId) {
-    throw new HttpException(
-      StatusCodes.FORBIDDEN,
-      'User does not have permission edit this notification'
-    );
-  }
-  notification.readed = readed;
-  await notification.save();
+export default {
+  getNotification,
+  removeNotification,
+  newNotification,
 };
-
-export default { getNotification, removeNotification, updateNotification };

@@ -1,0 +1,21 @@
+get:
+  summary: Reject to join chat room
+  tags:
+    - Chatroom
+  security:
+    - bearerAuth: []
+  parameters:
+    - in: path
+      name: chatRoomId
+      schema:
+        type: string
+      required: true
+  responses:
+    200:
+      description: Reject successful
+    400:
+      description: User does not have the request
+    401:
+      description: Unauthorized
+    404:
+      description: User or chat room not found

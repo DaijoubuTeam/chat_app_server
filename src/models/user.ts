@@ -14,6 +14,7 @@ interface IUser {
   isProfileFilled?: boolean;
   friends: mongoose.Types.Array<string>;
   friendRequests: mongoose.Types.Array<string>;
+  chatRoomRequests: mongoose.Types.Array<mongoose.Types.ObjectId>;
   bans: mongoose.Types.Array<string>;
   chatRooms: mongoose.Types.Array<mongoose.Types.ObjectId>;
 }
@@ -32,6 +33,7 @@ const userSchema = new Schema<IUser>(
     friends: [{ type: String, ref: 'User' }],
     friendRequests: [{ type: String, ref: 'User' }],
     bans: [{ type: String, ref: 'User' }],
+    chatRoomRequests: [{ type: mongoose.Types.ObjectId, ref: 'ChatRoom' }],
     chatRooms: [{ type: mongoose.Types.ObjectId, ref: 'ChatRoom' }],
   },
   { toJSON: { virtuals: true }, toObject: { virtuals: true } }

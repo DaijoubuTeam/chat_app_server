@@ -40,25 +40,4 @@ const deleteNotification = async (
   }
 };
 
-const putNotification = async (
-  req: Request<{ id: string }, unknown, unknown, { readed: boolean }>,
-  res: Response,
-  next: NextFunction
-) => {
-  try {
-    const { user } = req;
-    if (!user) {
-      throw new HttpException(StatusCodes.UNAUTHORIZED, 'Unauthorized');
-    }
-    const { id } = req.params;
-    const { readed } = req.query;
-    await notificationService.updateNotification(user._id, id, readed);
-    res.status(StatusCodes.OK).json({
-      message: 'Delete successful',
-    });
-  } catch (error) {
-    next(error);
-  }
-};
-
-export default { getNotifications, deleteNotification, putNotification };
+export default { getNotifications, deleteNotification };

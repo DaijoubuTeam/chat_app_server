@@ -1,9 +1,9 @@
 import { StatusCodes } from 'http-status-codes';
-import { io } from '../../..';
+import sendSocketToUser from '../../../common/sendSocketToUser';
 import HttpException from '../../../exception';
 import ChatRoom, { IChatRoom } from '../../../models/chat_room';
 import Message from '../../../models/message';
-import SocketUser from '../../../models/socket';
+import constants from '../../../constants';
 
 const sendMessage = async (
   userId: string,
@@ -20,15 +20,13 @@ const sendMessage = async (
     content,
   });
   await message.save();
-  const sendMessageSocket = chatRoom.members.map(async (member) => {
-    const memberSocketUsers = await SocketUser.find({
-      uid: member,
-    });
-    memberSocketUsers.forEach((socketUser) =>
-      io.to(socketUser._id).emit('new-message', message.toJSON())
+  chatRoom.members.forEach((member) => {
+    sendSocketToUser(
+      member,
+      constants.socketEvents.NEW_MESSAGE,
+      message.toJSON()
     );
   });
-  await Promise.all(sendMessageSocket);
 };
 
 const getChatRoomMessage = async (

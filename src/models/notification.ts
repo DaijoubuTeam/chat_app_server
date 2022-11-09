@@ -2,31 +2,47 @@ import mongoose, { mongo } from 'mongoose';
 
 enum NotifyType {
   mention = 'mention',
-  friendRequest = 'friend request',
-  groupInvitation = 'group invitation',
+  friendRequest = 'friend-request',
+  chatRoomRequest = 'chat-room-invitation',
 }
 
 interface INotification {
-  userId: string;
   notifyType: NotifyType;
   readed: boolean;
-  actionDoer: string;
-  actionTarget: string;
+  notificationSender: string;
+  notificationReceiver: string;
+  chatRoom?: mongoose.Types.ObjectId;
+  message?: mongoose.Types.ObjectId;
   createdAt: Date;
   updateAt: Date;
 }
 
 const notificationSchema = new mongoose.Schema<INotification>(
   {
-    userId: { type: String, ref: 'User', required: true },
     notifyType: { type: String, enum: NotifyType, required: true },
     readed: { type: Boolean, default: false },
-    actionDoer: {
+    notificationSender: {
       type: String,
       required: true,
       ref: 'User',
     },
-    actionTarget: { type: String, required: true },
+    notificationReceiver: {
+      type: String,
+      required: true,
+      ref: 'User',
+    },
+    chatRoom: {
+      type: mongoose.SchemaTypes.ObjectId,
+      required: false,
+      ref: 'ChatRoom',
+      default: null,
+    },
+    message: {
+      type: mongoose.SchemaTypes.ObjectId,
+      required: false,
+      ref: 'Message',
+      default: null,
+    },
   },
   { timestamps: true }
 );

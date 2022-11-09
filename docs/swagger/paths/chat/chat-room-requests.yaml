@@ -1,0 +1,13 @@
+get:
+  summary: Get all chat room requests
+  tags:
+    - Chatroom
+  security:
+    - bearerAuth: []
+  responses:
+    200:
+      description: Get successful
+    401:
+      description: Unauthorized
+    404:
+      description: User not found

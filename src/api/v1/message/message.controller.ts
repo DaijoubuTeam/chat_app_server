@@ -1,6 +1,5 @@
 import { Request, Response, NextFunction } from 'express';
 import { StatusCodes } from 'http-status-codes';
-import { nextTick } from 'process';
 import HttpException from '../../../exception';
 import messageService from './message.service';
 
