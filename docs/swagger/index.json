@@ -724,35 +724,7 @@
                             ]
                           },
                           "latestMessage": {
-                            "type": "object",
-                            "properties": {
-                              "chatRoomId": {
-                                "type": "string"
-                              },
-                              "from": {
-                                "$ref": "#/paths/~1user~1%7Bid%7D/get/responses/200/content/application~1json/schema"
-                              },
-                              "content": {
-                                "type": "string"
-                              },
-                              "readed": {
-                                "type": "array",
-                                "items": {
-                                  "type": "string"
-                                }
-                              },
-                              "id": {
-                                "type": "string"
-                              },
-                              "createdAt": {
-                                "type": "string",
-                                "format": "date-time"
-                              },
-                              "updatedAt": {
-                                "type": "string",
-                                "format": "date-time"
-                              }
-                            }
+                            "$ref": "#/paths/~1message~1chat-room~1%7BchatRoomId%7D/get/responses/200/content/application~1json/schema/items"
                           }
                         }
                       }
@@ -1244,31 +1216,31 @@
                   "items": {
                     "type": "object",
                     "properties": {
-                      "id": {
-                        "type": "string",
-                        "description": "message id"
-                      },
                       "chatRoomId": {
-                        "type": "string",
-                        "description": "chat room id"
+                        "type": "string"
                       },
                       "from": {
-                        "type": "string",
-                        "description": "sender id"
+                        "$ref": "#/paths/~1user~1%7Bid%7D/get/responses/200/content/application~1json/schema"
                       },
                       "content": {
-                        "type": "string",
-                        "description": "message content"
+                        "type": "string"
+                      },
+                      "readed": {
+                        "type": "array",
+                        "items": {
+                          "$ref": "#/paths/~1user~1%7Bid%7D/get/responses/200/content/application~1json/schema"
+                        }
+                      },
+                      "id": {
+                        "type": "string"
                       },
                       "createdAt": {
                         "type": "string",
-                        "format": "date-time",
-                        "description": "message send time"
+                        "format": "date-time"
                       },
                       "updatedAt": {
                         "type": "string",
-                        "format": "date-time",
-                        "description": "message update time"
+                        "format": "date-time"
                       }
                     }
                   }

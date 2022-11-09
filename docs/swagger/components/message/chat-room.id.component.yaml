@@ -7,26 +7,5 @@ schemas:
   GetResponse:
     type: array
     items:
-      type: object
-      properties:
-        id:
-          type: string
-          description: message id
-        chatRoomId:
-          type: string
-          description: chat room id
-        from:
-          type: string
-          description: sender id
-        content:
-          type: string
-          description: message content
-        createdAt: 
-          type: string
-          format: date-time
-          description: message send time
-        updatedAt:
-          type: string
-          format: date-time
-          description: message update time
+      $ref: '../models/message.component.yaml#/schemas/MessageWithFromAndReaded'
         

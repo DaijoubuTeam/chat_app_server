@@ -48,4 +48,4 @@ schemas:
           - personal
           - group
       latestMessage:
-        $ref: './message.component.yaml#/schemas/MessageWithFrom'
+        $ref: './message.component.yaml#/schemas/MessageWithFromAndReaded'
