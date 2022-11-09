@@ -26,7 +26,6 @@ const chatRoomSchema = new Schema<IChatRoom>({
   type: { type: String, enum: [CHAT_ROOM_TYPE.group, CHAT_ROOM_TYPE.personal] },
   latestMessage: {
     type: mongoose.SchemaTypes.ObjectId,
-    required: true,
     ref: 'Message',
   },
 });
