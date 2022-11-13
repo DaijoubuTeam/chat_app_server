@@ -67,6 +67,9 @@ const sendFriendRequest = async (userId: string, friendId: string) => {
   }
   if (friend.friendRequests.find((request) => request.toString() === userId))
     throw new HttpException(StatusCodes.BAD_REQUEST, 'Request has been sent');
+  if (user.friends.find((friend) => friend === friendId)) {
+    throw new HttpException(StatusCodes.BAD_REQUEST, 'Have been friend');
+  }
   friend.friendRequests.push(userId);
   user.friendRequestsSent.push(friendId);
   await Promise.all([friend.save(), user.save()]);
@@ -117,7 +120,12 @@ const acceptRequest = async (userId: string, friendId: string) => {
   const chatroom = await createPersonalChatRoom(userId, friendId);
   user.chatRooms.push(chatroom.id);
   friend.chatRooms.push(chatroom.id);
-  await Promise.all([user.save(), friend.save()]);
+  const deleteNotification = Notification.findOneAndDelete({
+    notifyType: NotifyType.friendRequest,
+    notificationReceiver: userId,
+    notificationSender: friendId,
+  });
+  await Promise.all([user.save(), friend.save(), deleteNotification]);
 };
 
 const deniedRequest = async (userId: string, friendId: string) => {
@@ -134,7 +142,12 @@ const deniedRequest = async (userId: string, friendId: string) => {
   }
   user.friendRequests.pull(friendId);
   friend.friendRequestsSent.pull(userId);
-  await Promise.all([user.save(), friend.save()]);
+  const deleteNotification = Notification.findOneAndDelete({
+    notifyType: NotifyType.friendRequest,
+    notificationReceiver: userId,
+    notificationSender: friendId,
+  });
+  await Promise.all([user.save(), friend.save(), deleteNotification]);
 };
 
 const banUser = async (userId: string, bannedUserId: string) => {
@@ -154,7 +167,12 @@ const banUser = async (userId: string, bannedUserId: string) => {
   user.friendRequestsSent.pull(bannedUserId);
   bannedUser.friendRequestsSent.pull(userId);
   user.bans.push(bannedUserId);
-  await Promise.all([user.save(), bannedUser.save()]);
+  const deleteNotification = Notification.findOneAndDelete({
+    notifyType: NotifyType.friendRequest,
+    notificationReceiver: userId,
+    notificationSender: bannedUserId,
+  });
+  await Promise.all([user.save(), bannedUser.save(), deleteNotification]);
 };
 
 const unbanUser = async (userId: string, bannedUserId: string) => {
