@@ -692,41 +692,7 @@
                     "chatRooms": {
                       "type": "array",
                       "items": {
-                        "type": "object",
-                        "properties": {
-                          "chatRoomId": {
-                            "type": "string"
-                          },
-                          "chatRoomName": {
-                            "type": "string"
-                          },
-                          "chatRoomAvatar": {
-                            "type": "string"
-                          },
-                          "members": {
-                            "type": "array",
-                            "items": {
-                              "type": "string"
-                            }
-                          },
-                          "admin": {
-                            "type": "array",
-                            "items": {
-                              "description": "User id",
-                              "type": "string"
-                            }
-                          },
-                          "type": {
-                            "type": "string",
-                            "enum": [
-                              "personal",
-                              "group"
-                            ]
-                          },
-                          "latestMessage": {
-                            "$ref": "#/paths/~1message~1chat-room~1%7BchatRoomId%7D/get/responses/200/content/application~1json/schema/items"
-                          }
-                        }
+                        "$ref": "#/paths/~1chat-room~1%7BchatRoomId%7D/get/responses/200/content/application~1json/schema"
                       }
                     }
                   }
