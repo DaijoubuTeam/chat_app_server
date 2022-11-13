@@ -34,10 +34,13 @@ const newNotification = async (
     message: message,
   });
   await notification.save();
+  const populatedNotification = await notification.populate({
+    path: 'notificationSender notificationReceiver chatRoom message',
+  });
   await sendSocketToUser(
     receiverId,
     constants.socketEvents.NEW_NOTIFICATION,
-    notification.toJSON()
+    getRawNotification(populatedNotification)
   );
 };
 

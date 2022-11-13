@@ -135,3 +135,5 @@ serviceAccountKey.json
 sendgrid.env
 
 .env*
+
+docker-compose.yml
