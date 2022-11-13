@@ -1,30 +1,42 @@
 import { StatusCodes } from 'http-status-codes';
 import HttpException from '../../../exception';
-import User from '../../../models/user';
+import User, { IUser } from '../../../models/user';
 import ChatRoom, { CHAT_ROOM_TYPE, IChatRoom } from '../../../models/chat_room';
 import mongoose from 'mongoose';
 import notificationService from '../notification/notification.service';
 import { NotifyType } from '../../../models/notification';
 import getRawChatRoom from '../../../common/getRawChatRoom';
-import { IMessage } from '../../../models/message';
 
-const getUserChatRooms = async (userId: string): Promise<IChatRoom[]> => {
-  const user = await User.findById(userId).populate<{
-    chatRooms: IChatRoom[];
-  }>({
+const getUserChatRooms = async (userId: string) => {
+  const user = await User.findById(userId).populate({
     path: 'chatRooms',
-    populate: {
-      path: 'latestMessage',
-      populate: {
-        path: 'from readed',
+    populate: [
+      {
+        path: 'latestMessage',
+        populate: {
+          path: 'from readed',
+        },
       },
-    },
+      {
+        path: 'members',
+      },
+    ],
   });
 
   if (!user) {
     throw new HttpException(StatusCodes.NOT_FOUND, 'User not found');
   }
-  return user.chatRooms;
+  return user.chatRooms.map((chatRoom) => {
+    const rawChatRoom = getRawChatRoom(chatRoom as unknown as IChatRoom);
+    if (rawChatRoom.type === CHAT_ROOM_TYPE.personal) {
+      const friend = rawChatRoom.members.find((member) => {
+        return (member as any).uid !== userId;
+      }) as unknown as IUser;
+      rawChatRoom.chatRoomAvatar = friend.avatar;
+      rawChatRoom.chatRoomName = friend.fullname;
+    }
+    return rawChatRoom;
+  });
 };
 
 const createNewChatRoom = async (

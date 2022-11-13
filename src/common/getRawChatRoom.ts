@@ -6,16 +6,6 @@ import getRawMessage from './getRawMessage';
 import getRawUser from './getRawUser';
 
 const getRawChatRoom = (chatroom: IChatRoom) => {
-  if (!chatroom.latestMessage) {
-    return {
-      chatRoomName: chatroom.chatRoomName,
-      chatRoomAvatar: chatroom.chatRoomAvatar,
-      members: chatroom.members,
-      admin: chatroom.admin,
-      type: chatroom.type,
-      chatRoomId: chatroom._id,
-    };
-  }
   const members = chatroom.members.map((member) => {
     if (typeof member == 'string' || member instanceof String) {
       return member;
@@ -23,6 +13,16 @@ const getRawChatRoom = (chatroom: IChatRoom) => {
       return getRawUser(member as unknown as IUser);
     }
   });
+  if (!chatroom.latestMessage) {
+    return {
+      chatRoomName: chatroom.chatRoomName,
+      chatRoomAvatar: chatroom.chatRoomAvatar,
+      members: members,
+      admin: chatroom.admin,
+      type: chatroom.type,
+      chatRoomId: chatroom._id,
+    };
+  }
   const rawChatRoom = {
     chatRoomName: chatroom.chatRoomName,
     chatRoomAvatar: chatroom.chatRoomAvatar,
