@@ -12,7 +12,6 @@ services:
      - chat_app_server
     depends_on:
       - server
-    command: [nginx-debug, '-g', 'daemon off;']
   server:
     build: 
       dockerfile: Dockerfile.server
@@ -29,11 +28,11 @@ services:
     networks:
       - chat_app_server
     restart: always
-    environment:
-      MONGO_INITDB_ROOT_USERNAME: root
-      MONGO_INITDB_ROOT_PASSWORD: example
+    env_file:
+      - .env
     volumes:
       - ./docker/mongo/:/mongo/:ro
+      - ./mongo/data/db:/data/db:rw
     healthcheck:
       test: echo 'db.runCommand("ping").ok' | mongo localhost:27017/test --quiet
       interval: 5s
@@ -45,10 +44,8 @@ services:
     image: mongo-express
     ports:
       - 8081:8081
-    environment:
-      ME_CONFIG_MONGODB_ADMINUSERNAME: root
-      ME_CONFIG_MONGODB_ADMINPASSWORD: example
-      ME_CONFIG_MONGODB_URL: mongodb://root:example@mongodb:27017/
+    env_file:
+      - .env
     networks:
       - chat_app_server
     depends_on:
