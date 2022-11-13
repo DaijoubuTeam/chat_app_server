@@ -1,15 +1,22 @@
 import { StatusCodes } from 'http-status-codes';
 import mongoose from 'mongoose';
+import getRawNotification from '../../../common/getRawNotification';
 import sendSocketToUser from '../../../common/sendSocketToUser';
 import constants from '../../../constants';
 import HttpException from '../../../exception';
 import Notification, { NotifyType } from '../../../models/notification';
 
 const getNotification = async (userId: string) => {
+  console.log(userId);
   const notifications = await Notification.find({
     notificationReceiver: userId,
+  }).populate({
+    path: 'notificationSender notificationReceiver chatRoom message',
   });
-  return notifications;
+  const notificationDTOs = notifications.map((notification) =>
+    getRawNotification(notification)
+  );
+  return notificationDTOs;
 };
 
 const newNotification = async (
@@ -27,11 +34,26 @@ const newNotification = async (
     message: message,
   });
   await notification.save();
-  sendSocketToUser(
+  await sendSocketToUser(
     receiverId,
     constants.socketEvents.NEW_NOTIFICATION,
     notification.toJSON()
   );
+};
+
+const putToggleNotificationAsRead = async (
+  userId: string,
+  notificationId: string
+) => {
+  const notification = await Notification.findById(notificationId);
+  if (notification?.notificationReceiver !== userId) {
+    throw new HttpException(
+      StatusCodes.FORBIDDEN,
+      'User does not have this notification'
+    );
+  }
+  notification.readed = !notification.readed;
+  await notification.save();
 };
 
 const removeNotification = async (userId: string, notificationId: string) => {
@@ -49,4 +71,5 @@ export default {
   getNotification,
   removeNotification,
   newNotification,
+  putToggleNotificationAsRead,
 };

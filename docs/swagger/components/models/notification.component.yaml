@@ -1,0 +1,20 @@
+schemas:
+  NotificationFullPopulated:
+    type: object
+    properties:
+      notifiType:
+        type: string
+        enum:
+          - mention
+          - friend-request
+          - chat-room-invitation
+      readed::
+        type: boolean
+      notificationSender:
+        $ref: '../models/user.component.yaml#/schemas/user'
+      notificationReceiver:
+        $ref: '../models/user.component.yaml#/schemas/user'
+      chatRoom:
+        $ref: '../models/chat-room.component.yaml#/schemas/ChatRoom'
+      message:
+        $ref: '../models/message.component.yaml#/schemas/message'

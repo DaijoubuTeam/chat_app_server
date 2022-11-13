@@ -1,0 +1,21 @@
+get:
+  tags:
+    - "Notification"
+  summary: Get user notifications
+  security:
+    - bearerAuth: []
+  responses:
+    200: 
+      description: Get notification successful
+      content:
+        application/json:
+          schema:
+            $ref: '../../components/models/notification.component.yaml#/schemas/NotificationFullPopulated'
+    401:
+      description: Unauthorized
+
+
+    
+    
+
+  

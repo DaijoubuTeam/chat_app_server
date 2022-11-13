@@ -1391,6 +1391,147 @@
           }
         }
       }
+    },
+    "/notification": {
+      "get": {
+        "tags": [
+          "Notification"
+        ],
+        "summary": "Get user notifications",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Get notification successful",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "notifiType": {
+                      "type": "string",
+                      "enum": [
+                        "mention",
+                        "friend-request",
+                        "chat-room-invitation"
+                      ]
+                    },
+                    "readed:": {
+                      "type": "boolean"
+                    },
+                    "notificationSender": {
+                      "$ref": "#/paths/~1user~1%7Bid%7D/get/responses/200/content/application~1json/schema"
+                    },
+                    "notificationReceiver": {
+                      "$ref": "#/paths/~1user~1%7Bid%7D/get/responses/200/content/application~1json/schema"
+                    },
+                    "chatRoom": {
+                      "$ref": "#/paths/~1chat-room/post/responses/201/content/application~1json/schema"
+                    },
+                    "message": {
+                      "type": "object",
+                      "properties": {
+                        "chatRoomId": {
+                          "type": "string"
+                        },
+                        "from": {
+                          "type": "string"
+                        },
+                        "content": {
+                          "type": "string"
+                        },
+                        "readed": {
+                          "type": "array",
+                          "items": {
+                            "type": "string"
+                          }
+                        },
+                        "id": {
+                          "type": "string"
+                        },
+                        "createdAt": {
+                          "type": "string",
+                          "format": "date-time"
+                        },
+                        "updatedAt": {
+                          "type": "string",
+                          "format": "date-time"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          }
+        }
+      }
+    },
+    "/notification/{notificationId}": {
+      "put": {
+        "tags": [
+          "Notification"
+        ],
+        "summary": "Toggle notification as read (true to false and false to true)",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "notificationId",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Toggle successful"
+          },
+          "403": {
+            "description": "User does not have this notification"
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Notification"
+        ],
+        "summary": "Delete user notification",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "notificationId",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Delete successful"
+          },
+          "403": {
+            "description": "User does not have this notification"
+          }
+        }
+      }
     }
   }
 }

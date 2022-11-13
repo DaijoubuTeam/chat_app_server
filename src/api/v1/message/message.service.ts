@@ -24,22 +24,25 @@ const sendMessage = async (
   const messageDoc = await message.save();
   chatRoom.latestMessage = messageDoc._id;
   await chatRoom.save();
+  const populatedMessage = await messageDoc.populate({
+    path: 'from readed',
+  });
   chatRoom.members.forEach((member) => {
     if (typeof member == 'string' || member instanceof String) {
       sendSocketToUser(
         member as string,
         constants.socketEvents.NEW_MESSAGE,
-        getRawMessage(message)
+        getRawMessage(populatedMessage)
       );
     } else {
       sendSocketToUser(
         (member as IUser)._id,
         constants.socketEvents.NEW_MESSAGE,
-        getRawMessage(message)
+        getRawMessage(populatedMessage)
       );
     }
   });
-  return getRawMessage(messageDoc);
+  return getRawMessage(populatedMessage);
 };
 
 const getChatRoomMessage = async (

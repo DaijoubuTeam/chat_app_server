@@ -1,0 +1,36 @@
+put:
+  tags:
+    - "Notification"
+  summary: Toggle notification as read (true to false and false to true)
+  security:
+    - bearerAuth: []
+  parameters:
+    - in: path
+      name: notificationId
+      required: true
+      schema:
+        type: string
+  responses:
+    200:
+      description: Toggle successful
+    403:
+      description: User does not have this notification
+  
+delete:
+  tags:
+    - "Notification"
+  summary: Delete user notification
+  security:
+    - bearerAuth: []
+  parameters:
+    - in: path
+      name: notificationId
+      required: true
+      schema:
+        type: string
+  responses:
+    200:
+      description: Delete successful
+    403:
+      description: User does not have this notification
+  
