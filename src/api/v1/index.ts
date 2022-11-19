@@ -8,6 +8,7 @@ import adminRouter from './admin';
 import dotenv from 'dotenv';
 import messageRouter from './message';
 import notificationRouter from './notification';
+import searchRouter from './search';
 
 dotenv.config();
 
@@ -19,6 +20,7 @@ router.use('/friend', authenticate, friendRouter);
 router.use('/chat-room', authenticate, chatRoomRouter);
 router.use('/message', authenticate, messageRouter);
 router.use('/notification', authenticate, notificationRouter);
+router.use('/search', authenticate, searchRouter);
 
 if (process.env.ENVIRONMENT === 'DEV') {
   router.use('/admin', adminRouter);

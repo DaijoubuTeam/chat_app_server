@@ -51,7 +51,8 @@ const createUser = async (
   avatar: string | undefined,
   phone: string | undefined,
   email: string | undefined,
-  isEmailVerified: boolean | undefined
+  isEmailVerified: boolean | undefined,
+  fullname: string | undefined
 ) => {
   if (avatar === undefined) {
     avatar = '';
@@ -65,6 +66,9 @@ const createUser = async (
   if (isEmailVerified === undefined) {
     isEmailVerified = false;
   }
+  if (fullname === undefined) {
+    fullname = '';
+  }
   if (!isLink(avatar)) {
     throw new HttpException(StatusCodes.BAD_REQUEST, 'Invalid avatar');
   }
@@ -74,7 +78,14 @@ const createUser = async (
   if (!isEmail(email)) {
     throw new HttpException(StatusCodes.BAD_REQUEST, 'Invalid email address');
   }
-  const user = new User({ _id: uid, avatar, phone, email, isEmailVerified });
+  const user = new User({
+    _id: uid,
+    avatar,
+    phone,
+    email,
+    isEmailVerified,
+    fullname,
+  });
   return user.save();
 };
 

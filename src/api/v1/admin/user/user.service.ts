@@ -4,6 +4,7 @@ import { StatusCodes } from 'http-status-codes';
 import HttpException from '../../../../exception';
 import User, { IUser } from '../../../../models/user';
 import authService from '../../auth/auth.service';
+import names from './name.json';
 
 const deleteUser = async (id: string) => {
   await User.findByIdAndDelete(id);
@@ -19,14 +20,14 @@ const createUser = async (
 ) => {
   for (let i = 0; i < nums; i++) {
     const email = `${prefix}${i}@${suffix}`;
-    console.log(email);
     const userRC = await createFirebaseUser(email, password, photoUrl);
     await authService.createUser(
       userRC.uid,
       userRC.photoURL,
       undefined,
       email,
-      true
+      true,
+      getRandomName()
     );
   }
 };
@@ -41,6 +42,11 @@ const createFirebaseUser = async (
     password,
     photoURL: photoUrl,
   });
+};
+
+const getRandomName = () => {
+  const index = Math.floor(Math.random() * names.length);
+  return names[index].name;
 };
 
 export default {

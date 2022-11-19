@@ -15,7 +15,8 @@ const verifyUser = async (req: Request, res: Response, next: NextFunction) => {
         decodedToken.picture,
         decodedToken.phone_number,
         decodedToken.email,
-        decodedToken.email_verified
+        decodedToken.email_verified,
+        undefined
       );
       return res.status(StatusCodes.CREATED).json({
         user: {

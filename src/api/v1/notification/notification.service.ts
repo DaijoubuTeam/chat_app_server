@@ -7,7 +7,6 @@ import HttpException from '../../../exception';
 import Notification, { NotifyType } from '../../../models/notification';
 
 const getNotification = async (userId: string) => {
-  console.log(userId);
   const notifications = await Notification.find({
     notificationReceiver: userId,
   }).populate({
