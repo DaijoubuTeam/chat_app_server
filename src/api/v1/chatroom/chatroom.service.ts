@@ -236,7 +236,15 @@ const getChatRoom = async (chatRoomId: string, userId: string) => {
   if (!chatRoom) {
     throw new HttpException(StatusCodes.NOT_FOUND, 'chat room not found');
   }
-  return chatRoom;
+  const rawChatRoom = getRawChatRoom(chatRoom);
+  if (rawChatRoom.type === CHAT_ROOM_TYPE.personal) {
+    const friend = rawChatRoom.members.find((member) => {
+      return (member as any).uid !== userId;
+    }) as unknown as IUser;
+    rawChatRoom.chatRoomAvatar = friend.avatar;
+    rawChatRoom.chatRoomName = friend.fullname;
+  }
+  return rawChatRoom;
 };
 
 export default {

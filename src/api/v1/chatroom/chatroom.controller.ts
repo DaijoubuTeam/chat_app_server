@@ -187,7 +187,7 @@ const getChatRoom = async (
       throw new HttpException(StatusCodes.NOT_FOUND, 'User not found');
     }
     const chatRoom = await chatroomService.getChatRoom(chatRoomId, user._id);
-    res.status(StatusCodes.OK).json(getRawChatRoom(chatRoom));
+    res.status(StatusCodes.OK).json(chatRoom);
   } catch (error) {
     next(error);
   }
