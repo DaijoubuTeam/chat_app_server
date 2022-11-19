@@ -29,6 +29,12 @@ post:
           properties:
             chatRoomName:
               type: string
+            chatRoomAvatar:
+              type: string
+            members:
+              type: array
+              items:
+                type: string
   responses:
     201:
       description: Create successful

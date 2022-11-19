@@ -3,6 +3,7 @@ import { StatusCodes } from 'http-status-codes';
 import chatroomService from './chatroom.service';
 import HttpException from '../../../exception';
 import getRawChatRoom from '../../../common/getRawChatRoom';
+import isLink from '../../../validator/is_link';
 
 const getUserChatRooms = async (
   req: Request,
@@ -22,19 +23,36 @@ const getUserChatRooms = async (
 };
 
 const postNewChatRoom = async (
-  req: Request<unknown, unknown, { chatRoomName: string }>,
+  req: Request<
+    unknown,
+    unknown,
+    { chatRoomName: string; chatRoomAvatar: string; members: string[] }
+  >,
   res: Response,
   next: NextFunction
 ) => {
   try {
     const user = req.user;
-    const { chatRoomName } = req.body;
+    const { chatRoomName, chatRoomAvatar, members } = req.body;
     if (!user) {
       throw new HttpException(StatusCodes.UNAUTHORIZED, 'Unauthorized');
     }
     const chatRoom = await chatroomService.createNewChatRoom(
       chatRoomName,
+      chatRoomAvatar,
       user._id
+    );
+    await Promise.all(
+      members.map(async (member) => {
+        if (member == user._id) {
+          return;
+        }
+        await chatroomService.sendChatRoomRequest(
+          chatRoom._id.toString(),
+          user._id,
+          member
+        );
+      })
     );
     res.status(StatusCodes.CREATED).json(getRawChatRoom(chatRoom));
   } catch (error) {

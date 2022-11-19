@@ -41,6 +41,7 @@ const getUserChatRooms = async (userId: string) => {
 
 const createNewChatRoom = async (
   chatRoomName: string,
+  chatRoomAvatar: string,
   userId: string
 ): Promise<IChatRoom> => {
   const chatRoom = new ChatRoom({
@@ -48,6 +49,7 @@ const createNewChatRoom = async (
     admin: [userId],
     members: [userId],
     type: CHAT_ROOM_TYPE.group,
+    chatRoomAvatar,
   });
   const user = await User.findById(userId);
   if (!user) {
