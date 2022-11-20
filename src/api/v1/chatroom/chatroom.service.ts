@@ -83,16 +83,20 @@ const deleteChatRoom = async (chatRoomId: string) => {
   }
   const deleteMembers = chatRoom.members.map(async (member) => {
     const memberUser = await User.findById(member);
-    if (memberUser) {
-      memberUser.chatRooms = new mongoose.Types.Array(
-        ...memberUser.chatRooms.filter(
-          (chatRoom) => chatRoom.toString() !== chatRoomId
-        )
-      );
-    }
+    await memberUser?.chatRooms.pull(chatRoom);
     return memberUser?.save();
   });
-  await Promise.all([...deleteMembers, ChatRoom.findByIdAndDelete(chatRoomId)]);
+
+  const users = await User.find({ chatRooms: chatRoomId });
+  const removeRequest = users.map(async (user) => {
+    await user.chatRoomRequests.pull(chatRoomId);
+    await user.save();
+  });
+  await Promise.all([
+    ...deleteMembers,
+    ChatRoom.findByIdAndDelete(chatRoomId),
+    removeRequest,
+  ]);
 };
 
 const sendChatRoomRequest = async (

@@ -34,6 +34,7 @@ const seedUser = async (
   try {
     const { password, prefix, nums, suffix, photo } = req.body;
     await userService.createUser(password, prefix, suffix, nums, photo);
+
     res.status(StatusCodes.OK).json('Seed successful');
   } catch (error) {
     next(error);
