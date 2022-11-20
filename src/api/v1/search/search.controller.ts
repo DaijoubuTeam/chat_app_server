@@ -22,6 +22,26 @@ const searchUser = async (
   }
 };
 
+const searchChatRoom = async (
+  req: Request<unknown, unknown, unknown, { q: string }>,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const { q } = req.query;
+    const user = req.user;
+    if (!user) {
+      throw new HttpException(StatusCodes.UNAUTHORIZED, 'Unauthorized');
+    }
+    const chatRoomIds = await searchService.searchChatRoom(q, user._id);
+    const filteredChatRoom = await searchService.filterChatRoom(chatRoomIds);
+    res.status(StatusCodes.OK).json(filteredChatRoom);
+  } catch (error) {
+    next(error);
+  }
+};
+
 export default {
   searchUser,
+  searchChatRoom,
 };

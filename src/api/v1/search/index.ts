@@ -4,4 +4,5 @@ import controller from './search.controller';
 const router = Router();
 
 router.get('/user', controller.searchUser);
+router.get('/chatroom', controller.searchChatRoom);
 export default router;
