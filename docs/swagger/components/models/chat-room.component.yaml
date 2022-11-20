@@ -74,3 +74,28 @@ schemas:
           - group
       latestMessage:
         $ref: './message.component.yaml#/schemas/MessageWithFromAndReaded'
+  ChatRoomWithLatestMessageWithFrom-Members:
+    type: object
+    properties:
+      chatRoomId:
+        type: string
+      chatRoomName:
+        type: string
+      chatRoomAvatar:
+        type: string
+      members:
+        type: array
+        items:
+          $ref: './user.component.yaml#/schemas/user'
+      admin:
+        type: array
+        items:
+          description: User id
+          type: string
+      type:
+        type: string
+        enum:
+          - personal
+          - group
+      latestMessage:
+        $ref: './message.component.yaml#/schemas/MessageWithFromAndReaded'

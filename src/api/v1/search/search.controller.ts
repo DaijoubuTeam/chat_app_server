@@ -41,7 +41,71 @@ const searchChatRoom = async (
   }
 };
 
+const searchMessage = async (
+  req: Request<unknown, unknown, unknown, { q: string }>,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const { q } = req.query;
+    const user = req.user;
+    if (!user) {
+      throw new HttpException(StatusCodes.UNAUTHORIZED, 'Unauthorized');
+    }
+    const messageIds = await searchService.searchMessages(
+      q,
+      user.chatRooms.map((chatroom) => chatroom.toString())
+    );
+    const filteredMessages = await searchService.filterMessage(
+      messageIds,
+      user._id
+    );
+    res.status(StatusCodes.OK).json(filteredMessages);
+  } catch (error) {
+    next(error);
+  }
+};
+
+const search = async (
+  req: Request<unknown, unknown, unknown, { q: string }>,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const { q } = req.query;
+    const user = req.user;
+    if (!user) {
+      throw new HttpException(StatusCodes.UNAUTHORIZED, 'Unauthorized');
+    }
+    // Search user
+    const userIds = await searchService.searchUsers(q, user.friends);
+    const filteredUser = await searchService.filterUserFriend(userIds);
+    // Seach chat room
+    const chatRoomIds = await searchService.searchChatRoom(q, user._id);
+    const filteredChatRoom = await searchService.filterChatRoom(chatRoomIds);
+    // Search message
+    const messageIds = await searchService.searchMessages(
+      q,
+      user.chatRooms.map((chatroom) => chatroom.toString())
+    );
+    const filteredMessages = await searchService.filterMessage(
+      messageIds,
+      user._id
+    );
+    // Return
+    res.status(StatusCodes.OK).json({
+      users: filteredUser,
+      chatRooms: filteredChatRoom,
+      messages: filteredMessages,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
 export default {
   searchUser,
   searchChatRoom,
+  searchMessage,
+  search,
 };

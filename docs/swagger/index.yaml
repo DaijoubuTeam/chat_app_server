@@ -59,3 +59,5 @@ paths:
     $ref: './paths/notification/index.path.yaml'
   /notification/{notificationId}:
     $ref: './paths/notification/id.path.yaml'
+  /search:
+    $ref: './paths/search/index.path.yaml'

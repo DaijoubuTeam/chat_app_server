@@ -747,41 +747,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "object",
-                  "properties": {
-                    "chatRoomId": {
-                      "type": "string"
-                    },
-                    "chatRoomName": {
-                      "type": "string"
-                    },
-                    "chatRoomAvatar": {
-                      "type": "string"
-                    },
-                    "members": {
-                      "type": "array",
-                      "items": {
-                        "type": "string"
-                      }
-                    },
-                    "admin": {
-                      "type": "array",
-                      "items": {
-                        "description": "User id",
-                        "type": "string"
-                      }
-                    },
-                    "type": {
-                      "type": "string",
-                      "enum": [
-                        "personal",
-                        "group"
-                      ]
-                    },
-                    "latestMessage": {
-                      "type": "string"
-                    }
-                  }
+                  "$ref": "#/paths/~1search/post/responses/201/content/application~1json/schema"
                 }
               }
             }
@@ -928,7 +894,7 @@
                       ]
                     },
                     "latestMessage": {
-                      "$ref": "#/paths/~1message~1chat-room~1%7BchatRoomId%7D/get/responses/200/content/application~1json/schema/items"
+                      "$ref": "#/paths/~1search/get/responses/200/content/application~1json/schema/properties/messages/items/allOf/0"
                     }
                   }
                 }
@@ -1145,7 +1111,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/paths/~1chat-room/post/responses/201/content/application~1json/schema"
+                  "$ref": "#/paths/~1search/post/responses/201/content/application~1json/schema"
                 }
               }
             }
@@ -1269,35 +1235,7 @@
                 "schema": {
                   "type": "array",
                   "items": {
-                    "type": "object",
-                    "properties": {
-                      "chatRoomId": {
-                        "type": "string"
-                      },
-                      "from": {
-                        "$ref": "#/paths/~1user~1%7Bid%7D/get/responses/200/content/application~1json/schema"
-                      },
-                      "content": {
-                        "type": "string"
-                      },
-                      "readed": {
-                        "type": "array",
-                        "items": {
-                          "$ref": "#/paths/~1user~1%7Bid%7D/get/responses/200/content/application~1json/schema"
-                        }
-                      },
-                      "id": {
-                        "type": "string"
-                      },
-                      "createdAt": {
-                        "type": "string",
-                        "format": "date-time"
-                      },
-                      "updatedAt": {
-                        "type": "string",
-                        "format": "date-time"
-                      }
-                    }
+                    "$ref": "#/paths/~1search/get/responses/200/content/application~1json/schema/properties/messages/items/allOf/0"
                   }
                 }
               }
@@ -1404,7 +1342,7 @@
                       "$ref": "#/paths/~1user~1%7Bid%7D/get/responses/200/content/application~1json/schema"
                     },
                     "chatRoom": {
-                      "$ref": "#/paths/~1chat-room/post/responses/201/content/application~1json/schema"
+                      "$ref": "#/paths/~1search/post/responses/201/content/application~1json/schema"
                     },
                     "message": {
                       "type": "object",
@@ -1504,6 +1442,220 @@
           },
           "403": {
             "description": "User does not have this notification"
+          }
+        }
+      }
+    },
+    "/search": {
+      "get": {
+        "tags": [
+          "Search"
+        ],
+        "summary": "Search",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "query",
+            "name": "q",
+            "schema": {
+              "type": "string"
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Search successful",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "users": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/paths/~1user~1%7Bid%7D/get/responses/200/content/application~1json/schema"
+                      }
+                    },
+                    "chatRooms": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "chatRoomId": {
+                            "type": "string"
+                          },
+                          "chatRoomName": {
+                            "type": "string"
+                          },
+                          "chatRoomAvatar": {
+                            "type": "string"
+                          },
+                          "members": {
+                            "type": "array",
+                            "items": {
+                              "$ref": "#/paths/~1user~1%7Bid%7D/get/responses/200/content/application~1json/schema"
+                            }
+                          },
+                          "admin": {
+                            "type": "array",
+                            "items": {
+                              "description": "User id",
+                              "type": "string"
+                            }
+                          },
+                          "type": {
+                            "type": "string",
+                            "enum": [
+                              "personal",
+                              "group"
+                            ]
+                          },
+                          "latestMessage": {
+                            "$ref": "#/paths/~1search/get/responses/200/content/application~1json/schema/properties/messages/items/allOf/0"
+                          }
+                        }
+                      }
+                    },
+                    "messages": {
+                      "type": "array",
+                      "items": {
+                        "allOf": [
+                          {
+                            "type": "object",
+                            "properties": {
+                              "chatRoomId": {
+                                "type": "string"
+                              },
+                              "from": {
+                                "$ref": "#/paths/~1user~1%7Bid%7D/get/responses/200/content/application~1json/schema"
+                              },
+                              "content": {
+                                "type": "string"
+                              },
+                              "readed": {
+                                "type": "array",
+                                "items": {
+                                  "$ref": "#/paths/~1user~1%7Bid%7D/get/responses/200/content/application~1json/schema"
+                                }
+                              },
+                              "id": {
+                                "type": "string"
+                              },
+                              "createdAt": {
+                                "type": "string",
+                                "format": "date-time"
+                              },
+                              "updatedAt": {
+                                "type": "string",
+                                "format": "date-time"
+                              }
+                            }
+                          },
+                          {
+                            "chatRoom": null,
+                            "$ref": "#/paths/~1chat-room~1%7BchatRoomId%7D/get/responses/200/content/application~1json/schema"
+                          }
+                        ]
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Chatroom"
+        ],
+        "summary": "Create new Chatroom",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "chatRoomName": {
+                    "type": "string"
+                  },
+                  "chatRoomAvatar": {
+                    "type": "string"
+                  },
+                  "members": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Create successful",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "chatRoomId": {
+                      "type": "string"
+                    },
+                    "chatRoomName": {
+                      "type": "string"
+                    },
+                    "chatRoomAvatar": {
+                      "type": "string"
+                    },
+                    "members": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      }
+                    },
+                    "admin": {
+                      "type": "array",
+                      "items": {
+                        "description": "User id",
+                        "type": "string"
+                      }
+                    },
+                    "type": {
+                      "type": "string",
+                      "enum": [
+                        "personal",
+                        "group"
+                      ]
+                    },
+                    "latestMessage": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "404": {
+            "description": "User not found"
           }
         }
       }
