@@ -151,16 +151,8 @@ const removeMember = async (chatRoomId: string, memberId: string) => {
   ) {
     throw new HttpException(StatusCodes.CONFLICT, 'User is admin');
   }
-  chatRoom.members = new mongoose.Types.Array(
-    ...chatRoom.members.filter(
-      (member) => member.toString() === memberUser._id.toString()
-    )
-  );
-  memberUser.chatRooms = new mongoose.Types.Array(
-    ...memberUser.chatRooms.filter(
-      (chatroom) => chatroom.toString() === chatRoom._id.toString()
-    )
-  );
+  chatRoom.members.pull(memberUser);
+  memberUser.chatRooms.pull(chatRoom);
   await Promise.all([chatRoom.save(), memberUser.save()]);
 };
 
