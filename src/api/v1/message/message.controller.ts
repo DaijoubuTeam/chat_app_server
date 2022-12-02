@@ -1,16 +1,21 @@
 import { Request, Response, NextFunction } from 'express';
 import { StatusCodes } from 'http-status-codes';
 import HttpException from '../../../exception';
+import { MessageType } from '../../../models/message';
 import messageService from './message.service';
 
 const postSendMessage = async (
-  req: Request<{ chatRoomId: string }, unknown, { message: string }>,
+  req: Request<
+    { chatRoomId: string },
+    unknown,
+    { message: string; type: MessageType }
+  >,
   res: Response,
   next: NextFunction
 ) => {
   try {
     const { chatRoomId } = req.params;
-    const { message } = req.body;
+    const { message, type } = req.body;
     const user = req.user;
     if (!user || !message || !chatRoomId) {
       throw new HttpException(
@@ -21,7 +26,8 @@ const postSendMessage = async (
     const messageDTO = await messageService.sendMessage(
       user._id,
       chatRoomId,
-      message
+      message,
+      type
     );
     res.status(StatusCodes.CREATED).json({ message: messageDTO });
   } catch (error) {

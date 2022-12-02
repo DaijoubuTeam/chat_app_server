@@ -4,6 +4,13 @@ import { IUser } from './user';
 
 const { Schema } = mongoose;
 
+export enum MessageType {
+  Text = 'text',
+  Image = 'image',
+  video = 'video',
+  record = 'record',
+}
+
 interface IMessage {
   _id: mongoose.Types.ObjectId;
   chatRoomId: mongoose.Types.ObjectId | IChatRoom;
@@ -12,6 +19,7 @@ interface IMessage {
   readed: mongoose.Types.Array<string | IUser>;
   createdAt: Date;
   updateAt: Date;
+  type: MessageType;
 }
 
 const messageSchema = new Schema<IMessage>(
@@ -24,6 +32,12 @@ const messageSchema = new Schema<IMessage>(
     from: { type: String, required: true, ref: 'User' },
     content: { type: String, required: true },
     readed: [{ type: String, ref: 'User' }],
+    type: {
+      type: String,
+      enum: MessageType,
+      required: true,
+      default: MessageType.Text,
+    },
   },
   { timestamps: true }
 );

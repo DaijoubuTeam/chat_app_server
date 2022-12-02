@@ -2,7 +2,7 @@ import { StatusCodes } from 'http-status-codes';
 import sendSocketToUser from '../../../common/sendSocketToUser';
 import HttpException from '../../../exception';
 import ChatRoom from '../../../models/chat_room';
-import Message from '../../../models/message';
+import Message, { MessageType } from '../../../models/message';
 import constants from '../../../constants';
 import getRawMessage from '../../../common/getRawMessage';
 import { IUser } from '../../../models/user';
@@ -10,7 +10,8 @@ import { IUser } from '../../../models/user';
 const sendMessage = async (
   userId: string,
   chatRoomId: string,
-  content: string
+  content: string,
+  type: MessageType
 ) => {
   const chatRoom = await ChatRoom.findById(chatRoomId);
   if (!chatRoom) {
@@ -20,6 +21,7 @@ const sendMessage = async (
     chatRoomId: chatRoom._id,
     from: userId,
     content,
+    type,
   });
   const messageDoc = await message.save();
   chatRoom.latestMessage = messageDoc._id;

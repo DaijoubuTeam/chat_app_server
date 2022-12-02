@@ -4,6 +4,9 @@ schemas:
     properties:
       message:
         type: string
+      type:
+        enum: ['image', 'text', 'video', 'record']
+        type: string
   GetResponse:
     type: array
     items:

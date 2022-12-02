@@ -30,6 +30,7 @@ const getRawMessage = (message: IMessage) => {
     content: message.content,
     readed: readed,
     id: message._id,
+    type: message.type,
     createdAt: message.createdAt,
     updateAt: message.updateAt,
   };

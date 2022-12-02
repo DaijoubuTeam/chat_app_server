@@ -12,6 +12,9 @@ schemas:
         type: array
         items:
           type: string
+      type:
+        type: string
+        enum: ['image', 'text', 'video', 'record']
       id:
         type: string
       createdAt:
@@ -33,6 +36,9 @@ schemas:
         type: array
         items:
           $ref: './user.component.yaml#/schemas/user'
+      type:
+        type: string
+        enum: ['image', 'text', 'video', 'record']
       id:
         type: string
       createdAt:

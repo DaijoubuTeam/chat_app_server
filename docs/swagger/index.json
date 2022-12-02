@@ -1283,6 +1283,15 @@
                 "properties": {
                   "message": {
                     "type": "string"
+                  },
+                  "type": {
+                    "enum": [
+                      "image",
+                      "text",
+                      "video",
+                      "record"
+                    ],
+                    "type": "string"
                   }
                 }
               }
@@ -1361,6 +1370,15 @@
                           "items": {
                             "type": "string"
                           }
+                        },
+                        "type": {
+                          "type": "string",
+                          "enum": [
+                            "image",
+                            "text",
+                            "video",
+                            "record"
+                          ]
                         },
                         "id": {
                           "type": "string"
@@ -1542,6 +1560,15 @@
                                 "items": {
                                   "$ref": "#/paths/~1user~1%7Bid%7D/get/responses/200/content/application~1json/schema"
                                 }
+                              },
+                              "type": {
+                                "type": "string",
+                                "enum": [
+                                  "image",
+                                  "text",
+                                  "video",
+                                  "record"
+                                ]
                               },
                               "id": {
                                 "type": "string"
