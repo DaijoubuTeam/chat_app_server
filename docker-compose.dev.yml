@@ -66,7 +66,7 @@ services:
     environment:
       ME_CONFIG_MONGODB_ADMINUSERNAME: root
       ME_CONFIG_MONGODB_ADMINPASSWORD: example
-      ME_CONFIG_MONGODB_URL: mongodb://root:example@mongodb:27017/
+      ME_CONFIG_MONGODB_URL: mongodb://root:example@mongodb:27017/?replicaSet=rs0
     networks:
       - chat_app_server
     depends_on:
