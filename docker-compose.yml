@@ -1,83 +1,13 @@
 version: '3.9'
 services:
-  nginx-proxy:
-    image: nginx
-    ports:
-      - 80:80
-      - 443:443
-    volumes:
-      - ./docker/nginx/nginx.conf:/etc/nginx/nginx.conf:ro
-      - ./docker/nginx/certs:/etc/nginx/certs/:ro
-    networks:
-     - chat_app_server
-    depends_on:
-      - server
   server:
-    build: 
+    build:
       dockerfile: Dockerfile.server
       context: .
     env_file:
       - .env
     networks:
       - chat_app_server
-    depends_on:
-      mongodb:
-        condition: service_healthy
-  mongodb:
-    image: mongo:5.0
-    networks:
-      - chat_app_server
-    restart: always
-    env_file:
-      - .env
-    volumes:
-      - ./docker/mongo/:/mongo/:ro
-      - ./mongo/data/db:/data/db:rw
-    healthcheck:
-      test: echo 'db.runCommand("ping").ok' | mongo localhost:27017/test --quiet
-      interval: 5s
-      timeout: 5s
-      retries: 5
-      start_period: 40s
-    entrypoint: sh /mongo/script.sh
-  mongo-express:
-    image: mongo-express
-    ports:
-      - 8081:8081
-    env_file:
-      - .env
-    networks:
-      - chat_app_server
-    depends_on:
-      mongodb:
-        condition: service_healthy
-  elastic-search:
-    image: elasticsearch:7.17.7
-    environment:
-      - discovery.type=single-node
-      - http.cors.enabled=true
-      - http.cors.allow-origin=https://app.elasticvue.com
-      - xpack.security.enabled=false
-      - "http.cors.allow-headers=X-Requested-With,X-Auth-Token,Content-Type,Content-Length,Authorization"
-      - "http.cors.allow-credentials=true"
-    ports:
-      - 9200:9200
-      - 9300:9300
-    networks:
-      - chat_app_server
-  monstache:        
-    image: rwynn/monstache:latest        
-    working_dir: /monstache        
-    command: -f /monstache/config.toml        
-    volumes:          
-        - ./docker/monstache/:/monstache/
-    restart: always
-    depends_on:
-      mongodb:
-        condition: service_healthy
-      elastic-search:
-        condition: service_started
-    networks:
-      - chat_app_server
 networks:
   chat_app_server:
+    name: doan1
