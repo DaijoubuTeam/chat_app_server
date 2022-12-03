@@ -1289,7 +1289,9 @@
                       "image",
                       "text",
                       "video",
-                      "record"
+                      "record",
+                      "sticker",
+                      "emoji"
                     ],
                     "type": "string"
                   }
@@ -1377,7 +1379,9 @@
                             "image",
                             "text",
                             "video",
-                            "record"
+                            "record",
+                            "sticker",
+                            "emoji"
                           ]
                         },
                         "id": {
@@ -1567,7 +1571,9 @@
                                   "image",
                                   "text",
                                   "video",
-                                  "record"
+                                  "record",
+                                  "sticker",
+                                  "emoji"
                                 ]
                               },
                               "id": {

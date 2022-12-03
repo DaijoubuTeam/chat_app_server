@@ -19,7 +19,6 @@ const createUser = async (
   photoUrl: string
 ) => {
   for (let i = 0; i < nums; i++) {
-    console.log('CREATED');
     const email = `${prefix}${i}@${suffix}`;
     const userRC = await createFirebaseUser(email, password, photoUrl);
     await authService.createUser(

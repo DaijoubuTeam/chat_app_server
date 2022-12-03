@@ -9,6 +9,8 @@ export enum MessageType {
   Image = 'image',
   video = 'video',
   record = 'record',
+  emoji = 'emoji',
+  sticker = 'sticker',
 }
 
 interface IMessage {
