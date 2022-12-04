@@ -9,6 +9,9 @@ components:
       type: http
       scheme: bearer
       bearerFormat: JWT
+  schemas:
+    SystemMessageType:
+      $ref: './components/models/system-message-type.component.yaml#/schemas/SystemMessageType'
 servers:
   - url: http://localhost/api/v1
   - url: https://localhost/api/v1
@@ -43,6 +46,8 @@ paths:
     $ref: './paths/chat/chat-room-id.accept.yaml'
   /chat-room/{chatRoomId}/reject:
     $ref: './paths/chat/chat-room-id.reject.yaml'
+  /chat-room/{chatRoomId}/leave:
+    $ref: './paths/chat/chat-room-id.leave.yaml'
   /chat-room/{chatRoomId}:
     $ref: './paths/chat/chat-room-id.path.yaml'
   /chat-room/{chatRoomId}/{memberId}:
@@ -55,9 +60,13 @@ paths:
     $ref: './paths/admin/seed.path.yaml'
   /message/chat-room/{chatRoomId}:
     $ref: './paths/message/chat-room.id.path.yaml'
+  /message/{messageId}:
+    $ref: './paths/message/id.path.yaml'
   /notification:
     $ref: './paths/notification/index.path.yaml'
   /notification/{notificationId}:
     $ref: './paths/notification/id.path.yaml'
   /search:
     $ref: './paths/search/index.path.yaml'
+
+  

@@ -75,4 +75,46 @@ const getChatRoomMessage = async (
   return messages.map((message) => getRawMessage(message));
 };
 
-export default { sendMessage, getChatRoomMessage };
+const getMessagesById = async (
+  messageId: string,
+  userId: string,
+  before: number,
+  after: number
+) => {
+  const message = await Message.findById(messageId).populate({
+    path: 'from readed',
+  });
+  if (!message) {
+    throw new HttpException(StatusCodes.NOT_FOUND, 'chat room not found');
+  }
+  const chatroom = await ChatRoom.findById(message.chatRoomId);
+  if (!chatroom || chatroom.members.findIndex((id) => id === userId) === -1) {
+    throw new HttpException(StatusCodes.FORBIDDEN, `forbidden request`);
+  }
+  const beforeMessages = await Message.find({
+    createdAt: {
+      $lt: message.createdAt,
+    },
+    chatRoomId: chatroom._id,
+  })
+    .populate({
+      path: 'from readed',
+    })
+    .sort({ createdAt: 'desc' })
+    .limit(before);
+  const afterMessages = await Message.find({
+    createdAt: {
+      $gt: message.createdAt,
+    },
+    chatRoomId: chatroom._id,
+  })
+    .populate({
+      path: 'from readed',
+    })
+    .sort({ createdAt: 'asc' })
+    .limit(after);
+  const messages = [...afterMessages.reverse(), message, ...beforeMessages];
+  return messages.map((message) => getRawMessage(message));
+};
+
+export default { sendMessage, getChatRoomMessage, getMessagesById };

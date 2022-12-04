@@ -70,7 +70,39 @@ const getMessages = async (
   }
 };
 
+const getMessagesById = async (
+  req: Request<
+    { messageId: string },
+    unknown,
+    unknown,
+    { before?: number; after?: number }
+  >,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    let { after, before } = req.query;
+    const { messageId } = req.params;
+    const user = req.user;
+    before = before ?? 0;
+    after = after ?? 0;
+    if (!user) {
+      throw new HttpException(StatusCodes.NOT_FOUND, 'User not found');
+    }
+    const messages = await messageService.getMessagesById(
+      messageId,
+      user._id,
+      before,
+      after
+    );
+    res.status(StatusCodes.OK).json(messages);
+  } catch (error) {
+    next(error);
+  }
+};
+
 export default {
   postSendMessage,
   getMessages,
+  getMessagesById,
 };

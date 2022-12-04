@@ -5,7 +5,7 @@ schemas:
       message:
         type: string
       type:
-        enum: ['image', 'text', 'video', 'record', 'sticker', 'emoji']
+        enum: ['image', 'text', 'video', 'record', 'sticker', 'emoji', 'system']
         type: string
   GetResponse:
     type: array

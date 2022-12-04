@@ -6,6 +6,8 @@ import mongoose from 'mongoose';
 import notificationService from '../notification/notification.service';
 import { NotifyType } from '../../../models/notification';
 import getRawChatRoom from '../../../common/getRawChatRoom';
+import messageService from '../message/message.service';
+import { MessageType, SystemMessageType } from '../../../models/message';
 
 const getUserChatRooms = async (userId: string) => {
   const user = await User.findById(userId).populate({
@@ -59,6 +61,12 @@ const createNewChatRoom = async (
 
   user.chatRooms.push(chatRoomDoc._id);
   await user.save();
+  await messageService.sendMessage(
+    userId,
+    chatRoomDoc._id.toString(),
+    SystemMessageType.createRoom,
+    MessageType.system
+  );
   return chatRoomDoc;
 };
 
@@ -151,6 +159,12 @@ const removeMember = async (chatRoomId: string, memberId: string) => {
   ) {
     throw new HttpException(StatusCodes.CONFLICT, 'User is admin');
   }
+  await messageService.sendMessage(
+    memberId,
+    chatRoomId,
+    SystemMessageType.removeFromRoom,
+    MessageType.system
+  );
   chatRoom.members.pull(memberUser);
   memberUser.chatRooms.pull(chatRoom);
   await Promise.all([chatRoom.save(), memberUser.save()]);
@@ -175,10 +189,17 @@ const acceptJoinChatRoom = async (chatRoomId: string, userId: string) => {
       'User does not have the request'
     );
   }
+
   user.chatRoomRequests.pull(chatRoomId);
   user.chatRooms.push(chatRoomId);
   chatRoom.members.push(userId);
-  return Promise.all([user.save(), chatRoom.save()]);
+  await Promise.all([user.save(), chatRoom.save()]);
+  await messageService.sendMessage(
+    userId,
+    chatRoomId,
+    SystemMessageType.joinRoom,
+    MessageType.system
+  );
 };
 const rejectJoinChatRoom = async (chatRoomId: string, userId: string) => {
   const chatRoom = await ChatRoom.findById(chatRoomId);
@@ -202,6 +223,44 @@ const rejectJoinChatRoom = async (chatRoomId: string, userId: string) => {
   user.chatRoomRequests.pull(chatRoomId);
 
   return Promise.all([user.save()]);
+};
+
+const leaveChatRoom = async (chatRoomId: string, userId: string) => {
+  const chatRoom = await ChatRoom.findById(chatRoomId);
+  const user = await User.findById(userId);
+  if (!chatRoom || !user) {
+    throw new HttpException(
+      StatusCodes.NOT_FOUND,
+      'User or chat room not found'
+    );
+  }
+  if (
+    user.chatRooms.findIndex(
+      (chatroom) => chatroom.toString() === chatRoomId
+    ) === -1
+  ) {
+    throw new HttpException(
+      StatusCodes.BAD_REQUEST,
+      'User does not in the chat room'
+    );
+  }
+
+  if (chatRoom.admin.findIndex((admin) => admin == userId) !== -1) {
+    throw new HttpException(
+      StatusCodes.CONFLICT,
+      'User is admin. Please delete chat room'
+    );
+  }
+  user.chatRooms.pull(chatRoomId);
+  chatRoom.members.pull(userId);
+
+  await Promise.all([user.save(), chatRoom.save()]);
+  await messageService.sendMessage(
+    userId,
+    chatRoomId,
+    SystemMessageType.leftRoom,
+    MessageType.system
+  );
 };
 
 const getChatRoomRequests = async (userId: string) => {
@@ -256,4 +315,5 @@ export default {
   rejectJoinChatRoom,
   getChatRoomRequests,
   getChatRoom,
+  leaveChatRoom,
 };

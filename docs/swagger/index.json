@@ -12,6 +12,18 @@
         "scheme": "bearer",
         "bearerFormat": "JWT"
       }
+    },
+    "schemas": {
+      "SystemMessageType": {
+        "type": "string",
+        "enum": [
+          "joinRoom",
+          "becomeFriend",
+          "leftRoom",
+          "removedFromRoom",
+          "createRoom"
+        ]
+      }
     }
   },
   "servers": [
@@ -835,6 +847,46 @@
         }
       }
     },
+    "/chat-room/{chatRoomId}/leave": {
+      "get": {
+        "summary": "Leave chat room",
+        "tags": [
+          "Chatroom"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "chatRoomId",
+            "schema": {
+              "type": "string"
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Leave successful"
+          },
+          "400": {
+            "description": "User does not have the request"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "404": {
+            "description": "User or chat room not found"
+          },
+          "409": {
+            "description": "User is admin. Please delete chat room instead"
+          }
+        }
+      }
+    },
     "/chat-room/{chatRoomId}": {
       "get": {
         "summary": "Get chat room",
@@ -1190,6 +1242,7 @@
     },
     "/message/chat-room/{chatRoomId}": {
       "get": {
+        "deprecated": true,
         "tags": [
           "Message"
         ],
@@ -1233,10 +1286,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/paths/~1search/get/responses/200/content/application~1json/schema/properties/messages/items/allOf/0"
-                  }
+                  "$ref": "#/paths/~1message~1%7BmessageId%7D/get/responses/200/content/application~1json/schema"
                 }
               }
             }
@@ -1291,7 +1341,8 @@
                       "video",
                       "record",
                       "sticker",
-                      "emoji"
+                      "emoji",
+                      "system"
                     ],
                     "type": "string"
                   }
@@ -1309,6 +1360,74 @@
           },
           "401": {
             "description": "Unauthorized"
+          },
+          "404": {
+            "description": "User not found or chat room not found"
+          }
+        }
+      }
+    },
+    "/message/{messageId}": {
+      "get": {
+        "tags": [
+          "Message"
+        ],
+        "summary": "Get messages",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "messageId",
+            "schema": {
+              "type": "string"
+            },
+            "required": true
+          },
+          {
+            "in": "query",
+            "name": "before",
+            "schema": {
+              "type": "number"
+            },
+            "description": "number of message earlier",
+            "required": false
+          },
+          {
+            "in": "query",
+            "name": "after",
+            "schema": {
+              "type": "number"
+            },
+            "required": false,
+            "description": "number of message after"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Get message successful",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/paths/~1search/get/responses/200/content/application~1json/schema/properties/messages/items/allOf/0"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid user, message or chat room"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden, may be user not in chat room"
           },
           "404": {
             "description": "User not found or chat room not found"
@@ -1381,7 +1500,8 @@
                             "video",
                             "record",
                             "sticker",
-                            "emoji"
+                            "emoji",
+                            "system"
                           ]
                         },
                         "id": {
@@ -1573,7 +1693,8 @@
                                   "video",
                                   "record",
                                   "sticker",
-                                  "emoji"
+                                  "emoji",
+                                  "system"
                                 ]
                               },
                               "id": {

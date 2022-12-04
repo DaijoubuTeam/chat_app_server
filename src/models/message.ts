@@ -4,6 +4,14 @@ import { IUser } from './user';
 
 const { Schema } = mongoose;
 
+export enum SystemMessageType {
+  joinRoom = 'joinRoom',
+  becomeFriend = 'becomeFriend',
+  leftRoom = 'leftRoom',
+  removeFromRoom = 'removedFromRoom',
+  createRoom = 'createRoom',
+}
+
 export enum MessageType {
   Text = 'text',
   Image = 'image',
@@ -11,6 +19,7 @@ export enum MessageType {
   record = 'record',
   emoji = 'emoji',
   sticker = 'sticker',
+  system = 'system',
 }
 
 interface IMessage {

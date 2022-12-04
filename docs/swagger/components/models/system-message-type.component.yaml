@@ -1,0 +1,4 @@
+schemas:
+  SystemMessageType:
+    type: string
+    enum: ['joinRoom','becomeFriend','leftRoom','removedFromRoom','createRoom']

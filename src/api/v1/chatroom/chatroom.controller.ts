@@ -176,6 +176,24 @@ const rejectJoinChatRoom = async (
   }
 };
 
+const leaveChatRoom = async (
+  req: Request<{ chatRoomId: string }>,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const { chatRoomId } = req.params;
+    const user = req.user;
+    if (user == null) {
+      throw new HttpException(StatusCodes.NOT_FOUND, 'User not found');
+    }
+    await chatroomService.leaveChatRoom(chatRoomId, user._id);
+    res.status(StatusCodes.OK).json('Leave successful');
+  } catch (error) {
+    next(error);
+  }
+};
+
 const getChatRoomRequests = async (
   req: Request<{ chatRoomId: string }>,
   res: Response,
@@ -222,4 +240,5 @@ export default {
   rejectJoinChatRoom,
   getChatRoomRequests,
   getChatRoom,
+  leaveChatRoom,
 };

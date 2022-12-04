@@ -1,0 +1,39 @@
+get:
+  tags:
+    - "Message"
+  summary: Get messages
+  security:
+    - bearerAuth: []
+  parameters:
+    - in: path
+      name: messageId
+      schema:
+        type: string
+      required: true
+    - in: query
+      name: before
+      schema:
+        type: number
+      description: number of message earlier 
+      required: false
+    - in: query
+      name: after
+      schema:
+        type: number
+      required: false
+      description: number of message after 
+  responses:
+    200: 
+      description: Get message successful
+      content:
+        application/json:
+          schema:
+            $ref: ../../components/message/chat-room.id.component.yaml#/schemas/GetResponse
+    401:
+      description: Unauthorized
+    403:
+      description: Forbidden, may be user not in chat room
+    400:
+      description: Invalid user, message or chat room 
+    404:
+      description: User not found or chat room not found

@@ -14,7 +14,7 @@ schemas:
           type: string
       type:
         type: string
-        enum: ['image', 'text', 'video', 'record', 'sticker', 'emoji']
+        enum: ['image', 'text', 'video', 'record', 'sticker', 'emoji', 'system']
       id:
         type: string
       createdAt:
@@ -38,7 +38,7 @@ schemas:
           $ref: './user.component.yaml#/schemas/user'
       type:
         type: string
-        enum: ['image', 'text', 'video', 'record','sticker', 'emoji']
+        enum: ['image', 'text', 'video', 'record','sticker', 'emoji', 'system']
       id:
         type: string
       createdAt:

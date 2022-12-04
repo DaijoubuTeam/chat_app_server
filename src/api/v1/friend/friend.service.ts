@@ -4,6 +4,8 @@ import ChatRoom, { CHAT_ROOM_TYPE } from '../../../models/chat_room';
 import User, { IUser } from '../../../models/user';
 import Notification, { NotifyType } from '../../../models/notification';
 import notificationService from '../notification/notification.service';
+import messageService from '../message/message.service';
+import { MessageType, SystemMessageType } from '../../../models/message';
 
 const getFriendList = async (userId: string) => {
   const user: IUser | null = await User.findById(userId)
@@ -191,10 +193,17 @@ const unbanUser = async (userId: string, bannedUserId: string) => {
 };
 
 const createPersonalChatRoom = async (userId: string, friendId: string) => {
-  return ChatRoom.create({
+  const chatRoom = await ChatRoom.create({
     members: [userId, friendId],
     type: CHAT_ROOM_TYPE.personal,
   });
+  await messageService.sendMessage(
+    userId,
+    chatRoom._id.toString(),
+    SystemMessageType.becomeFriend,
+    MessageType.system
+  );
+  return chatRoom;
 };
 
 const deletePersonalChatRoom = async (userId: string, friendId: string) => {

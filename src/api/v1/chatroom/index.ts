@@ -9,6 +9,7 @@ router.post('/', chatRoomController.postNewChatRoom); // Create a new group chat
 
 router.get('/:chatRoomId/accept', chatRoomController.acceptJoinChatRoom); // Accept to join chat room
 router.get('/:chatRoomId/reject', chatRoomController.rejectJoinChatRoom); // Reject to join chat room
+router.get('/:chatRoomId/leave', chatRoomController.leaveChatRoom); // leave chat room
 router.post(
   '/:chatRoomId/:memberId',
   isGroupAdmin,
