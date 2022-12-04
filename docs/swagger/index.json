@@ -1177,6 +1177,90 @@
         }
       }
     },
+    "/chat-room/chat-room-requests-sent": {
+      "get": {
+        "summary": "Get all chat room requests sent",
+        "tags": [
+          "Chatroom"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Get successful",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "chatRoom": {
+                        "$ref": "#/paths/~1search/post/responses/201/content/application~1json/schema"
+                      },
+                      "to": {
+                        "$ref": "#/paths/~1user~1%7Bid%7D/get/responses/200/content/application~1json/schema"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "404": {
+            "description": "User not found"
+          }
+        }
+      }
+    },
+    "/chat-room/chat-room-requests-sent/{chatRoomId}/{friendId}": {
+      "delete": {
+        "summary": "Unsent request",
+        "tags": [
+          "Chatroom"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "chatRoomId",
+            "schema": {
+              "type": "string"
+            },
+            "required": true
+          },
+          {
+            "in": "path",
+            "required": true,
+            "name": "friendId",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Unsent successful"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "404": {
+            "description": "Chat room or member not found"
+          }
+        }
+      }
+    },
     "/admin/user/{userId}": {
       "delete": {
         "tags": [

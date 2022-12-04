@@ -1,0 +1,26 @@
+delete:
+  summary: Unsent request
+  tags:
+    - Chatroom
+  security:
+    - bearerAuth: []
+  parameters:
+    - in: path
+      name: chatRoomId
+      schema:
+        type: string
+      required: true
+    - in: path
+      required: true
+      name: friendId
+      schema:
+        type: string
+  responses:
+    204:
+      description: Unsent successful
+    401:
+      description: Unauthorized
+    404:
+      description: Chat room or member not found
+    
+  

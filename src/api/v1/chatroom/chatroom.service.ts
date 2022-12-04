@@ -8,6 +8,7 @@ import { NotifyType } from '../../../models/notification';
 import getRawChatRoom from '../../../common/getRawChatRoom';
 import messageService from '../message/message.service';
 import { MessageType, SystemMessageType } from '../../../models/message';
+import getRawUser from '../../../common/getRawUser';
 
 const getUserChatRooms = async (userId: string) => {
   const user = await User.findById(userId).populate({
@@ -112,9 +113,10 @@ const sendChatRoomRequest = async (
   senderId: string,
   userId: string
 ) => {
+  const sender = await User.findById(senderId);
   const chatRoom = await ChatRoom.findById(chatRoomId);
   const user = await User.findById(userId);
-  if (!chatRoom || !user) {
+  if (!chatRoom || !user || !sender) {
     throw new HttpException(
       StatusCodes.NOT_FOUND,
       'Chatroom or member not found'
@@ -126,7 +128,11 @@ const sendChatRoomRequest = async (
     throw new HttpException(StatusCodes.CONFLICT, 'User has been in chat room');
   }
   user.chatRoomRequests.push(chatRoom._id);
-  await user.save();
+  sender.chatRoomRequestsSent.push({
+    chatRoom: chatRoom._id,
+    to: userId,
+  });
+  await Promise.all([user.save(), sender.save()]);
   await notificationService.newNotification(
     senderId,
     userId,
@@ -189,11 +195,23 @@ const acceptJoinChatRoom = async (chatRoomId: string, userId: string) => {
       'User does not have the request'
     );
   }
+  const sender = await User.findOne({
+    'chatRoomRequestsSent.chatRoom': chatRoomId,
+    'chatRoomRequestsSent.to': userId,
+  });
 
+  if (!sender) {
+    throw new HttpException(StatusCodes.NOT_FOUND, 'sender not found');
+  }
+
+  sender.chatRoomRequestsSent.pull({
+    chatRoom: chatRoomId,
+    to: userId,
+  });
   user.chatRoomRequests.pull(chatRoomId);
   user.chatRooms.push(chatRoomId);
   chatRoom.members.push(userId);
-  await Promise.all([user.save(), chatRoom.save()]);
+  await Promise.all([user.save(), chatRoom.save(), sender.save()]);
   await messageService.sendMessage(
     userId,
     chatRoomId,
@@ -220,9 +238,22 @@ const rejectJoinChatRoom = async (chatRoomId: string, userId: string) => {
       'User does not have the request'
     );
   }
+  const sender = await User.findOne({
+    'chatRoomRequestsSent.chatRoom': chatRoomId,
+    'chatRoomRequestsSent.to': userId,
+  });
+
+  if (!sender) {
+    throw new HttpException(StatusCodes.NOT_FOUND, 'sender not found');
+  }
+
+  sender.chatRoomRequestsSent.pull({
+    chatRoom: chatRoomId,
+    to: userId,
+  });
   user.chatRoomRequests.pull(chatRoomId);
 
-  return Promise.all([user.save()]);
+  return Promise.all([user.save(), sender.save()]);
 };
 
 const leaveChatRoom = async (chatRoomId: string, userId: string) => {
@@ -275,6 +306,29 @@ const getChatRoomRequests = async (userId: string) => {
   });
 };
 
+const getChatRoomRequestsSent = async (userId: string) => {
+  const user = await User.findById(userId).populate<{
+    chatRoomRequestsSent: {
+      chatRoom: IChatRoom;
+      to: IUser;
+    }[];
+  }>({
+    path: 'chatRoomRequestsSent',
+    populate: 'chatRoom to',
+  });
+  if (!user) {
+    throw new HttpException(StatusCodes.NOT_FOUND, 'User not found');
+  }
+  return user.chatRoomRequestsSent.map(
+    (request: { chatRoom: IChatRoom; to: IUser }) => {
+      return {
+        chatRoom: getRawChatRoom(request.chatRoom),
+        to: getRawUser(request.to),
+      };
+    }
+  );
+};
+
 const getChatRoom = async (chatRoomId: string, userId: string) => {
   const chatRoom = await ChatRoom.findOne({
     _id: chatRoomId,
@@ -304,6 +358,24 @@ const getChatRoom = async (chatRoomId: string, userId: string) => {
   return rawChatRoom;
 };
 
+const deleteChatRoomRequestsSent = async (
+  userId: string,
+  chatRoomId: string,
+  friendId: string
+) => {
+  const user = await User.findById(userId);
+  const friend = await User.findById(friendId);
+  if (!user || !friend) {
+    throw new HttpException(StatusCodes.NOT_FOUND, 'User not found');
+  }
+  user.chatRoomRequestsSent.pull({
+    chatRoom: chatRoomId,
+    to: friendId,
+  });
+  friend.chatRoomRequests.pull(chatRoomId);
+  await Promise.all([user.save(), friend.save()]);
+};
+
 export default {
   getUserChatRooms,
   createNewChatRoom,
@@ -316,4 +388,6 @@ export default {
   getChatRoomRequests,
   getChatRoom,
   leaveChatRoom,
+  getChatRoomRequestsSent,
+  deleteChatRoomRequestsSent,
 };

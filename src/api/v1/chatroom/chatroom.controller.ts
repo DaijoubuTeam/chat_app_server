@@ -195,7 +195,7 @@ const leaveChatRoom = async (
 };
 
 const getChatRoomRequests = async (
-  req: Request<{ chatRoomId: string }>,
+  req: Request,
   res: Response,
   next: NextFunction
 ) => {
@@ -206,6 +206,45 @@ const getChatRoomRequests = async (
     }
     const chatRooms = await chatroomService.getChatRoomRequests(user._id);
     res.status(StatusCodes.OK).json({ chatRooms });
+  } catch (error) {
+    next(error);
+  }
+};
+
+const getChatRoomRequestsSent = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const user = req.user;
+    if (user == null) {
+      throw new HttpException(StatusCodes.NOT_FOUND, 'User not found');
+    }
+    const chatRooms = await chatroomService.getChatRoomRequestsSent(user._id);
+    res.status(StatusCodes.OK).json({ chatRooms });
+  } catch (error) {
+    next(error);
+  }
+};
+
+const deleteChatRoomRequestsSent = async (
+  req: Request<{ chatRoomId: string; friendId: string }>,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const { chatRoomId, friendId } = req.params;
+    const user = req.user;
+    if (user == null) {
+      throw new HttpException(StatusCodes.NOT_FOUND, 'User not found');
+    }
+    await chatroomService.deleteChatRoomRequestsSent(
+      user._id,
+      chatRoomId,
+      friendId
+    );
+    res.status(StatusCodes.NO_CONTENT).end();
   } catch (error) {
     next(error);
   }
@@ -241,4 +280,6 @@ export default {
   getChatRoomRequests,
   getChatRoom,
   leaveChatRoom,
+  getChatRoomRequestsSent,
+  deleteChatRoomRequestsSent,
 };

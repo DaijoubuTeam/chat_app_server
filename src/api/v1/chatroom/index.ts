@@ -7,6 +7,16 @@ const router = Router();
 router.get('/', chatRoomController.getUserChatRooms); // Get all user's chat room
 router.post('/', chatRoomController.postNewChatRoom); // Create a new group chat room
 
+router.get(
+  '/chat-room-requests-sent',
+  chatRoomController.getChatRoomRequestsSent
+); // Get chat room requests sent
+
+router.delete(
+  '/chat-room-requests-sent/:chatRoomId/:friendId',
+  chatRoomController.deleteChatRoomRequestsSent
+); // Get chat room requests sent
+
 router.get('/:chatRoomId/accept', chatRoomController.acceptJoinChatRoom); // Accept to join chat room
 router.get('/:chatRoomId/reject', chatRoomController.rejectJoinChatRoom); // Reject to join chat room
 router.get('/:chatRoomId/leave', chatRoomController.leaveChatRoom); // leave chat room

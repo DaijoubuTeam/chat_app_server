@@ -1,0 +1,24 @@
+get:
+  summary: Get all chat room requests sent
+  tags:
+    - Chatroom
+  security:
+    - bearerAuth: []
+  responses:
+    200:
+      description: Get successful
+      content:
+        application/json:
+          schema:
+            type: array
+            items: 
+              type: object
+              properties:
+                chatRoom: 
+                  $ref: '../../components/models/chat-room.component.yaml#/schemas/ChatRoom'
+                to:
+                  $ref: '../../components/models/user.component.yaml#/schemas/user'
+    401:
+      description: Unauthorized
+    404:
+      description: User not found

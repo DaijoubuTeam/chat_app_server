@@ -16,6 +16,10 @@ interface IUser {
   friendRequests: mongoose.Types.Array<string>;
   friendRequestsSent: mongoose.Types.Array<string>;
   chatRoomRequests: mongoose.Types.Array<mongoose.Types.ObjectId>;
+  chatRoomRequestsSent: mongoose.Types.Array<{
+    to: string;
+    chatRoom: mongoose.Types.ObjectId;
+  }>;
   bans: mongoose.Types.Array<string>;
   chatRooms: mongoose.Types.Array<mongoose.Types.ObjectId>;
 }
@@ -36,6 +40,12 @@ const userSchema = new Schema<IUser>(
     friendRequestsSent: [{ type: String, ref: 'User' }],
     bans: [{ type: String, ref: 'User' }],
     chatRoomRequests: [{ type: mongoose.Types.ObjectId, ref: 'ChatRoom' }],
+    chatRoomRequestsSent: [
+      {
+        to: { type: String, ref: 'User' },
+        chatRoom: { type: mongoose.Types.ObjectId, ref: 'ChatRoom' },
+      },
+    ],
     chatRooms: [{ type: mongoose.Types.ObjectId, ref: 'ChatRoom' }],
   },
   { toJSON: { virtuals: true }, toObject: { virtuals: true } }
