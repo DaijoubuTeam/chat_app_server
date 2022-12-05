@@ -1,0 +1,46 @@
+get:
+  tags:
+    - "Device"
+  summary: Get user devices
+  security:
+    - bearerAuth: []
+  responses:
+    200: 
+      description: Get user devices list successful
+      content:
+        application/json:
+          schema:
+            type: array
+            items:
+              $ref: '../../components/models/device.component.yaml#/schemas/devicePresenter'
+    404:
+      description: User not found
+
+post:
+  tags:
+    - "Device"
+  summary: Add or update to device list
+  security:
+    - bearerAuth: []
+  requestBody:
+    content:
+      application/json:
+        schema:
+          $ref: '../../components/models/device.component.yaml#/schemas/deviceDto'
+  responses:
+    201: 
+      description: Add or update successful
+      content:
+        application/json:
+          schema:
+            $ref: '../../components/models/device.component.yaml#/schemas/devicePresenter'
+    400:
+      description: Invalid Body
+    401:
+      description: Unauthorized
+
+
+    
+    
+
+  

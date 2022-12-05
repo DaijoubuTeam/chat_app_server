@@ -72,5 +72,9 @@ paths:
     $ref: './paths/notification/id.path.yaml'
   /search:
     $ref: './paths/search/index.path.yaml'
+  /device:
+    $ref: './paths/device/index.path.yaml'
+  /device/{id}:
+    $ref: './paths/device/id.path.yaml'
 
   

@@ -1,0 +1,17 @@
+schemas:
+  deviceDto:
+    type: object
+    properties:
+      deviceId:
+        type: string
+      name: 
+        type: string
+      token:
+        type: string
+  devicePresenter:
+    type: object
+    properties:
+      id:
+        type: string
+      name: 
+        type: string

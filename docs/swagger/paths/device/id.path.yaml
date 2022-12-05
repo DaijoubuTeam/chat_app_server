@@ -1,0 +1,17 @@
+delete:
+  tags:
+    - "Device"
+  summary: Delete user devices
+  security:
+    - bearerAuth: []
+  parameters:
+    - in: path
+      name: id
+      schema:
+        type: string
+      required: true
+  responses:
+    200: 
+      description: Delete user device successful
+    401:
+      description: Unauthorized
