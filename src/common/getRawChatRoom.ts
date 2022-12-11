@@ -31,7 +31,7 @@ const getRawChatRoom = (chatroom: IChatRoom) => {
     type: chatroom.type,
     chatRoomId: chatroom._id,
     latestMessage: isValidObjectId(chatroom.latestMessage.toString())
-      ? chatroom.latestMessage
+      ? null
       : getRawMessage(chatroom.latestMessage as unknown as IMessage),
   };
   return rawChatRoom;
