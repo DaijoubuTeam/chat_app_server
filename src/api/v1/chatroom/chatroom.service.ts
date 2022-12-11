@@ -4,7 +4,7 @@ import User, { IUser } from '../../../models/user';
 import ChatRoom, { CHAT_ROOM_TYPE, IChatRoom } from '../../../models/chat_room';
 import mongoose from 'mongoose';
 import notificationService from '../notification/notification.service';
-import { NotifyType } from '../../../models/notification';
+import Notification, { NotifyType } from '../../../models/notification';
 import getRawChatRoom from '../../../common/getRawChatRoom';
 import messageService from '../message/message.service';
 import { MessageType, SystemMessageType } from '../../../models/message';
@@ -96,15 +96,27 @@ const deleteChatRoom = async (chatRoomId: string) => {
     return memberUser?.save();
   });
 
-  const users = await User.find({ chatRooms: chatRoomId });
-  const removeRequest = users.map(async (user) => {
-    await user.chatRoomRequests.pull(chatRoomId);
+  const removeRequest = (await User.find({ chatRoomRequests: chatRoomId })).map(
+    async (user) => {
+      await user.chatRoomRequests.pull(chatRoomId);
+      await user.save();
+    }
+  );
+  const removeRequestSent = (
+    await User.find({ chatRoomRequestsSent: chatRoomId })
+  ).map(async (user) => {
+    await user.chatRoomRequestsSent.pull(chatRoomId);
     await user.save();
   });
+
+  const removeNotification = Notification.deleteMany({ chatRoom: chatRoomId });
+
   await Promise.all([
     ...deleteMembers,
     ChatRoom.findByIdAndDelete(chatRoomId),
     removeRequest,
+    removeRequestSent,
+    removeNotification,
   ]);
 };
 
@@ -173,7 +185,11 @@ const removeMember = async (chatRoomId: string, memberId: string) => {
   );
   chatRoom.members.pull(memberUser);
   memberUser.chatRooms.pull(chatRoom);
-  await Promise.all([chatRoom.save(), memberUser.save()]);
+  const deleteNotification = await Notification.deleteMany({
+    notificationReceiver: memberId,
+    chatRoom: chatRoomId,
+  });
+  await Promise.all([chatRoom.save(), memberUser.save(), deleteNotification]);
 };
 
 const acceptJoinChatRoom = async (chatRoomId: string, userId: string) => {
@@ -211,7 +227,16 @@ const acceptJoinChatRoom = async (chatRoomId: string, userId: string) => {
   user.chatRoomRequests.pull(chatRoomId);
   user.chatRooms.push(chatRoomId);
   chatRoom.members.push(userId);
-  await Promise.all([user.save(), chatRoom.save(), sender.save()]);
+  const deleteNotification = Notification.findOneAndDelete({
+    chatRoom: chatRoomId,
+    notificationReceiver: userId,
+  });
+  await Promise.all([
+    user.save(),
+    chatRoom.save(),
+    sender.save(),
+    deleteNotification,
+  ]);
   await messageService.sendMessage(
     userId,
     chatRoomId,
@@ -253,7 +278,12 @@ const rejectJoinChatRoom = async (chatRoomId: string, userId: string) => {
   });
   user.chatRoomRequests.pull(chatRoomId);
 
-  return Promise.all([user.save(), sender.save()]);
+  const deleteNotification = Notification.findOneAndDelete({
+    chatRoom: chatRoomId,
+    notificationReceiver: userId,
+  });
+
+  return Promise.all([user.save(), sender.save(), deleteNotification]);
 };
 
 const leaveChatRoom = async (chatRoomId: string, userId: string) => {
@@ -285,7 +315,12 @@ const leaveChatRoom = async (chatRoomId: string, userId: string) => {
   user.chatRooms.pull(chatRoomId);
   chatRoom.members.pull(userId);
 
-  await Promise.all([user.save(), chatRoom.save()]);
+  const deleteNotification = Notification.findOneAndDelete({
+    chatRoom: chatRoomId,
+    notificationReceiver: userId,
+  });
+
+  await Promise.all([user.save(), chatRoom.save(), deleteNotification]);
   await messageService.sendMessage(
     userId,
     chatRoomId,
@@ -372,8 +407,15 @@ const deleteChatRoomRequestsSent = async (
     chatRoom: chatRoomId,
     to: friendId,
   });
+
+  const deleteNotification = Notification.findOneAndDelete({
+    chatRoom: chatRoomId,
+    notificationReceiver: friendId,
+    userId: userId,
+  });
+
   friend.chatRoomRequests.pull(chatRoomId);
-  await Promise.all([user.save(), friend.save()]);
+  await Promise.all([user.save(), friend.save(), deleteNotification]);
 };
 
 export default {
