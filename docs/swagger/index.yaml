@@ -76,5 +76,7 @@ paths:
     $ref: './paths/device/index.path.yaml'
   /device/{id}:
     $ref: './paths/device/id.path.yaml'
+  /webrtc/{id}:
+    $ref: './paths/webrtc/id.path.yaml'
 
   

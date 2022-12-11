@@ -10,6 +10,7 @@ import messageRouter from './message';
 import notificationRouter from './notification';
 import searchRouter from './search';
 import deviceRouter from './device';
+import webrtcRouter from './webrtc';
 
 dotenv.config();
 
@@ -23,6 +24,7 @@ router.use('/message', authenticate, messageRouter);
 router.use('/notification', authenticate, notificationRouter);
 router.use('/search', authenticate, searchRouter);
 router.use('/device', authenticate, deviceRouter);
+router.use('/webrtc', authenticate, webrtcRouter);
 
 if (process.env.ENVIRONMENT === 'DEV') {
   router.use('/admin', adminRouter);
