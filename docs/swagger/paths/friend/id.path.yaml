@@ -49,6 +49,37 @@ delete:
     404:
       description: Friend not found
 
+post:
+  tags:
+    - "Message"
+    - "Friend"
+  summary: Send message to friend
+  security:
+    - bearerAuth: []
+  parameters:
+    - in: path
+      name: id
+      schema:
+        type: string
+      required: true
+  requestBody:
+    content:
+      application/json:
+        schema:
+          $ref: ../../components/message/chat-room.id.component.yaml#/schemas/PostRequest
+  responses:
+    201: 
+      description: Send successful
+    401:
+      description: Unauthorized
+    400:
+      description: Invalid user, message or chat room 
+    404:
+      description: User not found or chat room not found
+    
+
+  
+
 
     
     

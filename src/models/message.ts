@@ -10,6 +10,7 @@ export enum SystemMessageType {
   leftRoom = 'leftRoom',
   removeFromRoom = 'removedFromRoom',
   createRoom = 'createRoom',
+  callCancelled = 'callCancelled',
 }
 
 export enum MessageType {

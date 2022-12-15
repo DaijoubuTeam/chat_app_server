@@ -1,11 +1,13 @@
 import { StatusCodes } from 'http-status-codes';
 import HttpException from '../../../exception';
-import ChatRoom, { CHAT_ROOM_TYPE } from '../../../models/chat_room';
+import ChatRoom, { CHAT_ROOM_TYPE, IChatRoom } from '../../../models/chat_room';
 import User, { IUser } from '../../../models/user';
 import Notification, { NotifyType } from '../../../models/notification';
 import notificationService from '../notification/notification.service';
 import messageService from '../message/message.service';
 import { MessageType, SystemMessageType } from '../../../models/message';
+import getRawChatRoom from '../../../common/getRawChatRoom';
+import { Types } from 'mongoose';
 
 const getFriendList = async (userId: string) => {
   const user: IUser | null = await User.findById(userId)
@@ -232,6 +234,20 @@ const unsendFriendRequests = async (userId: string, friendId: string) => {
   ]);
 };
 
+const getPersonalChatroom = async (
+  userId: string,
+  friendId: string
+): Promise<IChatRoom & { _id: Types.ObjectId }> => {
+  const chatRoom = await ChatRoom.findOne({
+    members: [userId, friendId],
+    type: CHAT_ROOM_TYPE.personal,
+  });
+  if (!chatRoom) {
+    throw new HttpException(StatusCodes.NOT_FOUND, 'Is not friend');
+  }
+  return chatRoom;
+};
+
 export default {
   getFriendList,
   addFriendRequestList: sendFriendRequest,
@@ -243,4 +259,5 @@ export default {
   getFriendRequestList,
   getFriendRequestSentList,
   unsendFriendRequests,
+  getPersonalChatroom,
 };

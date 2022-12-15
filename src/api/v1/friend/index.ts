@@ -10,5 +10,6 @@ router.get('/friend-requests-sent', controller.getFriendRequestsSent); // Get al
 router.delete('/friend-requests-sent/:id', controller.unsendFriendRequests); // Unsent friend request
 router.delete('/:id', controller.deleteFriend); // Remove friend (unfriend)
 router.get('/:id', controller.acceptOrDeniedFriendRequest); // Accept or denied friend request or bans friend based on query
+router.post('/:id', controller.sendMessage); // Send message to friend
 
 export default router;

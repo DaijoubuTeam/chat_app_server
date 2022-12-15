@@ -2,7 +2,10 @@ import { Request, Response, NextFunction } from 'express';
 import { StatusCodes } from 'http-status-codes';
 import getRawUser from '../../../common/getRawUser';
 import HttpException from '../../../exception';
+import { MessageType, SystemMessageType } from '../../../models/message';
 import { IUser } from '../../../models/user';
+import messageService from '../message/message.service';
+import friendService from './friend.service';
 import servive from './friend.service';
 
 const getUserFriends = async (
@@ -169,6 +172,35 @@ const unsendFriendRequests = async (
   }
 };
 
+const sendMessage = async (
+  req: Request<{ id: string }, unknown, { message: string; type: MessageType }>,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const { user } = req;
+    const { id } = req.params;
+    const { message, type } = req.body;
+    if (!user || !message || !id) {
+      throw new HttpException(
+        StatusCodes.BAD_REQUEST,
+        'Bad request: Invalid user, messsage or chatRoom id'
+      );
+    }
+
+    const chatRoom = await friendService.getPersonalChatroom(user._id, id);
+    const messageDTO = await messageService.sendMessage(
+      user._id,
+      chatRoom._id.toString(),
+      message,
+      type
+    );
+    res.status(StatusCodes.CREATED).json({ message: messageDTO });
+  } catch (error) {
+    next(error);
+  }
+};
+
 export default {
   getUserFriends,
   sendFriendRequest,
@@ -177,4 +209,5 @@ export default {
   getFriendRequest,
   getFriendRequestsSent,
   unsendFriendRequests,
+  sendMessage,
 };
