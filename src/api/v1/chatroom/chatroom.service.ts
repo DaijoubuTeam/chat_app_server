@@ -103,7 +103,9 @@ const deleteChatRoom = async (chatRoomId: string) => {
     }
   );
   const removeRequestSent = (
-    await User.find({ chatRoomRequestsSent: chatRoomId })
+    await User.find({
+      'chatRoomRequestsSent.chatRoom': chatRoomId,
+    })
   ).map(async (user) => {
     await user.chatRoomRequestsSent.pull(chatRoomId);
     await user.save();
