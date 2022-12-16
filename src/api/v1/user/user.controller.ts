@@ -76,7 +76,7 @@ const changeMailVerified = async (
     if (!token) {
       return res.sendFile(failureTemplatePath);
     }
-    // await userService.changeEmailVerified(token);
+    await userService.changeEmailVerified(token);
 
     res.status(StatusCodes.OK).sendFile(successTemplatePath);
   } catch (error) {
