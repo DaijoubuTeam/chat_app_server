@@ -13,6 +13,8 @@ import { ActionCodeSettings } from 'firebase-admin/lib/auth/action-code-settings
 import VerifyEmailToken from '../../../models/verify_email_token';
 import crypto from 'crypto';
 import { toLowerCaseNonAccentVietnamese } from '../../../common/vietnamese/non-accent';
+import sendSocketToUser from '../../../common/sendSocketToUser';
+import constants from '../../../constants';
 
 dotenv.config();
 
@@ -137,6 +139,7 @@ const changeEmailVerified = async (token: string) => {
     throw new HttpException(StatusCodes.NOT_FOUND, 'User not found');
   }
   user.isEmailVerified = true;
+  await sendSocketToUser(user._id, constants.socketEvents.EMAIL_VERIFIED, {});
   await user.save();
   await existingVerifiedEmailToken.delete();
 };

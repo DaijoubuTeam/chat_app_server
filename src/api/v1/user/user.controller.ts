@@ -6,6 +6,7 @@ import userService from './user.service';
 import { IUser } from '../../../models/user';
 import dotenv from 'dotenv';
 import validator from '../../../validator';
+import path from 'path';
 
 dotenv.config();
 
@@ -64,23 +65,22 @@ const verifyEmail = async (req: Request, res: Response, next: NextFunction) => {
 
 const changeMailVerified = async (
   req: Request<any, any, any, { token: string }>,
-  res: Response,
-  next: NextFunction
+  res: Response
 ) => {
-  const clientUrl = process.env.CLIENT_URL;
-  if (!clientUrl) {
-    return res.status(StatusCodes.NOT_FOUND).send('<h1>Not found</h1>');
-  }
+  const successTemplatePath = path.join(__dirname, 'template', 'success.html');
+  const failureTemplatePath = path.join(__dirname, 'template', 'failure.html');
+
   try {
     const { token } = req.query;
 
     if (!token) {
-      return res.redirect(clientUrl);
+      return res.sendFile(failureTemplatePath);
     }
-    await userService.changeEmailVerified(token);
-    res.status(StatusCodes.OK).redirect(clientUrl);
+    // await userService.changeEmailVerified(token);
+
+    res.status(StatusCodes.OK).sendFile(successTemplatePath);
   } catch (error) {
-    res.status(StatusCodes.NOT_FOUND).redirect(clientUrl);
+    res.status(StatusCodes.NOT_FOUND).sendFile(failureTemplatePath);
   }
 };
 
