@@ -18,12 +18,22 @@ const getUserFriends = async (
     if (!user) {
       throw new HttpException(StatusCodes.UNAUTHORIZED, 'Unauthorized');
     }
-    const userFriendsList = await servive.getFriendList(user._id);
-    res
-      .status(StatusCodes.OK)
-      .json(
-        (userFriendsList as unknown as IUser[]).map((user) => getRawUser(user))
-      );
+    const userFriendsList = await Promise.all(
+      ((await servive.getFriendList(user._id)) as unknown as IUser[]).map(
+        async (user) => {
+          const rawUser = getRawUser(user);
+          const chatRoomId = await friendService.getPersonalChatRoom(
+            rawUser.uid,
+            user._id
+          );
+          return {
+            ...rawUser,
+            personalChatRoomId: chatRoomId,
+          };
+        }
+      )
+    );
+    res.status(StatusCodes.OK).json(userFriendsList);
   } catch (error) {
     next(error);
   }

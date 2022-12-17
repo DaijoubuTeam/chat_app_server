@@ -18,6 +18,8 @@ schemas:
             type: string
           email:
             type: string
+          personalChatRoomId:
+            type: string
   PostRequest:
     type: object
     properties:
