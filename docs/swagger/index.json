@@ -431,6 +431,9 @@
                       },
                       "email": {
                         "type": "string"
+                      },
+                      "personalChatRoomId": {
+                        "type": "string"
                       }
                     }
                   }

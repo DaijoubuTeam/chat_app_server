@@ -20,12 +20,13 @@ const getUserFriends = async (
     }
     const userFriendsList = await Promise.all(
       ((await servive.getFriendList(user._id)) as unknown as IUser[]).map(
-        async (user) => {
-          const rawUser = getRawUser(user);
-          const chatRoomId = await friendService.getPersonalChatRoom(
-            rawUser.uid,
-            user._id
-          );
+        async (u) => {
+          const rawUser = getRawUser(u);
+          console.log(rawUser.uid);
+          console.log(user._id);
+          const chatRoomId = (
+            await friendService.getPersonalChatroom(rawUser.uid, user._id)
+          )._id;
           return {
             ...rawUser,
             personalChatRoomId: chatRoomId,

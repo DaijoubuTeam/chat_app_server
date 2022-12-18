@@ -239,7 +239,7 @@ const getPersonalChatroom = async (
   friendId: string
 ): Promise<IChatRoom & { _id: Types.ObjectId }> => {
   const chatRoom = await ChatRoom.findOne({
-    members: [userId, friendId],
+    members: { $all: [userId, friendId] },
     type: CHAT_ROOM_TYPE.personal,
   });
   if (!chatRoom) {
@@ -247,16 +247,6 @@ const getPersonalChatroom = async (
   }
   return chatRoom;
 };
-
-const getPersonalChatRoom = async (userId: string, friendId: string) => {
-  return (
-    await ChatRoom.findOne({
-      members: [userId, friendId],
-      type: CHAT_ROOM_TYPE.personal,
-    })
-  )?._id.toString();
-};
-
 export default {
   getFriendList,
   addFriendRequestList: sendFriendRequest,
@@ -269,5 +259,4 @@ export default {
   getFriendRequestSentList,
   unsendFriendRequests,
   getPersonalChatroom,
-  getPersonalChatRoom,
 };
