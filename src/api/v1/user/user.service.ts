@@ -8,7 +8,7 @@ import isEmail from '../../../validator/is_email';
 import isLink from '../../../validator/is_link';
 import isPhone from '../../../validator/is_phone';
 import dotenv from 'dotenv';
-import firebase from 'firebase-admin';
+import firebase, { auth } from 'firebase-admin';
 import { ActionCodeSettings } from 'firebase-admin/lib/auth/action-code-settings-builder';
 import VerifyEmailToken from '../../../models/verify_email_token';
 import crypto from 'crypto';
@@ -142,6 +142,9 @@ const changeEmailVerified = async (token: string) => {
   await sendSocketToUser(user._id, constants.socketEvents.EMAIL_VERIFIED, {});
   await user.save();
   await existingVerifiedEmailToken.delete();
+  await auth().updateUser(user._id, {
+    emailVerified: true,
+  });
 };
 
 const searchUser = async (searchString?: string): Promise<IUser> => {
