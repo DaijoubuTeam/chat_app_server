@@ -2,6 +2,7 @@ import { Request, Response, NextFunction } from 'express';
 import { StatusCodes } from 'http-status-codes';
 import service from './auth.service';
 import getRawUser from '../../../common/getRawUser';
+import { auth } from 'firebase-admin';
 
 const verifyUser = async (req: Request, res: Response, next: NextFunction) => {
   try {
@@ -10,13 +11,14 @@ const verifyUser = async (req: Request, res: Response, next: NextFunction) => {
     const user = await service.getUser(decodedToken);
 
     if (!user) {
+      const firebaseUser = await auth().getUser(decodedToken.uid);
       const newUser = await service.createUser(
         decodedToken.uid,
         decodedToken.picture,
         decodedToken.phone_number,
         decodedToken.email,
         decodedToken.email_verified,
-        undefined
+        firebaseUser.displayName
       );
       return res.status(StatusCodes.CREATED).json({
         user: {
