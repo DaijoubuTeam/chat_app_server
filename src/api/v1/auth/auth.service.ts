@@ -1,5 +1,5 @@
 import { Request } from 'express';
-import firebase from 'firebase-admin';
+import firebase, { auth } from 'firebase-admin';
 import { DecodedIdToken } from 'firebase-admin/lib/auth/token-verifier';
 import { AuthException } from '../../../exception/auth_exception';
 import User from '../../../models/user';
@@ -91,31 +91,20 @@ const createUser = async (
 
 // #region Reset password
 
-const getResetLink = (
-  token: IResetPasswordToken & { _id: mongoose.Types.ObjectId }
-) => {
-  const clientUrl = process.env.CLIENT_RESET_URL;
-  if (!clientUrl) {
-    throw new HttpException(
-      StatusCodes.INTERNAL_SERVER_ERROR,
-      'Internal server error'
-    );
-  }
-  const reset_link = `${clientUrl}?token=${token._id}`;
+const getResetLink = async (email: string) => {
+  const reset_link = await auth().generatePasswordResetLink(email);
+
   return reset_link;
 };
 
-const sendEmailResetLink = async (
-  email: string,
-  token: IResetPasswordToken & { _id: mongoose.Types.ObjectId }
-) => {
+const sendEmailResetLink = async (email: string) => {
   const templatePath = path.join(
     __dirname,
     'template',
     'reset_password_template.ejs'
   );
 
-  const reset_link = getResetLink(token);
+  const reset_link = await getResetLink(email);
 
   const template = await ejs.renderFile(templatePath, {
     reset_link,
@@ -131,27 +120,26 @@ const sendResetPasswordMail = async (
   if (!user) {
     throw new HttpException(StatusCodes.NOT_FOUND, 'User not found');
   }
-  const resetPasswordToken = new ResetPasswordToken({
-    uid: user._id,
-  });
-  const tokenDoc = await resetPasswordToken.save();
-  await _sendEmailResetLink(email, tokenDoc);
-};
-
-const verifyResetPasswordToken = async (token: string) => {
-  const resetToken = await ResetPasswordToken.findById(token);
-  if (!resetToken) {
-    throw new HttpException(StatusCodes.BAD_REQUEST, 'Invalid reset code');
+  if (!user.isEmailVerified) {
+    throw new HttpException(StatusCodes.FORBIDDEN, 'Email has not verified');
   }
-  return resetToken.uid;
+  await _sendEmailResetLink(email);
 };
 
-const updatePassword = async (userId: string, password: string) => {
-  await firebase.auth().updateUser(userId, {
-    password,
-  });
-  await ResetPasswordToken.deleteMany({ uid: userId });
-};
+// const verifyResetPasswordToken = async (token: string) => {
+//   const resetToken = await ResetPasswordToken.findById(token);
+//   if (!resetToken) {
+//     throw new HttpException(StatusCodes.BAD_REQUEST, 'Invalid reset code');
+//   }
+//   return resetToken.uid;
+// };
+
+// const updatePassword = async (userId: string, password: string) => {
+//   await firebase.auth().updateUser(userId, {
+//     password,
+//   });
+//   await ResetPasswordToken.deleteMany({ uid: userId });
+// };
 // #endregion
 
 export default {
@@ -161,7 +149,7 @@ export default {
   verifyToken,
   createUser,
   sendResetPasswordMail,
-  verifyResetPasswordToken,
-  updatePassword,
+  // verifyResetPasswordToken,
+  // updatePassword,
   sendEmailResetLink,
 };

@@ -3,6 +3,7 @@ import { StatusCodes } from 'http-status-codes';
 import service from './auth.service';
 import getRawUser from '../../../common/getRawUser';
 import { auth } from 'firebase-admin';
+import { HttpStatusCode } from 'axios';
 
 const verifyUser = async (req: Request, res: Response, next: NextFunction) => {
   try {
@@ -56,6 +57,7 @@ const resetPassword = async (
   next: NextFunction
 ) => {
   try {
+    return res.status(HttpStatusCode.NotImplemented).end();
     const { password } = req.body;
     const { token } = req.query;
     const userId = await service.verifyResetPasswordToken(token);
