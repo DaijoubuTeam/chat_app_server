@@ -166,7 +166,7 @@
                   "type": "object",
                   "properties": {
                     "user": {
-                      "$ref": "#/paths/~1user~1%7Bid%7D/get/responses/200/content/application~1json/schema"
+                      "$ref": "#/paths/~1user~1%7Bid%7D/get/responses/200/content/application~1json/schema/allOf/0"
                     }
                   }
                 }
@@ -226,7 +226,7 @@
                   "type": "object",
                   "properties": {
                     "user": {
-                      "$ref": "#/paths/~1user~1%7Bid%7D/get/responses/200/content/application~1json/schema"
+                      "$ref": "#/paths/~1user~1%7Bid%7D/get/responses/200/content/application~1json/schema/allOf/0"
                     }
                   }
                 }
@@ -293,7 +293,7 @@
                 "schema": {
                   "allOf": [
                     {
-                      "$ref": "#/paths/~1user~1%7Bid%7D/get/responses/200/content/application~1json/schema"
+                      "$ref": "#/paths/~1user~1%7Bid%7D/get/responses/200/content/application~1json/schema/allOf/0"
                     },
                     {
                       "type": "object",
@@ -350,36 +350,51 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "object",
-                  "properties": {
-                    "gender": {
-                      "type": "string"
+                  "allOf": [
+                    {
+                      "type": "object",
+                      "properties": {
+                        "gender": {
+                          "type": "string"
+                        },
+                        "fullname": {
+                          "type": "string"
+                        },
+                        "uid": {
+                          "type": "string"
+                        },
+                        "avatar": {
+                          "type": "string"
+                        },
+                        "phone": {
+                          "type": "string"
+                        },
+                        "about": {
+                          "type": "string"
+                        },
+                        "email": {
+                          "type": "string"
+                        },
+                        "isEmailVerified": {
+                          "type": "boolean"
+                        },
+                        "isProfileFilled": {
+                          "type": "boolean"
+                        }
+                      }
                     },
-                    "fullname": {
-                      "type": "string"
-                    },
-                    "uid": {
-                      "type": "string"
-                    },
-                    "avatar": {
-                      "type": "string"
-                    },
-                    "phone": {
-                      "type": "string"
-                    },
-                    "about": {
-                      "type": "string"
-                    },
-                    "email": {
-                      "type": "string"
-                    },
-                    "isEmailVerified": {
-                      "type": "boolean"
-                    },
-                    "isProfileFilled": {
-                      "type": "boolean"
+                    {
+                      "type": "object",
+                      "properties": {
+                        "isFriend": {
+                          "type": "boolean"
+                        },
+                        "isSelf": {
+                          "type": "boolean"
+                        }
+                      }
                     }
-                  }
+                  ]
                 }
               }
             }
@@ -994,7 +1009,7 @@
                     "members": {
                       "type": "array",
                       "items": {
-                        "$ref": "#/paths/~1user~1%7Bid%7D/get/responses/200/content/application~1json/schema"
+                        "$ref": "#/paths/~1user~1%7Bid%7D/get/responses/200/content/application~1json/schema/allOf/0"
                       }
                     },
                     "admin": {
@@ -1268,7 +1283,7 @@
                         "$ref": "#/paths/~1search/post/responses/201/content/application~1json/schema"
                       },
                       "to": {
-                        "$ref": "#/paths/~1user~1%7Bid%7D/get/responses/200/content/application~1json/schema"
+                        "$ref": "#/paths/~1user~1%7Bid%7D/get/responses/200/content/application~1json/schema/allOf/0"
                       }
                     }
                   }
@@ -1599,10 +1614,10 @@
                       "type": "boolean"
                     },
                     "notificationSender": {
-                      "$ref": "#/paths/~1user~1%7Bid%7D/get/responses/200/content/application~1json/schema"
+                      "$ref": "#/paths/~1user~1%7Bid%7D/get/responses/200/content/application~1json/schema/allOf/0"
                     },
                     "notificationReceiver": {
-                      "$ref": "#/paths/~1user~1%7Bid%7D/get/responses/200/content/application~1json/schema"
+                      "$ref": "#/paths/~1user~1%7Bid%7D/get/responses/200/content/application~1json/schema/allOf/0"
                     },
                     "chatRoom": {
                       "$ref": "#/paths/~1search/post/responses/201/content/application~1json/schema"
@@ -1753,7 +1768,7 @@
                     "users": {
                       "type": "array",
                       "items": {
-                        "$ref": "#/paths/~1user~1%7Bid%7D/get/responses/200/content/application~1json/schema"
+                        "$ref": "#/paths/~1user~1%7Bid%7D/get/responses/200/content/application~1json/schema/allOf/0"
                       }
                     },
                     "chatRooms": {
@@ -1773,7 +1788,7 @@
                           "members": {
                             "type": "array",
                             "items": {
-                              "$ref": "#/paths/~1user~1%7Bid%7D/get/responses/200/content/application~1json/schema"
+                              "$ref": "#/paths/~1user~1%7Bid%7D/get/responses/200/content/application~1json/schema/allOf/0"
                             }
                           },
                           "admin": {
@@ -1807,7 +1822,7 @@
                                 "type": "string"
                               },
                               "from": {
-                                "$ref": "#/paths/~1user~1%7Bid%7D/get/responses/200/content/application~1json/schema"
+                                "$ref": "#/paths/~1user~1%7Bid%7D/get/responses/200/content/application~1json/schema/allOf/0"
                               },
                               "content": {
                                 "type": "string"
@@ -1815,7 +1830,7 @@
                               "readed": {
                                 "type": "array",
                                 "items": {
-                                  "$ref": "#/paths/~1user~1%7Bid%7D/get/responses/200/content/application~1json/schema"
+                                  "$ref": "#/paths/~1user~1%7Bid%7D/get/responses/200/content/application~1json/schema/allOf/0"
                                 }
                               },
                               "type": {

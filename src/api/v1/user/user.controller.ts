@@ -114,7 +114,9 @@ const getUserById = async (
     if (user === null || user === undefined) {
       throw new HttpException(StatusCodes.NOT_FOUND, 'User not found');
     }
-    res.status(StatusCodes.OK).json(getRawUser(user));
+    const isFriend = await userService.isFriend(user._id, req.user?._id ?? '');
+    const isSelf = user._id === req.user?._id;
+    res.status(StatusCodes.OK).json({ ...getRawUser(user), isFriend, isSelf });
   } catch (error) {
     next(error);
   }

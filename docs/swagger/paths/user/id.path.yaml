@@ -16,7 +16,14 @@ get:
       content:
         application/json:
           schema:
-            $ref: '../../components/models/user.component.yaml#/schemas/user'
+            allOf:
+              - $ref: '../../components/models/user.component.yaml#/schemas/user'
+              - type: object
+                properties:
+                  isFriend:
+                    type: boolean
+                  isSelf:
+                    type: boolean
     404:
       description: User not found
         
