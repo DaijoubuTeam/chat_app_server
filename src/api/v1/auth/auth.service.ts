@@ -54,8 +54,8 @@ const createUser = async (
   isEmailVerified: boolean | undefined,
   fullname: string | undefined
 ) => {
-  if (avatar === undefined) {
-    avatar = '';
+  if (!avatar) {
+    avatar = process.env.EMPTY_USER_AVATAR;
   }
   if (phone === undefined) {
     phone = '';
@@ -69,7 +69,7 @@ const createUser = async (
   if (fullname === undefined) {
     fullname = '';
   }
-  if (!isLink(avatar)) {
+  if (!isLink(avatar ?? '')) {
     throw new HttpException(StatusCodes.BAD_REQUEST, 'Invalid avatar');
   }
   if (!isPhone(phone)) {

@@ -54,6 +54,9 @@ const createNewChatRoom = async (
     type: CHAT_ROOM_TYPE.group,
     chatRoomAvatar,
   });
+  if (!chatRoom.chatRoomAvatar) {
+    chatRoom.chatRoomAvatar = process.env.EMPTY_GROUP_AVATAR!;
+  }
   const user = await User.findById(userId);
   if (!user) {
     throw new HttpException(StatusCodes.NOT_FOUND, 'User not found');

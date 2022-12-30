@@ -58,14 +58,14 @@ const resetPassword = async (
 ) => {
   try {
     return res.status(HttpStatusCode.NotImplemented).end();
-    const { password } = req.body;
-    const { token } = req.query;
-    const userId = await service.verifyResetPasswordToken(token);
-    await service.updatePassword(userId, password);
-    res.status(StatusCodes.OK).json('Update successful');
+    // const { password } = req.body;
+    // const { token } = req.query;
+    // const userId = await service.verifyResetPasswordToken(token);
+    // await service.updatePassword(userId, password);
+    // res.status(StatusCodes.OK).json('Update successful');
   } catch (error) {
     next(error);
   }
 };
 
-export default { verifyUser, forgotPassword, resetPassword };
+export default { verifyUser, forgotPassword };
