@@ -146,6 +146,13 @@ const sendChatRoomRequest = async (
   ) {
     throw new HttpException(StatusCodes.CONFLICT, 'User has been in chat room');
   }
+  if (
+    sender.chatRoomRequestsSent.findIndex(
+      (req) => req.to === userId && req.chatRoom.toString() === chatRoomId
+    ) !== -1
+  ) {
+    throw new HttpException(StatusCodes.CONFLICT, 'User has been invited');
+  }
   user.chatRoomRequests.push(chatRoom._id);
   sender.chatRoomRequestsSent.push({
     chatRoom: chatRoom._id,
