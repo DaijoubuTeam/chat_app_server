@@ -335,12 +335,6 @@ const leaveChatRoom = async (chatRoomId: string, userId: string) => {
       'User is admin. Please delete chat room'
     );
   }
-  await messageService.sendMessage(
-    userId,
-    chatRoomId,
-    SystemMessageType.leftRoom,
-    MessageType.system
-  );
   user.chatRooms.pull(chatRoomId);
   chatRoom.members.pull(userId);
 
@@ -350,6 +344,13 @@ const leaveChatRoom = async (chatRoomId: string, userId: string) => {
   });
 
   await Promise.all([user.save(), chatRoom.save(), deleteNotification]);
+  await messageService.sendMessage(
+    userId,
+    chatRoomId,
+    SystemMessageType.leftRoom,
+    MessageType.system
+  );
+  await sendSocketToUser(userId, SOCKET_EVENT.ROOM_LEFT, null);
 };
 
 const getChatRoomRequests = async (userId: string) => {
