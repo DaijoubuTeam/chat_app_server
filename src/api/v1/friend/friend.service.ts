@@ -8,6 +8,8 @@ import messageService from '../message/message.service';
 import { MessageType, SystemMessageType } from '../../../models/message';
 import getRawChatRoom from '../../../common/getRawChatRoom';
 import { Types } from 'mongoose';
+import sendSocketToUser from '../../../common/sendSocketToUser';
+import SOCKET_EVENT from '../../../constants/socket_event';
 
 const getFriendList = async (userId: string) => {
   const user: IUser | null = await User.findById(userId)
@@ -102,7 +104,12 @@ const removeFriend = async (userId: string, friendId: string) => {
   const chatRoom = await deletePersonalChatRoom(userId, friendId);
   user.chatRooms.pull(chatRoom?._id);
   friend.chatRooms.pull(chatRoom?._id);
-  return Promise.all([user.save(), friend.save()]);
+  return Promise.all([
+    user.save(),
+    friend.save(),
+    sendSocketToUser(userId, SOCKET_EVENT.FRIEND_DELETED, null),
+    sendSocketToUser(friendId, SOCKET_EVENT.FRIEND_DELETED, null),
+  ]);
 };
 
 const acceptRequest = async (userId: string, friendId: string) => {

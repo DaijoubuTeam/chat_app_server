@@ -9,6 +9,8 @@ import getRawChatRoom from '../../../common/getRawChatRoom';
 import messageService from '../message/message.service';
 import { MessageType, SystemMessageType } from '../../../models/message';
 import getRawUser from '../../../common/getRawUser';
+import sendSocketToUser from '../../../common/sendSocketToUser';
+import SOCKET_EVENT from '../../../constants/socket_event';
 
 const getUserChatRooms = async (userId: string) => {
   const user = await User.findById(userId).populate({
@@ -96,6 +98,13 @@ const deleteChatRoom = async (chatRoomId: string) => {
   const deleteMembers = chatRoom.members.map(async (member) => {
     const memberUser = await User.findById(member);
     await memberUser?.chatRooms.pull(chatRoom);
+    if (memberUser) {
+      await sendSocketToUser(
+        memberUser?._id,
+        SOCKET_EVENT.CHATROOM_DELETED,
+        null
+      );
+    }
     return memberUser?.save();
   });
 
