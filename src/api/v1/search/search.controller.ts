@@ -82,7 +82,10 @@ const search = async (
     }
     // Search user
     const userIds = await searchService.searchUsers(q, user.friends);
-    const filteredUser = await searchService.filterUserFriend(userIds);
+    const filteredUser = await searchService.filterUserFriend(
+      user._id,
+      userIds
+    );
     // Seach chat room
     const chatRoomIds = await searchService.searchChatRoom(q, user._id);
     const filteredChatRoom = await searchService.filterChatRoom(chatRoomIds);
