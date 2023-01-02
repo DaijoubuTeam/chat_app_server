@@ -2,7 +2,7 @@ import { StatusCodes } from 'http-status-codes';
 import sendSocketToUser from '../../../common/sendSocketToUser';
 import HttpException from '../../../exception';
 import ChatRoom from '../../../models/chat_room';
-import Message, { MessageType } from '../../../models/message';
+import Message, { IMessage, MessageType } from '../../../models/message';
 import constants from '../../../constants';
 import getRawMessage from '../../../common/getRawMessage';
 import { IUser } from '../../../models/user';
@@ -91,28 +91,34 @@ const getMessagesById = async (
   if (!chatroom || chatroom.members.findIndex((id) => id === userId) === -1) {
     throw new HttpException(StatusCodes.FORBIDDEN, `forbidden request`);
   }
-  const beforeMessages = await Message.find({
-    createdAt: {
-      $lt: message.createdAt,
-    },
-    chatRoomId: chatroom._id,
-  })
-    .populate({
-      path: 'from readed',
+  let beforeMessages: IMessage[] = [];
+  if (before) {
+    beforeMessages = await Message.find({
+      createdAt: {
+        $lt: message.createdAt,
+      },
+      chatRoomId: chatroom._id,
     })
-    .sort({ createdAt: 'desc' })
-    .limit(before);
-  const afterMessages = await Message.find({
-    createdAt: {
-      $gt: message.createdAt,
-    },
-    chatRoomId: chatroom._id,
-  })
-    .populate({
-      path: 'from readed',
+      .populate({
+        path: 'from readed',
+      })
+      .sort({ createdAt: 'desc' })
+      .limit(before);
+  }
+  let afterMessages: IMessage[] = [];
+  if (after) {
+    afterMessages = await Message.find({
+      createdAt: {
+        $gt: message.createdAt,
+      },
+      chatRoomId: chatroom._id,
     })
-    .sort({ createdAt: 'asc' })
-    .limit(after);
+      .populate({
+        path: 'from readed',
+      })
+      .sort({ createdAt: 'asc' })
+      .limit(after);
+  }
   const messages = [...afterMessages.reverse(), message, ...beforeMessages];
   return messages.map((message) => getRawMessage(message));
 };
