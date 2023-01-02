@@ -15,7 +15,10 @@ const searchUser = async (
       throw new HttpException(StatusCodes.UNAUTHORIZED, 'Unauthorized');
     }
     const userIds = await searchService.searchUsers(q, user.friends);
-    const filteredUser = await searchService.filterUserFriend(userIds);
+    const filteredUser = await searchService.filterUserFriend(
+      user._id,
+      userIds
+    );
     res.status(StatusCodes.OK).json(filteredUser);
   } catch (error) {
     next(error);

@@ -8,6 +8,7 @@ import HttpException from '../../../exception';
 import ChatRoom, { CHAT_ROOM_TYPE, IChatRoom } from '../../../models/chat_room';
 import Message from '../../../models/message';
 import User, { IUser } from '../../../models/user';
+import friendService from '../friend/friend.service';
 
 const searchUsers = async (
   query: string,
@@ -53,9 +54,18 @@ const searchUsers = async (
   }
 };
 
-const filterUserFriend = async (userIds: string[]) => {
+const filterUserFriend = async (userId: string, userIds: string[]) => {
   const users = await User.find({ _id: { $in: userIds } });
-  return users.map((user) => getRawUser(user));
+
+  const rs = await Promise.all(
+    users.map(async (user) => {
+      const personalChatRoomId = (
+        await friendService.getPersonalChatroom(userId, user._id)
+      )._id.toString();
+      return { ...getRawUser(user), personalChatRoomId };
+    })
+  );
+  return rs;
 };
 
 const searchChatRoom = async (
