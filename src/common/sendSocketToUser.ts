@@ -1,7 +1,11 @@
 import { io } from '..';
+import SOCKET_EVENT from '../constants/socket_event';
 import Device from '../models/device';
 import SocketUser from '../models/socket';
-import { sendPushNotificationToDevice } from './sendPushNotificationToDevice';
+import {
+  sendPushMessage,
+  sendPushNotificationToDevice,
+} from './sendPushNotificationToDevice';
 
 const sendSocketToUser = async (
   userId: string,
@@ -20,9 +24,21 @@ const sendSocketToUser = async (
     });
 
     await Promise.all(
-      devices.map((device) =>
-        sendPushNotificationToDevice(device._id, eventName, data)
-      )
+      devices.map(async (device) => {
+        if (eventName == SOCKET_EVENT.NEW_MESSAGE) {
+          await sendPushMessage(
+            device._id,
+            'New Message',
+            'You have new message'
+          );
+        } else {
+          await sendPushMessage(
+            device._id,
+            'New Notifcation',
+            'You have new notification'
+          );
+        }
+      })
     );
   } catch (error) {
     console.log(error);

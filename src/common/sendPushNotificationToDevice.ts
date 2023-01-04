@@ -1,6 +1,7 @@
 import Device from '../models/device';
 import * as admin from 'firebase-admin';
 import { FirebaseError } from 'firebase-admin';
+import { Message } from 'firebase-admin/lib/messaging/messaging-api';
 
 export const sendPushNotificationToDevice = async (
   deviceId: string,
@@ -20,6 +21,39 @@ export const sendPushNotificationToDevice = async (
       },
       token: device.token,
     };
+    await admin.messaging().send(message);
+  } catch (error: any) {
+    if (
+      error.message == 'messaging/invalid-argument' ||
+      error.message == 'messaging/invalid-registration-token'
+    ) {
+      if (device != null) {
+        device.token == null;
+        device.save().catch((err) => console.log(err));
+      }
+    }
+    console.log(error);
+  }
+};
+
+export const sendPushMessage = async (
+  deviceId: string,
+  title: string,
+  body: string
+) => {
+  let device;
+  try {
+    device = await Device.findById(deviceId);
+    if (!device || !device.uid || !device.token) {
+      return;
+    }
+    const message = {
+      notication: {
+        title,
+        body,
+      },
+      token: device.token,
+    } as Message;
     await admin.messaging().send(message);
   } catch (error: any) {
     if (
