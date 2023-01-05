@@ -31,7 +31,7 @@ const sendSocketToUser = async (
             'New Message',
             'You have new message'
           );
-        } else {
+        } else if (eventName == SOCKET_EVENT.NEW_NOTIFICATION) {
           await sendPushMessage(
             device._id,
             'New Notifcation',
