@@ -5,6 +5,7 @@ interface IDevice {
   name: string;
   uid?: string;
   token?: string;
+  os?: string;
 }
 
 const deviceSchema = new mongoose.Schema<IDevice>(
@@ -13,6 +14,7 @@ const deviceSchema = new mongoose.Schema<IDevice>(
     name: { type: String },
     uid: { type: String, ref: 'User', default: null },
     token: { type: String, default: null },
+    os: { type: String, default: null },
   },
   { expires: '2M' }
 );

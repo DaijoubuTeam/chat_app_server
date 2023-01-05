@@ -30,6 +30,7 @@ const postDevice = async (
       token: string;
       deviceId: string;
       name: string;
+      os: string;
     }
   >,
   res: Response,
@@ -37,14 +38,20 @@ const postDevice = async (
 ) => {
   try {
     const user = req.user;
-    const { deviceId, token, name } = req.body;
+    const { deviceId, token, name, os } = req.body;
     if (!deviceId || !token) {
       throw new HttpException(StatusCodes.BAD_REQUEST, 'Invalid body');
     }
     if (!user) {
       throw new HttpException(StatusCodes.UNAUTHORIZED, 'Unauthorized');
     }
-    const device = await service.addToDevice(user._id, deviceId, token, name);
+    const device = await service.addToDevice(
+      user._id,
+      deviceId,
+      token,
+      name,
+      os
+    );
     res.status(StatusCodes.CREATED).json(device);
   } catch (error) {
     next(error);

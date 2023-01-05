@@ -2016,6 +2016,9 @@
                   },
                   "token": {
                     "type": "string"
+                  },
+                  "os": {
+                    "type": "string"
                   }
                 }
               }
@@ -2034,6 +2037,9 @@
                       "type": "string"
                     },
                     "name": {
+                      "type": "string"
+                    },
+                    "os": {
                       "type": "string"
                     }
                   }

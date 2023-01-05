@@ -14,19 +14,22 @@ const addToDevice = async (
   userId: string,
   deviceId: string,
   token: string,
-  name: string
+  name: string,
+  os: string
 ) => {
   let device = await Device.findById(deviceId);
   if (device) {
     device.token = token;
     device.uid = userId;
     device.name = name;
+    device.os = os;
   } else {
     device = await Device.create({
       _id: deviceId,
       uid: userId,
       token: token,
       name: name,
+      os: os,
     });
   }
   const rs = await device.save();

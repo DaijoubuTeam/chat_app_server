@@ -8,10 +8,14 @@ schemas:
         type: string
       token:
         type: string
+      os:
+        type: string
   devicePresenter:
     type: object
     properties:
       id:
         type: string
       name: 
+        type: string
+      os:
         type: string
