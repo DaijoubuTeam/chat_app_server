@@ -76,6 +76,9 @@ const sendFriendRequest = async (userId: string, friendId: string) => {
   if (user.friends.find((friend) => friend === friendId)) {
     throw new HttpException(StatusCodes.BAD_REQUEST, 'Have been friend');
   }
+  if (friend.friendRequestsSent.find((reqSent) => reqSent == userId)) {
+    throw new HttpException(StatusCodes.BAD_REQUEST, 'Have receive request');
+  }
   friend.friendRequests.push(userId);
   user.friendRequestsSent.push(friendId);
   await Promise.all([friend.save(), user.save()]);

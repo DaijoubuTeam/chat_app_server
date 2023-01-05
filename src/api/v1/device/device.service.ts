@@ -1,4 +1,6 @@
+import { HttpStatusCode } from 'axios';
 import getRawDevice from '../../../common/getRawDevice';
+import HttpException from '../../../exception';
 import Device from '../../../models/device';
 
 const getDevicesList = async (userId: string) => {
@@ -32,6 +34,10 @@ const addToDevice = async (
 };
 
 const removeDevice = async (deviceId: string) => {
+  const device = await Device.findById(deviceId);
+  if (!device) {
+    throw new HttpException(HttpStatusCode.NotFound, 'Device not found');
+  }
   await Device.findByIdAndDelete(deviceId);
 };
 
