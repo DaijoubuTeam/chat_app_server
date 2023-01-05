@@ -1,7 +1,6 @@
 import Device from '../models/device';
 import * as admin from 'firebase-admin';
 import { FirebaseError } from 'firebase-admin';
-import { Message } from 'firebase-admin/lib/messaging/messaging-api';
 
 export const sendPushNotificationToDevice = async (
   deviceId: string,
@@ -48,12 +47,12 @@ export const sendPushMessage = async (
       return;
     }
     const message = {
-      notication: {
-        title,
-        body,
+      notification: {
+        title: title,
+        body: body,
       },
       token: device.token,
-    } as Message;
+    };
     await admin.messaging().send(message);
   } catch (error: any) {
     if (
