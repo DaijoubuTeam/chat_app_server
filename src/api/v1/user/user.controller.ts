@@ -116,7 +116,8 @@ const getUserById = async (
     }
     const isFriend = await userService.isFriend(user._id, req.user?._id ?? '');
     const isSelf = user._id === req.user?._id;
-    res.status(StatusCodes.OK).json({ ...getRawUser(user), isFriend, isSelf });
+    const rs = { ...getRawUser(user), isFriend, isSelf }
+    res.status(StatusCodes.OK).json(rs);
   } catch (error) {
     next(error);
   }

@@ -91,23 +91,23 @@ const getVerifiedLink = async (
 
   const url = `${hostUrl}/api/v1/user/email-verified?token=${token}`;
 
-  const actionCodeSettings: ActionCodeSettings = {
-    url,
-    handleCodeInApp: true,
-    iOS: {
-      bundleId: 'xyz.daijoubuteam.chatapp',
-    },
-    android: {
-      packageName: 'xyz.daijoubuteam.chatapp',
-      installApp: true,
-      minimumVersion: '12',
-    },
-    dynamicLinkDomain: 'chatapp.daijoubuteam.xyz',
-  };
-  const link = await firebase
-    .auth()
-    .generateEmailVerificationLink(email, actionCodeSettings);
-  return link;
+  // const actionCodeSettings: ActionCodeSettings = {
+  //   url,
+  //   handleCodeInApp: true,
+  //   iOS: {
+  //     bundleId: 'xyz.daijoubuteam.chatapp',
+  //   },
+  //   android: {
+  //     packageName: 'xyz.daijoubuteam.chatapp',
+  //     installApp: true,
+  //     minimumVersion: '12',
+  //   },
+  //   dynamicLinkDomain: 'chatapp.daijoubuteam.xyz',
+  // };
+  // const link = await firebase
+  //   .auth()
+  //   .generateEmailVerificationLink(email, actionCodeSettings);
+  return url;
 };
 
 const sendVerifyEmailMail = async (

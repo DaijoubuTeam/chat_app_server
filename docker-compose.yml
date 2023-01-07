@@ -8,6 +8,9 @@ services:
       - .env
     networks:
       - chat_app_server
+    volumes:
+      - ./src/api/v1/user/template/:/app/dist/src/api/v1/user/template/:ro
+      - ./src/api/v1/auth/template/:/app/dist/src/api/v1/auth/template/:ro
 networks:
   chat_app_server:
     name: doan1

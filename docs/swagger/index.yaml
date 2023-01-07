@@ -13,8 +13,7 @@ components:
     SystemMessageType:
       $ref: './components/models/system-message-type.component.yaml#/schemas/SystemMessageType'
 servers:
-  - url: http://localhost/api/v1
-  - url: https://localhost/api/v1
+  - url: https://alpha.chatapp.daijoubuteam.xyz/api/v1
 paths:
   /auth/verify:
     $ref: './paths/auth/verify.path.yaml'
